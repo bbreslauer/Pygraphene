@@ -1,0 +1,254 @@
+
+from PySide.QtGui import *
+from PySide.QtCore import Qt
+
+from backend_base import BackendBase
+
+
+class Qt4PySideBackend(BackendBase):
+    """
+    Abstract class representing all the methods a backend must implement.
+    """
+
+    def __init__(self, width, height):
+        self._scene = QGraphicsScene(0, 0, width, height)
+        self._view = QGraphicsView(self._scene)
+        self._view.setAlignment(Qt.AlignLeft | Qt.AlignTop)
+        
+        self._view.show()
+
+
+
+
+    def figureToScene(self, x, y, ox=0, oy=0):
+        """
+        Convert from figure coords to scene coords.
+
+        ox, oy = origin in figure coordinates
+        """
+
+        # Shift x value to the right
+        x += ox
+
+        # Shift y value up, and then invert to reach the scene
+        y += oy
+        y = self._scene.height() - y
+
+        return (x, y)
+
+    def sceneToFigure(self, x, y, ox=0, oy=0):
+        """
+        Convert from scene coords to figure coords.
+        
+        ox, oy = origin in figure coordinates
+        """
+
+        # Shift x value to the left
+        x -= ox
+
+        # Invert from scene to figure, then shift y value down
+        y = self._scene.height() - y
+        y -= oy
+
+        return (x, y)
+
+
+    def drawLine(self, sx, sy, ex, ey, ox=0, oy=0, **kwargs):
+        """
+        Draw a line from (sx, sy) to (ex, ey).
+        The local origin is at (ox, oy).
+
+        The origin is defined as the bottom left corner, so this will transform
+        to the top-left corner to display in Qt4.
+        """
+
+        (sx, sy) = self.figureToScene(sx, sy, ox, oy)
+        (ex, ey) = self.figureToScene(ex, ey, ox, oy)
+
+        return self._scene.addLine(sx, sy, ex, ey, makePen(**kwargs))
+
+
+
+    def drawRect(self, sx, sy, ex, ey, ox=0, oy=0, fill=False):
+        """
+        Draw a rectangle with corners (sx, sy) and (ex, ey).
+        The local origin is at (ox, oy).
+
+        """
+
+        pass
+
+
+
+
+    def drawCircle(self, cx, cy, r, ox=0, oy=0, **kwargs):
+        """
+        Draw a circle centered at (cx, cy) with radius r.
+        The local origin is at (ox, oy).
+
+        The origin is defined as the bottom left corner, so this will transform
+        to the top-left corner to display in Qt4.
+        """
+
+        # Shift the center of the circle to the corner, which is used by QT.
+        cx -= r
+        cy += r
+
+        (cx, cy) = self.figureToScene(cx, cy, ox, oy)
+
+        fillcolor = kwargs.pop('fillcolor', '#000000')
+
+        return self._scene.addEllipse(cx, cy, 2*r, 2*r, makePen(**kwargs), QBrush(fillcolor, Qt.SolidPattern))
+
+
+
+
+
+    def drawText(self, x, y, ox=0, oy=0, **kwargs):
+        """
+        kwargs that are taken care of:
+        text = string
+        font = Font object or str
+        horizontalalignment = str
+        verticalalignment = str
+        rotation = 'horizontal', 'vertical' or int (for degrees)
+        """
+        
+        t = QGraphicsTextItem(str(kwargs['text']))
+        t.setFont(makeFont(kwargs['font']))
+        
+        # take care of text location
+        size = t.boundingRect()
+        height = size.height()
+        width = size.width()
+
+        if kwargs['horizontalalignment'] == 'right':
+            x = x - width
+        elif kwargs['horizontalalignment'] == 'center':
+            x = x - width / 2
+        
+        if kwargs['verticalalignment'] == 'bottom':
+            y = y + height
+        elif kwargs['verticalalignment'] == 'center':
+            y = y + height / 2
+
+        (x, y) = self.figureToScene(x, y, ox, oy)
+
+        if kwargs['rotation'] == 'horizontal':
+            kwargs['rotation'] = 0
+        elif kwargs['rotation'] == 'vertical':
+            kwargs['rotation'] = -90
+
+        t.setPos(x, y)
+        t.setRotation(kwargs['rotation'])
+        self._scene.addItem(t)
+
+        return t
+
+    def clear(self):
+        self._scene.clear()
+
+    def remove(self, item):
+        """
+        Remove the given item from the scene.
+        """
+        self._scene.removeItem(item)
+        del item
+
+
+
+    def listFonts(self):
+        """
+        Print out a list of the fonts that are available to use.
+        """
+
+        d = QFontDatabase()
+
+        for font in d.families():
+            print font
+            for style in d.styles(font):
+                print "  " + style,
+                for size in d.smoothSizes(font, style):
+                    print size,
+                print ""
+
+
+
+
+
+
+
+def makePen(**kwargs):
+    """
+    Create a QPen from the given properties. Valid properties are:
+
+    color
+    width
+    """
+    
+    styles = {  
+                'solid': Qt.SolidLine,
+                'dash': Qt.DashLine,
+                'dot': Qt.DotLine,
+                'dashdot': Qt.DashDotLine,
+                'dashdotdot': Qt.DashDotDotLine,
+                }
+
+    caps = {
+            'square': Qt.SquareCap,
+            'flat': Qt.FlatCap,
+            'round': Qt.RoundCap,
+            }
+
+    joins = {
+            'bevel': Qt.BevelJoin,
+            'miter': Qt.MiterJoin,
+            'round': Qt.RoundJoin,
+            }
+
+    pen = QPen()
+    
+    keys = kwargs.keys()
+    if 'color' in keys: 
+        pen.setColor(kwargs['color'])
+    if 'width' in keys: 
+        pen.setWidth(kwargs['width'])
+    if 'style' in keys:
+        pen.setStyle(styles[kwargs['style']])
+    if 'cap' in keys:
+        pen.setCapStyle(caps[kwargs['cap']])
+    if 'join' in keys:
+        pen.setJoinStyle(joins[kwargs['join']])
+    
+    return pen
+
+
+def makeFont(font):
+    """
+    font is a Font object or a string
+    """
+    
+    fontStyles = {
+            'normal': QFont.StyleNormal,
+            'italic': QFont.StyleItalic,
+            'oblique': QFont.StyleOblique,
+            }
+
+    fontWeights = {
+            'light': QFont.Light,
+            'normal': QFont.Normal,
+            'bold': QFont.Bold,
+            }
+
+    qf = QFont()
+
+    if isinstance(font, str):
+        qf.setFamily(font)
+    else:
+        qf.setFamily(str(font._family))
+        qf.setStyle(fontStyles[str(font._style).lower()])
+        qf.setWeight(fontWeights[str(font._weight).lower()])
+        qf.setPointSize(int(font._size))
+
+    return qf
+
