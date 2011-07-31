@@ -17,10 +17,42 @@ class Figure(object):
         self._title.setPosition(width / 2, height - 10)
         self.setTitle('')
         self._plots = []
+        self._currentPlot = None  # index of the current plot
 
     def addPlot(self, plot):
         self._plots.append(plot)
-        plot.setPlotRegion(0, 0, self._backend._scene.width(), self._backend._scene.height())
+        self._currentPlot = len(self._plots) - 1
+
+
+    def getCurrentPlot(self):
+        """
+        Return the current plot, or None if none exists.
+        """
+
+        try:
+            return self._plots[self._currentPlot]
+        except TypeError, IndexError:
+            # self._currentPlot is None or not in 0..len(self._plots)
+            return None
+
+    def setCurrentPlot(self, plot):
+        """
+        Check if fig already exists. If it does, then set it as active. If not,
+        then add it to the figures and set it as active.
+        """
+        
+        if isinstance(plot, Plot):
+            try:
+                self._currentPlot = self._plots.index(plot)
+            except ValueError:
+                # plot is not in self._plots
+                self.addPlot(plot)
+
+    def width(self):
+        return self._backend._scene.width()
+
+    def height(self):
+        return self._backend._scene.height()
 
     def setTitle(self, title):
         if isinstance(title, Text):

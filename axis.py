@@ -4,7 +4,7 @@ from artist import Artist
 from line import Line
 from text import Text
 from font import Font
-
+from locator import *
 
 class Axis(Line):
 
@@ -25,6 +25,7 @@ class Axis(Line):
         self._dataStart = 0.0
         self._dataEnd = 0.0
         self._dataLength = 0.0
+        self._autoscaled = True  # determine if axis is currently being autoscaled to the data
 
         self._majorTicks = Ticks(self._backend, self)
         self._minorTicks = Ticks(self._backend, self)
@@ -134,7 +135,6 @@ class Axis(Line):
         self.setLabelPosition()
         self._majorTicks.determineAxisPosition()
         self._minorTicks.determineAxisPosition()
-        self.setTicks()
 
     def setInside(self, i):
         """
@@ -155,7 +155,6 @@ class Axis(Line):
         self.setLabelPosition()
         self._majorTicks.determineAxisPosition()
         self._minorTicks.determineAxisPosition()
-        self.setTicks()
 
 
     def setPlotOrigin(self, x, y):
@@ -164,7 +163,6 @@ class Axis(Line):
         """
         
         self.setOrigin(x, y)
-        self.setTicks()
 
     def setPlotRange(self, anchor, start, end):
         """
@@ -191,9 +189,8 @@ class Axis(Line):
 
         self.setAxisPosition()
         self.setLabelPosition()
-        self.setTicks()
 
-    def setDataRange(self, start, end, fromMaster=False):
+    def setDataRange(self, start, end, fromMaster=False, autoscaled=False):
         """
         Set the start and end of the data range.
         """
@@ -212,9 +209,11 @@ class Axis(Line):
             self._dataStart = start
             self._dataEnd = end
             self._dataLength = end - start
+
+            self._autoscaled = autoscaled
     
             for axis in self._masterOf:
-                axis.setDataRange(start, end, True)
+                axis.setDataRange(start, end, True, autoscaled)
 
     def setTicksFont(self, font):
         self._majorTicks.setFont(font)
@@ -264,65 +263,66 @@ class Axis(Line):
 
         pass
 
-    def autoscale(self, fromMaster=False):
+    def autoscale(self):
         """
         Autoscale the data range so that it fits all the data attached
         to it.
         """
 
-        # Do not change the data range if this axis is slaved, unless
-        # we are calling it from the master
-        if self._slavedTo is None or fromMaster is True:
-            start = None
-            end = None
-    
-            datapairs = self._plot._datapairs
-    
-            for dp in datapairs:
-                if dp._xaxis == self:
-                    if start is None:
-                        start = dp.minXValue()
-                    else:
-                        start = min(start, dp.minXValue())
-                    
-                    if end is None:
-                        end = dp.maxXValue()
-                    else:
-                        end = max(end, dp.maxXValue())
-    
-                if dp._yaxis == self:
-                    if start is None:
-                        start = dp.minYValue()
-                    else:
-                        start = min(start, dp.minYValue())
-                    
-                    if end is None:
-                        end = dp.maxYValue()
-                    else:
-                        end = max(end, dp.maxYValue())
-    
-            if start is None:
-                start = 0.0
-            if end is None:
-                end = 10.0
-    
-            self.setDataRange(start, end)
-            self.setTicks('major')
-            self.setTicks('minor')
+        start = None
+        end = None
 
-            # setDataRange will call slaves, so only need to call setTicks
-            for axis in self._masterOf:
-                axis.setTicks('major')
-                axis.setTicks('minor')
+        datapairs = self._plot._datapairs
 
-    def setTicks(self, which='major', num=5):
+        for dp in datapairs:
+            if dp._xaxis == self:
+                if start is None:
+                    start = dp.minXValue()
+                else:
+                    start = min(start, dp.minXValue())
+                
+                if end is None:
+                    end = dp.maxXValue()
+                else:
+                    end = max(end, dp.maxXValue())
+
+            if dp._yaxis == self:
+                if start is None:
+                    start = dp.minYValue()
+                else:
+                    start = min(start, dp.minYValue())
+                
+                if end is None:
+                    end = dp.maxYValue()
+                else:
+                    end = max(end, dp.maxYValue())
+
+        if start is None:
+            start = 0.0
+        if end is None:
+            end = 10.0
+
+        self.setDataRange(start, end, autoscaled=True)
+
+    def setTicksLocator(self, which='major', locator=LinearLocator(), **kwargs):
+        """
+        kwargs are for the locator instance that is created.
+        """
+
         if which == 'minor':
-            ticks = self._minorTicks
+            self._minorTicks.setLocator(locator, **kwargs)
         else:
-            ticks = self._majorTicks
+            self._majorTicks.setLocator(locator, **kwargs)
 
-        ticks.setTicksNum(num, self._dataStart, self._dataEnd)
-
+    def setTicksLabeler(self, which='major', labeler=LinearLabeler(), **kwargs):
+        """
+        kwargs are for the labeler instance that is created.
+        """
+        
+        if which == 'minor':
+            self._minorTicks.setLabeler(labeler, **kwargs)
+        else:
+            self._majorTicks.setLabeler(labeler, **kwargs)
 
     def setAxisPosition(self):
         """
@@ -347,8 +347,9 @@ class Axis(Line):
 
     def drawTicks(self):
         if self._visible:
+            # hide minor ticks behind major ticks if they overlap
+            #self._minorTicks.draw()
             self._majorTicks.draw()
-            self._minorTicks.draw()
 
     def draw(self, *args, **kwargs):
         Line.draw(self, *args, **kwargs)
@@ -358,7 +359,7 @@ class Axis(Line):
 
 class Ticks(object):
 
-    def __init__(self, backend, axis, length=5, width=1, font=Font()):
+    def __init__(self, backend, axis, length=5, width=1, font=Font(), locator=None, labeler=None):
         """
         axis is the object these ticks are attached to.
         length is the default length for each tick.
@@ -370,10 +371,11 @@ class Ticks(object):
         self._length = length
         self._width = width
         self._font = font
+        self._locator = LinearLocator()
+        self._labeler = LinearLocator()
+        self.setLocator(locator)
+        self.setLabeler(labeler)
         self._visible = True
-
-        # temporary until there is a better way to set locations of ticks
-        self.setTicksNum(5, 0.0, 0.0)
 
         # defaults
         self._tickMarkArgs = {                    
@@ -423,40 +425,47 @@ class Ticks(object):
         if isinstance(v, bool):
             self._visible = v
 
-    def setTicksNum(self, num, start, end):
+    def setLocator(self, locator=None, **kwargs):
         """
-        start and end are in data coords
-        num is the number of ticks to display.
+        If locator is not a Locator instance (i.e. it is None), set kwargs on current locator.
+        Otherwise, set the locator and then set the kwargs on the locator.
         """
 
-        self._num = int(num)
-        self._start = float(start)
-        self._end = float(end)
+        if isinstance(locator, Locator):
+            self._locator = locator
+
+        self._locator.setKwargs(**kwargs)
+
+
+    def setLabeler(self, labeler, **kwargs):
+        pass
+
 
     def makeTicks(self):
-        
         self.removeTicks()
         self.delTicks()
         self._ticks = []
 
-        start = self._start
-        end = self._end
-        num = self._num
+        # get start and end data locations
+        start = self._axis._dataStart
+        end = self._axis._dataEnd
 
-        delta = (float(end) - float(start)) / float(num - 1)
+        locations = self._locator.locations(start, end)
 
-        for i in range(num):
-            self._tickMarkArgs.update(width=self._width)
-            self._labelArgs.update(text=str(start), font=self._font)
+        self._tickMarkArgs.update(width=self._width)
+        self._labelArgs.update(font=self._font)
 
+        for loc in locations:
+            self._labelArgs.update(text=str(loc))
             tick = Tick(self._backend,
                         self._axis,
-                        start,
+                        loc,
                         self._length,
                         self._tickMarkArgs,
                         self._labelArgs)
             self._ticks.append(tick)
-            start += delta
+
+        
 
     def removeTicks(self):
         """

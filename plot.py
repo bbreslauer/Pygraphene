@@ -28,7 +28,7 @@ class CartesianPlot(Plot):
         self.setTitle('')
 
         self._axes = {}
-        self.addAxes()
+        self.addInitialAxes()
 
         self._datapairs = []
 
@@ -44,12 +44,30 @@ class CartesianPlot(Plot):
     def setTitlePosition(self):
         self._title.setPosition(self._plotWidth / 2, self._plotHeight - 10)
 
+    def setPlotLocation(self, nRows, nCols, num):
+        """
+        A simple way to set the plot region. Specify how many rows and columns
+        should be on the figure, and which plot this is, and then calculate
+        the appropriate region.
+        """
+
+        row = num / nCols - 1    # -1 so that it is zero-indexed
+        col = num % nCols
+
+        plotWidth = float(self._figure.width()) / float(nCols)
+        plotHeight = float(self._figure.height()) / float(nRows)
+
+        x = float(col) * plotWidth
+        y = float(row) * plotHeight
+
+        self.setPlotRegion(x, y, plotWidth, plotHeight)
+
     def setPlotRegion(self, x, y, width, height):
         """
         Set the region of the figure (in figure coords) that this
         plot may occupy.
         """
-        
+
         self.setOrigin(x, y)
         self._plotWidth = width
         self._plotHeight = height
@@ -104,14 +122,6 @@ class CartesianPlot(Plot):
         self._axes['top'].setPlotOrigin(self._axesOx, self._axesOy)
         self._axes['bottom'].setPlotOrigin(self._axesOx, self._axesOy)
 
-        self._axes['left'].setOrientation('vertical')
-        self._axes['right'].setOrientation('vertical')
-        self._axes['top'].setOrientation('horizontal')
-        self._axes['bottom'].setOrientation('horizontal')
-
-        self._axes['right'].setInside('down')
-        self._axes['top'].setInside('down')
-        
         self._axes['left'].setPlotRange(0, 0, self._axesHeight)
         self._axes['right'].setPlotRange(self._axesWidth, 0, self._axesHeight)
         self._axes['top'].setPlotRange(self._axesHeight, 0, self._axesWidth)
@@ -127,11 +137,23 @@ class CartesianPlot(Plot):
         if key not in self._axes.keys():
             self._axes[key] = Axis(self._figure._backend, self, **kwargs)
 
-    def addAxes(self):
-        self._axes['left']   = Axis(self._figure._backend, self)
-        self._axes['top']    = Axis(self._figure._backend, self)
-        self._axes['right']  = Axis(self._figure._backend, self)
-        self._axes['bottom'] = Axis(self._figure._backend, self)
+    def addInitialAxes(self, **kwargs):
+
+        for key in ('left', 'top', 'right', 'bottom'):
+            self.addAxis(key, **kwargs)
+
+        self._axes['left'].setOrientation('vertical')
+        self._axes['right'].setOrientation('vertical')
+        self._axes['top'].setOrientation('horizontal')
+        self._axes['bottom'].setOrientation('horizontal')
+
+        self._axes['right'].setInside('down')
+        self._axes['top'].setInside('down')
+        self._axes['left'].setInside('up')
+        self._axes['bottom'].setInside('up')
+
+        self._axes['right'].slaveTo(self._axes['left'])
+        self._axes['top'].slaveTo(self._axes['bottom'])
 
     def addDataPair(self, datapair):
         if isinstance(datapair, DataPair):
@@ -143,6 +165,20 @@ class CartesianPlot(Plot):
         elif isinstance(title, str):
             self._title.setKwargs(text=title)
 
+    def setAxisLabel(self, key='bottom', label='', font=''):
+        try:
+            self._axes[key].setLabelText(label)
+            self._axes[key].setLabelFont(label)
+        except:
+            pass
+
+    def setAxisAutoscale(self, key='bottom', autoscale=True):
+        if isinstance(autoscale, bool):
+            try:
+                self._axes[key]._autoscaled = autoscale
+            except:
+                pass
+
 
     def _draw(self):
         self.drawAxes()
@@ -153,6 +189,10 @@ class CartesianPlot(Plot):
     def drawAxes(self):
         axes = self._axes.values()
         
+        for axis in axes:
+            if axis._autoscaled:
+                axis.autoscale()
+
         # need to draw ticks here so that they don't cover up the axis
         for axis in axes:
             axis.drawTicks()
