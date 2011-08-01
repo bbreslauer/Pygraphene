@@ -53,16 +53,16 @@ class CircleMarker(Marker):
 
 
 
-    def setKwargs(self, **kwargs):
+    def setKwargs(self, args={}, **kwargs):
         """
         Pull radius out.
         """
 
         radius = kwargs.pop('radius', None)
-        if radius is not None:
-            self.setRadius(radius)
+        radius = args.pop('radius', radius)
+        self.setRadius(radius)
 
-        Marker.setKwargs(self, **kwargs)
+        Marker.setKwargs(self, args={}, **kwargs)
 
 
     def setRadius(self, radius):

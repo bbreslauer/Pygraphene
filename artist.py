@@ -9,6 +9,8 @@ class Artist(Kwobject):
 
 
     def __init__(self, backend, *args, **kwargs):
+        Kwobject.__init__(self, **kwargs)
+
         self._backend = backend
 
         self._item = None
@@ -43,13 +45,6 @@ class Artist(Kwobject):
         if isinstance(v, bool):
             self._visible = v
     
-    def setKwargs(self, args={}, **kwargs):
-        self._kwargs.update(args)
-        self._kwargs.update(kwargs)
-
-    def kwargs(self):
-        return self._kwargs
-
     def setColor(self, color):
         self.setKwargs(color=color)
 

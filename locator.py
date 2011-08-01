@@ -2,7 +2,9 @@
 from base import Kwobject
 
 class Locator(Kwobject):
-    pass
+    
+    def __init__(self, **kwargs):
+        Kwobject.__init__(self, **kwargs)
 
 class LinearLocator(Locator):
 
