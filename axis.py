@@ -27,8 +27,11 @@ class Axis(Line):
         self._dataLength = 0.0
         self._autoscaled = True  # determine if axis is currently being autoscaled to the data
 
-        self._majorTicks = Ticks(self._backend, self)
-        self._minorTicks = Ticks(self._backend, self)
+        self._majorTicks = Ticks(self._backend, self, 'major')
+        self._minorTicks = Ticks(self._backend, self, 'minor')
+        self._minorTicks.setLocator(num=3)
+        self._minorTicks.setLength(3)
+        self._minorTicks._labelArgs.update(visible=False)
 
 
         # An axis can be slaved to zero or one other axises, but
@@ -349,7 +352,7 @@ class Axis(Line):
     def drawTicks(self):
         if self._visible:
             # hide minor ticks behind major ticks if they overlap
-            #self._minorTicks.draw()
+            self._minorTicks.draw()
             self._majorTicks.draw()
 
     def draw(self, *args, **kwargs):
@@ -360,7 +363,7 @@ class Axis(Line):
 
 class Ticks(object):
 
-    def __init__(self, backend, axis, length=5, width=1, font=Font(), locator=None, labeler=None):
+    def __init__(self, backend, axis, type_='major', length=5, width=1, font=Font(), locator=None, labeler=None):
         """
         axis is the object these ticks are attached to.
         length is the default length for each tick.
@@ -369,11 +372,12 @@ class Ticks(object):
         self._ticks = []
         self._backend = backend
         self._axis = axis
+        self._type = type_
         self._length = length
         self._width = width
         self._font = font
         self._locator = LinearLocator()
-        self._labeler = LinearLocator()
+        self._labeler = LinearLabeler()
         self.setLocator(locator)
         self.setLabeler(labeler)
         self._visible = True
@@ -426,6 +430,10 @@ class Ticks(object):
         if isinstance(v, bool):
             self._visible = v
 
+    def setLength(self, length):
+        if isinstance(length, int):
+            self._length = length
+
     def setLocator(self, locator=None, **kwargs):
         """
         If locator is not a Locator instance (i.e. it is None), set kwargs on current locator.
@@ -451,13 +459,21 @@ class Ticks(object):
         start = self._axis._dataStart
         end = self._axis._dataEnd
 
-        locations = self._locator.locations(start, end)
+        if self._type == 'minor':
+            majorLocations = self._axis._majorTicks._locator.locations(start, end)
+            locations = []
+            for i in range(len(majorLocations) - 1):
+                locations.extend(self._locator.locations(majorLocations[i], majorLocations[i+1], 'minor'))
+        else:
+            locations = self._locator.locations(start, end)
 
+        # TODO can this be done elsewhere?
         self._tickMarkArgs.update(width=self._width)
         self._labelArgs.update(font=self._font)
 
         for loc in locations:
-            self._labelArgs.update(text=str(loc))
+            if self._type == 'major':
+                self._labelArgs.update(text=str(loc))
             tick = Tick(self._backend,
                         self._axis,
                         loc,

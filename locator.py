@@ -34,13 +34,16 @@ class LinearLocator(Locator):
         if isinstance(num, int):
             self._num = num
 
-    def locations(self, start, end):
+    def locations(self, start, end, axisType='major'):
         """
         Return a list of data coords between start and end,
         evenly spaced so that there are num values.
         """
 
         num = self._num
+
+        if axisType == 'minor':
+            num += 2
 
         delta = (float(end) - float(start)) / float(num - 1)
 
