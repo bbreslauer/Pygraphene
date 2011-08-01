@@ -1,23 +1,8 @@
 
+from base import Kwobject
 
-
-class Locator(object):
-
-
-    def __init__(self, **kwargs):
-        self._kwargs = {}
-        self.setKwargs(**kwargs)
-
-    def setKwargs(self, args={}, **kwargs):
-        self._kwargs.update(args)
-        self._kwargs.update(kwargs)
-
-    def kwargs(self):
-        return self._kwargs
-
-
-
-
+class Locator(Kwobject):
+    pass
 
 class LinearLocator(Locator):
 
@@ -66,7 +51,12 @@ class LinearLocator(Locator):
         return self._kwargs
 
 
-class LinearLabeler():
+
+
+class Labeler(Kwobject):
+    pass
+
+class LinearLabeler(Labeler):
     pass
 
 

@@ -452,7 +452,15 @@ class Ticks(object):
 
 
     def setLabeler(self, labeler, **kwargs):
-        pass
+        """
+        If labeler is not a Labeler instance (i.e. it is None), set kwargs on current labeler.
+        Otherwise, set the labeler and then set the kwargs on the labeler.
+        """
+
+        if isinstance(labeler, Labeler):
+            self._labeler = labeler
+
+        self._labeler.setKwargs(**kwargs)
 
 
     def makeTicks(self):

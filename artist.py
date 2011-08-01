@@ -1,7 +1,7 @@
 
+from base import Kwobject
 
-
-class Artist(object):
+class Artist(Kwobject):
     """
     Valid kwargs:
     color
