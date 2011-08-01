@@ -103,6 +103,7 @@ class Axis(Line):
 
     def slaveTo(self, other):
         if isinstance(other, Axis):
+            self.setDataRange(other._dataStart, other._dataEnd, True, other._autoscaled)
             self._slavedTo = other
             other.addSlave(self)
 
@@ -226,30 +227,31 @@ class Axis(Line):
         self._label.setKwargs(text=text)
 
     def setLabelPosition(self):
-
         try:
             if self._orientation == 'horizontal' and self._inside == 'up':  # bottom axis
                 self._label.setKwargs({'horizontalalignment': 'center',
                                    'verticalalignment': 'top',
+                                   'rotation': 'horizontal',
                                   })
-                self._label.setPosition(self._plotLength / 2, self._plotAnchor - 20)
+                self._label.setPosition(self._plotLength / 2, self._plotAnchor - 25)
             elif self._orientation == 'horizontal' and self._inside == 'down':  # top axis
                 self._label.setKwargs({'horizontalalignment': 'center',
                                    'verticalalignment': 'bottom',
+                                   'rotation': 'horizontal',
                                   })
-                self._label.setPosition(self._plotLength / 2, self._plotAnchor + 20)
+                self._label.setPosition(self._plotLength / 2, self._plotAnchor + 25)
             elif self._orientation == 'vertical' and self._inside == 'up':  # left axis
                 self._label.setKwargs({'horizontalalignment': 'right',
                                    'verticalalignment': 'center',
                                    'rotation': 'vertical',
                                   })
-                self._label.setPosition(self._plotAnchor - 20, self._plotLength / 2)
+                self._label.setPosition(self._plotAnchor - 25, self._plotLength / 2)
             elif self._orientation == 'vertical' and self._inside == 'down':  # right axis
                 self._label.setKwargs({'horizontalalignment': 'left',
                                    'verticalalignment': 'center',
                                    'rotation': 'vertical',
                                   })
-                self._label.setPosition(self._plotAnchor + 20, self._plotLength / 2)
+                self._label.setPosition(self._plotAnchor + 25, self._plotLength / 2)
             else:  # undefined axis
                 self._label.setKwargs({'horizontalalignment': 'center',
                                    'verticalalignment': 'center',
@@ -261,7 +263,6 @@ class Axis(Line):
                               })
             self._label.setPosition(0, 0)
 
-        pass
 
     def autoscale(self):
         """

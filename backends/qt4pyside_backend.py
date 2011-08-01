@@ -106,6 +106,8 @@ class Qt4PySideBackend(BackendBase):
 
     def drawText(self, x, y, ox=0, oy=0, **kwargs):
         """
+        x, y are figure coords that define the top-left corner of the text item.
+
         kwargs that are taken care of:
         text = string
         font = Font object or str
@@ -116,12 +118,35 @@ class Qt4PySideBackend(BackendBase):
         
         t = QGraphicsTextItem(str(kwargs['text']))
         t.setFont(makeFont(kwargs['font']))
+       
+        # Need to rotate first so that we can set the position correctly
+        # based on the height and width after rotation.
+        if kwargs['rotation'] == 'horizontal':
+            kwargs['rotation'] = 0
+        elif kwargs['rotation'] == 'vertical':
+            kwargs['rotation'] = -90
         
-        # take care of text location
-        size = t.boundingRect()
-        height = size.height()
-        width = size.width()
+        t.setRotation(kwargs['rotation'])
 
+        # The boundingRect() is in item coordinates, so it gives the same rect regardless
+        # of whether the item is rotated or not. So long as the BoundingRegionGranularity
+        # is 0 (the default), this is just the boundingRect transformed into the scene, 
+        # which gives us the proper height and width
+        boundingRect = t.boundingRegion(t.sceneTransform()).rects()[0]
+        height = boundingRect.height()
+        width = boundingRect.width()
+
+        # the setPos() method used below sets the top-left corner of the item to the given
+        # position. However, if the item is rotated, then the top-left corner of the item
+        # is no longer the same as the top-left corner of the bounding rectangle in the scene
+        # (as retrieved above). So we need to adjust x and y so that we are in effect placing
+        # the top-left corner of the bounding rect, not the item. As an example, if the item
+        # is rotated 45deg CCW, the top-left corner of the item is near the bottom-left
+        # corner of the bounding rect.
+        x += boundingRect.x()
+        y += boundingRect.y()
+
+        # take care of text location
         if kwargs['horizontalalignment'] == 'right':
             x = x - width
         elif kwargs['horizontalalignment'] == 'center':
@@ -134,13 +159,13 @@ class Qt4PySideBackend(BackendBase):
 
         (x, y) = self.figureToScene(x, y, ox, oy)
 
-        if kwargs['rotation'] == 'horizontal':
-            kwargs['rotation'] = 0
-        elif kwargs['rotation'] == 'vertical':
-            kwargs['rotation'] = -90
+#        if kwargs['rotation'] == 'horizontal':
+#            kwargs['rotation'] = 0
+#        elif kwargs['rotation'] == 'vertical':
+#            kwargs['rotation'] = -90
 
         t.setPos(x, y)
-        t.setRotation(kwargs['rotation'])
+#        t.setRotation(kwargs['rotation'])
         self._scene.addItem(t)
 
         return t

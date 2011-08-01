@@ -21,7 +21,7 @@ class Locator(object):
 
 class LinearLocator(Locator):
 
-    def __init__(self, num=9, **kwargs):
+    def __init__(self, num=5, **kwargs):
         Locator.__init__(self, **kwargs)
 
         # in case someone passes in a non-int, we will still have a default
