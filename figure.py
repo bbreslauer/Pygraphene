@@ -61,11 +61,18 @@ class Figure(object):
             self._title.setKwargs(text=title)
 
     def draw(self):
+        self._backend.show()
+
         for p in self._plots:
             p.draw()
 
         self._title.draw()
         
+    def deleteAllPlots(self):
+        for plot in self._plots:
+            del plot
+        self._plots = []
+        self._currentPlot = None
 
     def clear(self):
         self._backend.clear()

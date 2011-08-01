@@ -58,24 +58,29 @@ def figure(width=600, height=400):
 
 
 
-
 def plot(*args, **kwargs):
     """
     args are x1, y1, x2, y2, etc
 
     kwargs are undef. as of now
+
+    Uses the current figure, if one exists, otherwise creates a new figure.
+    If the current figure has a current plot, then uses it, otherwise creates a
+    plot in position 1, 1, 1.
+
+    Running plot() multiple times will add more data to the last defined plot.
+    Running show() multiple times will show the last defined plot.
     """
 
     fig = FigureManager.getActive()
     if fig is None:
         figure()
         fig = FigureManager.getActive()
-
-    plot = CartesianPlot(fig, fig._backend)
-    fig.addPlot(plot)
-
-    plot.setPlotLocation(1, 1, 1)
-
+    plot = fig.getCurrentPlot()
+    if plot is None:
+        plot = CartesianPlot(fig, fig._backend)
+        fig.addPlot(plot)
+        plot.setPlotLocation(1, 1, 1)
 
     args = list(args)
     while len(args) > 0:
@@ -85,10 +90,16 @@ def plot(*args, **kwargs):
         d = DataPair(fig._backend, x, y, plot._axes['bottom'], plot._axes['left'])
         plot.addDataPair(d)
 
-
-
-
     return plot
+
+def clearFigure():
+    fig = FigureManager.getActive()
+    if fig is not None:
+        fig.clear()
+        fig.deleteAllPlots()
+
+
+
 
 
 
@@ -100,11 +111,46 @@ def show():
     fig = FigureManager.getActive()
     if fig is not None:
         fig.draw()
+        _show_Qt()
 
 
 
 def listFonts():
     figure = Figure(600, 400)
     figure._backend.listFonts()
+
+
+
+
+
+
+
+# import necessary modules
+import sys
+from PySide.QtCore import *
+from PySide.QtGui import *
+
+
+def _start_Qt():
+    try:
+        QApplication(sys.argv)
+    except RuntimeError:
+        pass
+
+def _show_Qt():
+    qApp.exec_()
+
+app = QApplication(sys.argv)
+
+
+
+
+
+
+
+
+
+
+
 
 

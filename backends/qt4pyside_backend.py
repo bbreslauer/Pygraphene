@@ -11,14 +11,15 @@ class Qt4PySideBackend(BackendBase):
     """
 
     def __init__(self, width, height):
+
         self._scene = QGraphicsScene(0, 0, width, height)
         self._view = QGraphicsView(self._scene)
         self._view.setAlignment(Qt.AlignLeft | Qt.AlignTop)
         
         self._view.show()
 
-
-
+    def show(self):
+        self._view.show()
 
     def figureToScene(self, x, y, ox=0, oy=0):
         """

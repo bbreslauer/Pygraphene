@@ -72,5 +72,9 @@ class Artist(Kwobject):
         item = self.item()
 
         if item is not None:
-            self._backend.remove(item)
+            try:
+                self._backend.remove(item)
+            except:
+                # Don't worry if it cannot be deleted; it probably doesn't exist anymore
+                pass
 
