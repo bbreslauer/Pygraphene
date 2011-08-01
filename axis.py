@@ -363,33 +363,34 @@ class Axis(Line):
 
 class Ticks(object):
 
-    def __init__(self, backend, axis, type_='major', length=5, width=1, font=Font(), locator=None, labeler=None):
+    def __init__(self, backend, axis, type_='major', length=5, width=1, font=None, locator=None, labeler=None):
         """
         axis is the object these ticks are attached to.
         length is the default length for each tick.
         """
+
+        # defaults
+        self._tickMarkArgs = {
+                            'width': 1,
+                       }
+
+        self._labelArgs = {'horizontalalignment': 'center',
+                           'verticalalignment': 'center',
+                           'font': Font()
+                          }
 
         self._ticks = []
         self._backend = backend
         self._axis = axis
         self._type = type_
         self._length = length
-        self._width = width
-        self._font = font
+        self.setWidth(width)
+        self.setFont(font)
         self._locator = LinearLocator()
         self._labeler = LinearLabeler()
         self.setLocator(locator)
         self.setLabeler(labeler)
         self._visible = True
-
-        # defaults
-        self._tickMarkArgs = {                    
-                       }
-
-        self._labelArgs = {'horizontalalignment': 'center',
-                           'verticalalignment': 'center',
-                          }
-
 
 
     def determineAxisPosition(self):
@@ -424,7 +425,7 @@ class Ticks(object):
 
     def setFont(self, font):
         if isinstance(font, str) or isinstance(font, Font):
-            self._font = font
+            self._labelArgs.update(font=font)
 
     def setVisible(self, v):
         if isinstance(v, bool):
@@ -433,6 +434,10 @@ class Ticks(object):
     def setLength(self, length):
         if isinstance(length, int):
             self._length = length
+
+    def setWidth(self, width):
+        if isinstance(width, int):
+            self._tickMarkArgs.update(width=width)
 
     def setLocator(self, locator=None, **kwargs):
         """
@@ -466,10 +471,6 @@ class Ticks(object):
                 locations.extend(self._locator.locations(majorLocations[i], majorLocations[i+1], 'minor'))
         else:
             locations = self._locator.locations(start, end)
-
-        # TODO can this be done elsewhere?
-        self._tickMarkArgs.update(width=self._width)
-        self._labelArgs.update(font=self._font)
 
         for loc in locations:
             if self._type == 'major':
