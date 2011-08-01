@@ -49,19 +49,26 @@ class LinearLocator(Locator):
 
         Locator.setKwargs(self, args, **kwargs)
 
-    def kwargs(self):
-        return self._kwargs
-
 
 
 
 class Labeler(Kwobject):
-    pass
+    def __init__(self, **kwargs):
+        Kwobject.__init__(self, **kwargs)
+    
+    def labels(self, locations):
+        """
+        Must return a list with exactly the same length as locations.
+        """
+        pass
 
-class LinearLabeler(Labeler):
-    pass
+class NullLabeler(Labeler):
+    def labels(self, locations):
+        return [''] * len(locations)
 
-
+class StringLabeler(Labeler):
+    def labels(self, locations):
+        return map(str, locations)
 
 
 

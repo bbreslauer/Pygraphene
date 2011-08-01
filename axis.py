@@ -27,8 +27,8 @@ class Axis(Line):
         self._dataLength = 0.0
         self._autoscaled = True  # determine if axis is currently being autoscaled to the data
 
-        self._majorTicks = Ticks(self._backend, self, 'major')
-        self._minorTicks = Ticks(self._backend, self, 'minor')
+        self._majorTicks = Ticks(self._backend, self, 'major', labeler=StringLabeler())
+        self._minorTicks = Ticks(self._backend, self, 'minor', labeler=NullLabeler())
         self._minorTicks.setLocator(num=3)
         self._minorTicks.setLength(3)
         self._minorTicks._labelArgs.update(visible=False)
@@ -318,7 +318,7 @@ class Axis(Line):
         else:
             self._majorTicks.setLocator(locator, **kwargs)
 
-    def setTicksLabeler(self, which='major', labeler=LinearLabeler(), **kwargs):
+    def setTicksLabeler(self, which='major', labeler=NullLabeler(), **kwargs):
         """
         kwargs are for the labeler instance that is created.
         """
@@ -387,7 +387,7 @@ class Ticks(object):
         self.setWidth(width)
         self.setFont(font)
         self._locator = LinearLocator()
-        self._labeler = LinearLabeler()
+        self._labeler = NullLabeler()
         self.setLocator(locator)
         self.setLabeler(labeler)
         self._visible = True
@@ -480,9 +480,10 @@ class Ticks(object):
         else:
             locations = self._locator.locations(start, end)
 
-        for loc in locations:
-            if self._type == 'major':
-                self._labelArgs.update(text=str(loc))
+        labels = self._labeler.labels(locations)
+
+        for loc, lab in zip(locations, labels):
+            self._labelArgs.update(text=str(lab))
             tick = Tick(self._backend,
                         self._axis,
                         loc,
