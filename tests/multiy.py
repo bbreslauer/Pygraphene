@@ -10,8 +10,6 @@ from PySide.QtGui import *
 from plotter import *
 from font import *
 
-app = QApplication(sys.argv)
-
 x = [1,2,3,4,5,6,7,8,9]
 y1 = [1,2,9,5,8,1,5]
 y2 = [1, 15, 90, 89, 90, 30, 34, 60, 0]

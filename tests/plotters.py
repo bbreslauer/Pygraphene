@@ -9,8 +9,6 @@ from PySide.QtGui import *
 
 from plotter import *
 
-app = QApplication(sys.argv)
-
 x = [1,2,3,4,5,6,7]
 y = [1,2,9,5,9,1,0]
 
@@ -27,6 +25,4 @@ p.setAxisLabel('right', 'right')
 
 show()
 
-app.exec_()
-sys.exit()
 

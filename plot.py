@@ -117,10 +117,10 @@ class CartesianPlot(Plot):
         self._axesWidth = self._plotWidth - self._rpad - self._lpad
         self._axesHeight = self._plotHeight - self._tpad - self._bpad
 
-        self._axes['left'].setPlotOrigin(self._axesOx, self._axesOy)
-        self._axes['right'].setPlotOrigin(self._axesOx, self._axesOy)
-        self._axes['top'].setPlotOrigin(self._axesOx, self._axesOy)
-        self._axes['bottom'].setPlotOrigin(self._axesOx, self._axesOy)
+        self._axes['left'].setOrigin(self._axesOx, self._axesOy)
+        self._axes['right'].setOrigin(self._axesOx, self._axesOy)
+        self._axes['top'].setOrigin(self._axesOx, self._axesOy)
+        self._axes['bottom'].setOrigin(self._axesOx, self._axesOy)
 
         self._axes['left'].setPlotRange(0, 0, self._axesHeight)
         self._axes['right'].setPlotRange(self._axesWidth, 0, self._axesHeight)
