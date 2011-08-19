@@ -10,22 +10,22 @@ class Text(Artist):
     The font used can be either a string with the font family name in it,
     or a PyGraphene Font object.
 
-    ======================  =================   ============    =======
-    Keyword                 Possible Values     Default         Description
-    ======================  =================   ============    =======
-    text                    str                 ''              The text that will be displayed.
-    font                    | str               'Times'         The font that will be used. Either a Font object or the name of a font family.
+    ======================  =================   =======
+    Keyword                 Possible Values     Description
+    ======================  =================   =======
+    text                    str ('')            The text that will be displayed.
+    font                    | str ('Times')     The font that will be used. Either a Font object or the name of a font family.
                             | Font
-    horizontalalignment     | 'center'          'center'        Define where the horizontal anchor point is located in reference to the text.
+    horizontalalignment     | 'center'          Define where the horizontal anchor point is located in reference to the text.
                             | 'right'
                             | 'left'
-    verticalignment         | 'center'          'center'        Define where the vertical anchor point is located in reference to the text.
+    verticalignment         | 'center'          Define where the vertical anchor point is located in reference to the text.
                             | 'top'
                             | 'bottom'
-    rotation                | 'horizontal'      'horizontal'    Define how much to rotate the text. If using an int, specifies degrees clockwise.
+    rotation                | 'horizontal'      Define how much to rotate the text. If using an int, specifies degrees clockwise.
                             | 'vertical'
                             | int
-    ======================  =================   ============    =======
+    ======================  =================   =======
     """
 
     def __init__(self, backend, text='', **kwargs):

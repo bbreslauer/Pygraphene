@@ -562,6 +562,8 @@ class Ticks(object):
 
     def __init__(self, backend, axis, type_='major', length=5, width=1, font=None, locator=None, labeler=None):
         """
+        **Constructor**
+
         axis
             The Axis instance these ticks are attached to.
 
@@ -779,6 +781,8 @@ class Tick(object):
 
     def __init__(self, backend, axis, dataLoc, length, tickMarkArgs={}, labelArgs={}):
         """
+        **Constructor**
+
         axis
             The Axis instance this tick is attached to.
 

@@ -16,7 +16,8 @@ class Kwobject(object):
         Update object's keyword arguments with kwargs.
 
         If args is a dictionary, then the object's keyword arguments
-        will be updated with it first.
+        will be updated with it first. If args is not a dictionary,
+        it is ignored.
         """
 
         if isinstance(args, dict):

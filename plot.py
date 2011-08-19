@@ -14,10 +14,26 @@ class Plot(Artist):
 
 class CartesianPlot(Plot):
     """
-    Cartesian plot.
+    A cartesian plot. The plot contains a title and four initial axes. The plot can
+    contain any number of DataPairs.
+
+    The plot's location is specified by an origin point in figure coordinates, along
+    with a width and a height. This specifies the absolute size of the plot; the actual
+    space contained within the axes will almost certainly be smaller, in order to 
+    leave space for the plot title, the axis labels, and the tick marks/labels. The
+    amount of space between this absolute plot size and the locations of the axes is
+    defined as the plot padding.
     """
 
     def __init__(self, figure, backend):
+        """
+        **Constructor**
+
+        figure
+            The figure to draw the plot on.
+        backend
+            The backend that the figure uses.
+        """
 
         Plot.__init__(self, backend)
 
@@ -42,6 +58,11 @@ class CartesianPlot(Plot):
         self.setPadding()
 
     def setTitlePosition(self):
+        """
+        Set the position for the title. Currently, this is centered at the top of the
+        plot, but in the future it may take x and y arguments.
+        """
+
         self._title.setPosition(self._plotWidth / 2, self._plotHeight - 10)
 
     def setPlotLocation(self, nRows, nCols, num):
@@ -64,8 +85,7 @@ class CartesianPlot(Plot):
 
     def setPlotRegion(self, x, y, width, height):
         """
-        Set the region of the figure (in figure coords) that this
-        plot may occupy.
+        Set the region of the figure that this plot may occupy, in figure coordinates.
         """
 
         self.setOrigin(x, y)
@@ -77,10 +97,10 @@ class CartesianPlot(Plot):
 
     def setPadding(self, top=50, right=50, bottom=50, left=50):
         """
-        Set the padding between the region this plot can occupy
-        and the axes.
+        Set the padding between the plot region (the area of the figure that this 
+        plot can occupy) and the axes.
         """
-
+# TODO need to make sure all padding variables are always >=0
         self._tpad = top
         self._rpad = right
         self._bpad = bottom
@@ -89,24 +109,38 @@ class CartesianPlot(Plot):
         self.setAxesRegion()
 
     def setTopPadding(self, p):
+        """
+        Set the padding for just the top of the plot.
+        """
         self._tpad = p
         self.setAxesRegion()
 
     def setRightPadding(self, p):
+        """
+        Set the padding for just the right of the plot.
+        """
         self._rpad = p
         self.setAxesRegion()
 
     def setBottomPadding(self, p):
+        """
+        Set the padding for just the bottom of the plot.
+        """
         self._bpad = p
         self.setAxesRegion()
 
     def setLeftPadding(self, p):
+        """
+        Set the padding for just the left of the plot.
+        """
         self._lpad = p
         self.setAxesRegion()
 
     def setAxesRegion(self):
         """
-        Calculate the region that the axes can occupy, in figure coords.
+        Calculate the region that the axes can occupy, in figure coordinates.
+
+        This is basically the plot region made smaller by the padding on each axis.
         """
 
         # Origin of axes, in figure coords
@@ -128,16 +162,31 @@ class CartesianPlot(Plot):
         self._axes['bottom'].setPlotRange(0, 0, self._axesWidth)
        
     def setAxesDataRange(self):
+        """
+        Set the range of data represented by the axes.
+        """
+# TODO this is only really a default setup; change the method name, or add arguments
         self._axes['left'].setDataRange(0, 10)
         self._axes['right'].setDataRange(0, 10)
         self._axes['top'].setDataRange(0, 10)
         self._axes['bottom'].setDataRange(0, 10)
 
     def addAxis(self, key, **kwargs):
+        """
+        Add a new axis to the plot, with its name given by key. If key already exists,
+        do nothing.
+
+        Return the axis, regardless of whether it already exists or was just created.
+        """
+
         if key not in self._axes.keys():
             self._axes[key] = Axis(self._figure._backend, self, **kwargs)
+        return self._axes[key]
 
     def addInitialAxes(self, **kwargs):
+        """
+        Create the initial 4 axes. These are given the names top, bottom, left, right.
+        """
 
         for key in ('left', 'top', 'right', 'bottom'):
             self.addAxis(key, **kwargs)
@@ -156,37 +205,60 @@ class CartesianPlot(Plot):
         self._axes['top'].slaveTo(self._axes['bottom'])
 
     def addDataPair(self, datapair):
+        """
+        Add a DataPair to this plot. datapair must be a DataPair instance, or nothing
+        happens.
+        """
+# TODO should probably have some default x and y axes to attach this datapair to, 
+# in case it does not already have some defined. that way, this method is all
+# that needs to be used when putting the data on the plot, and the user does not
+# need to know the names of the axes to attach the data to.
         if isinstance(datapair, DataPair):
             self._datapairs.append(datapair)
 
     def setTitle(self, title):
+        """
+        Set the title of this plot. The title can be either a Text instance,
+        or a string.
+        """
+
         if isinstance(title, Text):
             self._title = title
         elif isinstance(title, str):
             self._title.setKwargs(text=title)
 
     def setAxisLabel(self, key='bottom', label='', font=''):
+        """
+        Set the label (and label font) for the axis with the name given by key.
+        """
+
         try:
             self._axes[key].setLabelText(label)
-            self._axes[key].setLabelFont(label)
+            self._axes[key].setLabelFont(font)
         except:
             pass
 
     def setAxisAutoscale(self, key='bottom', autoscale=True):
+        """
+        Set the axis with the name given by key to autoscale to its data range.
+        """
+
         if isinstance(autoscale, bool):
             try:
                 self._axes[key]._autoscaled = autoscale
             except:
                 pass
 
-
     def _draw(self):
         self.drawAxes()
         self.drawData()
         self._title.draw()
 
-
     def drawAxes(self):
+        """
+        Draw the axes and tick marks for the plot.
+        """
+
         axes = self._axes.values()
         
         for axis in axes:
@@ -201,13 +273,10 @@ class CartesianPlot(Plot):
             axis.draw()
 
     def drawData(self):
-        # draw the data
+        """
+        Draw all the data attached to this plot.
+        """
+
         for datapair in self._datapairs:
             datapair.draw()
-
-
-
-
-
-
 

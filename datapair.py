@@ -15,6 +15,8 @@ class DataPair(object):
 # efficient to disable drawing of either one
     def __init__(self, backend, x, y, xaxis, yaxis, lineArgs={}, markerArgs={}):
         """
+        **Constructor**
+
         x, y
             lists of something that can be plotted. Normally these are numbers, but
             they can be anything that Axis.mapDataToPlot(), min(), and max() can

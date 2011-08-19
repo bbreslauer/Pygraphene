@@ -271,10 +271,10 @@ def makeFont(font):
     if isinstance(font, str):
         qf.setFamily(font)
     else:
-        qf.setFamily(str(font._family))
-        qf.setStyle(fontStyles[str(font._style).lower()])
-        qf.setWeight(fontWeights[str(font._weight).lower()])
-        qf.setPointSize(int(font._size))
+        qf.setFamily(str(font.kwargs('family')))
+        qf.setStyle(fontStyles[str(font.kwargs('style')).lower()])
+        qf.setWeight(fontWeights[str(font.kwargs('weight')).lower()])
+        qf.setPointSize(int(font.kwargs('size')))
 
     return qf
 

@@ -4,10 +4,11 @@ from figure import *
 from plot import *
 from datapair import *
 
-
-
-
 class FigureManager(object):
+    """
+    A class that contains all the figures that have been created using the plotter
+    interface. It also keeps track of the active figure.
+    """
 
     _figures = []   # list of all figures that have been created
     _active = None  # index of the active figure
@@ -40,12 +41,6 @@ class FigureManager(object):
                 FigureManager._active = len(FigureManager._figures) - 1
 
 
-
-
-
-
-
-
 def figure(width=600, height=400):
     """
     Create a figure.
@@ -54,9 +49,6 @@ def figure(width=600, height=400):
     fig = Figure(width, height)
     FigureManager.setActive(fig)
     return fig
-
-
-
 
 def plot(*args, **kwargs):
     """
@@ -93,19 +85,18 @@ def plot(*args, **kwargs):
     return plot
 
 def clearFigure():
+    """
+    Clear the active figure and remove all plots from it.
+    """
+
     fig = FigureManager.getActive()
     if fig is not None:
         fig.clear()
         fig.deleteAllPlots()
 
-
-
-
-
-
 def show():
     """
-    Redraw the current figure.
+    Redraw the current figure and display it.
     """
 
     fig = FigureManager.getActive()
@@ -113,14 +104,14 @@ def show():
         fig.draw()
         _show_Qt()
 
-
-
 def listFonts():
+    """
+    List all the available fonts for the backend that is currently
+    in use.
+    """
+
     figure = Figure(600, 400)
     figure._backend.listFonts()
-
-
-
 
 
 
@@ -141,16 +132,4 @@ def _show_Qt():
     qApp.exec_()
 
 app = QApplication(sys.argv)
-
-
-
-
-
-
-
-
-
-
-
-
 

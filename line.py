@@ -5,47 +5,91 @@ from artist import Artist
 
 class Line(Artist):
     """
+    Represent a line to draw on the canvas.
 
-    Valid kwargs:
-    width = any int
-    style = solid, dash, dot, dashdot, dashdotdot
-    cap = square, flat, round
-    join (not supported) = bevel, miter, round
+    The line has start and end points, and properties defining
+    how the line will appear.
+
+    ======================  =================   =======
+    Keyword                 Possible Values     Description
+    ======================  =================   =======
+    width                   int (1)             The width of the line.
+    style                   | 'solid'           The line style.
+                            | 'dash'
+                            | 'dot'
+                            | 'dashdot'
+                            | 'dashdotdot'
+    cap                     | 'square'          How the end of the line should be drawn.
+                            | 'flat'
+                            | 'round'
+    join                    | 'bevel'           How two lines should be joined. NOT SUPPORTED.
+                            | 'miter'
+                            | 'round'
+    ======================  =================   =======
+
     """
 
     def __init__(self, backend, **kwargs):
-        Artist.__init__(self, backend, **kwargs)
+
+        initialKwargs = {'width': 1,
+                         'style': 'solid',
+                         'cap': 'square',
+                         'join': 'bevel',
+                        }
+        initialKwargs.update(kwargs)
+
+        Artist.__init__(self, backend, **initialKwargs)
 
         self.setOrigin()
         self.setPosition()
         self.setEnd()
 
+    def setStart(self, x=0, y=0):
+        """
+        Set the starting point of the line, in plot coordinates. Equivalent
+        to calling setPosition.
+        """
+        self.setPosition(x, y)
 
     def setEnd(self, x=0, y=0):
         """
-        Set the ending point of the line, in plot coords.
+        Set the ending point of the line, in plot coordinates.
         """
         self._ex = float(x)
         self._ey = float(y)
 
     def setPoints(self, sx, sy, ex, ey, ox, oy):
         """
-        Convenience method to set all data points.
+        Set the start, end, and origin points for this line. Start and end are
+        in plot coordinates, and origin is in figure coordinates. Equivalent
+        to calling setStart, setEnd, and setOrigin separately.
         """
         self.setOrigin(ox, oy)
         self.setPosition(sx, sy)
         self.setEnd(ex, ey)
 
     def setWidth(self, width):
+        """
+        Set the width of the line.
+        """
         self.setKwargs(width=int(width))
 
     def setStyle(self, style):
+        """
+        Set the style of the line.
+        """
         self.setKwargs(style=str(style))
 
     def setCap(self, cap):
+        """
+        Set the cap of the line.
+        """
         self.setKwargs(cap=str(cap))
 
     def setJoin(self, join):
+        """
+        Set the join of the line.
+        """
         self.setKwargs(join=str(join))
 
 

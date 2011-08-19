@@ -19,6 +19,8 @@ class Figure(object):
 
     def __init__(self, width, height):
         """
+        **Constructor**
+
         width, height
             The width and height of the figure, in pixels.
         """

@@ -2,28 +2,42 @@
 from base import Kwobject
 
 class Locator(Kwobject):
-    
+    """
+    A generic class that defines the locations for ticks.
+    """
+
     def __init__(self, **kwargs):
         Kwobject.__init__(self, **kwargs)
 
 class LinearLocator(Locator):
+    """
+    Define tick locations by evenly spacing a certain number of ticks over the data range.
+    """
 
     def __init__(self, num=5, **kwargs):
+        """
+        **Constructor**
+        
+        num
+            The number of ticks that should be created.
+        """
+
         Locator.__init__(self, **kwargs)
 
         # in case someone passes in a non-int, we will still have a default
         self._num = 5
         self.setNum(num)
 
-
-
     def setNum(self, num):
+        """
+        Set the number of ticks to create locations for.
+        """
         if isinstance(num, int):
             self._num = num
 
     def locations(self, start, end, axisType='major'):
         """
-        Return a list of data coords between start and end,
+        Return a list of data coordinates between start and end,
         evenly spaced so that there are num values.
         """
 
@@ -50,9 +64,11 @@ class LinearLocator(Locator):
         Locator.setKwargs(self, args, **kwargs)
 
 
-
-
 class Labeler(Kwobject):
+    """
+    A generic class that defines the labels for ticks.
+    """
+
     def __init__(self, **kwargs):
         Kwobject.__init__(self, **kwargs)
     
@@ -63,20 +79,17 @@ class Labeler(Kwobject):
         pass
 
 class NullLabeler(Labeler):
+    """
+    No labels.
+    """
     def labels(self, locations):
         return [''] * len(locations)
 
 class StringLabeler(Labeler):
+    """
+    Labels that are the same as the location value.
+    """
     def labels(self, locations):
         return map(str, locations)
-
-
-
-
-
-
-
-
-
 
 

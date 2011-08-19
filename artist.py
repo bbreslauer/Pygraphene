@@ -19,7 +19,7 @@ class Artist(Kwobject):
     specifying positions of items on its canvas. To convert from
     PyGraphene coordinates to the backend's coordinates, each backend
     must provide figureToScene and sceneToFigure methods.
-
+    
     Figure coordinates start in the bottom-left corner of the canvas
     and increase up and to the right.
 
@@ -30,26 +30,29 @@ class Artist(Kwobject):
     moving of plots around the Figure. Plot coordinates also increase
     up and to the right.
 
-    ======================  =================   ==========      =======
-    Keyword                 Possible Values     Default         Description
-    ======================  =================   ==========      =======
-    color                   str                 '#000000'       The primary color to be used when drawing this Artist.
-    visible                 bool                True            Determine whether to draw this Artist.
-    ======================  =================   ==========      =======
+    ======================  =================   =======
+    Keyword                 Possible Values     Description
+    ======================  =================   =======
+    color                   str ('#000000')     The primary color to be used when drawing this Artist.
+    visible                 bool (True)         Determine whether to draw this Artist.
+    ======================  =================   =======
     """
 
 
     def __init__(self, backend, *args, **kwargs):
         """
+        **Constructor**
+
         Initialize the origin and position. Also set the backend for this Artist to draw with.
         """
 
-        Kwobject.__init__(self, **kwargs)
+        initialKwargs = {'color': '#000000', 'visible': True}
+        initialKwargs.update(kwargs)
+
+        Kwobject.__init__(self, initialKwargs)
 
         self._backend = backend
         self._item = None
-        self._kwargs = {'color': '#000000', 'visible': True}
-        self.setKwargs(**kwargs)
 
         self.setOrigin()
         self.setPosition()
