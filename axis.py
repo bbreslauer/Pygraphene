@@ -392,47 +392,64 @@ class Axis(Line):
         # the user can specify an offset as well and the offset is done with the position.
         # if we do that, then the setting method here would need to add the origin and the
         # current value in order to get the new origin.
-        try:
-            # BOTTOM axis
-            if self.orientation() == 'horizontal' and self.inside() == 'up':
-                self._label.setProps({'horizontalalignment': 'center',
-                                   'verticalalignment': 'top',
-                                   'rotation': 'horizontal',
-                                  })
-                self._label.setPosition(self._plotLength / 2, self._plotAnchor - 25)
-            # TOP axis
-            elif self.orientation() == 'horizontal' and self.inside() == 'down':
-                self._label.setProps({'horizontalalignment': 'center',
-                                   'verticalalignment': 'bottom',
-                                   'rotation': 'horizontal',
-                                  })
-                self._label.setPosition(self._plotLength / 2, self._plotAnchor + 25)
-            # LEFT axis
-            elif self.orientation() == 'vertical' and self.inside() == 'up':
-                self._label.setProps({'horizontalalignment': 'right',
-                                   'verticalalignment': 'center',
-                                   'rotation': 'vertical',
-                                  })
-                self._label.setPosition(self._plotAnchor - 25, self._plotLength / 2)
-            # RIGHT axis
-            elif self.orientation() == 'vertical' and self.inside() == 'down':
-                self._label.setProps({'horizontalalignment': 'left',
-                                   'verticalalignment': 'center',
-                                   'rotation': 'vertical',
-                                  })
-                self._label.setPosition(self._plotAnchor + 25, self._plotLength / 2)
-            # UNDEFINED axis
-            else:
-                self._label.setProps({'horizontalalignment': 'center',
-                                   'verticalalignment': 'center',
-                                  })
-                self._label.setPosition(0, 0)
-        except:
+        location = self.location()
+
+        if location == 'bottom':
+            self._label.setProps({'horizontalalignment': 'center',
+                               'verticalalignment': 'top',
+                               'rotation': 'horizontal',
+                              })
+            self._label.setPosition(self._plotLength / 2, self._plotAnchor - 25)
+        elif location == 'top':
+            self._label.setProps({'horizontalalignment': 'center',
+                               'verticalalignment': 'bottom',
+                               'rotation': 'horizontal',
+                              })
+            self._label.setPosition(self._plotLength / 2, self._plotAnchor + 25)
+        elif location == 'left':
+            self._label.setProps({'horizontalalignment': 'right',
+                               'verticalalignment': 'center',
+                               'rotation': 'vertical',
+                              })
+            self._label.setPosition(self._plotAnchor - 25, self._plotLength / 2)
+        elif location == 'right':
+            self._label.setProps({'horizontalalignment': 'left',
+                               'verticalalignment': 'center',
+                               'rotation': 'vertical',
+                              })
+            self._label.setPosition(self._plotAnchor + 25, self._plotLength / 2)
+        else:
             self._label.setProps({'horizontalalignment': 'center',
                                'verticalalignment': 'center',
+                               'rotation': 'horizontal',
                               })
             self._label.setPosition(0, 0)
 
+    def location(self):
+        """
+        Return the location of the axis, as a string. Return values can be:
+        
+        * 'bottom'
+        * 'top'
+        * 'left'
+        * 'right'
+        * None
+
+        """
+
+        try:
+            if self.orientation() == 'horizontal' and self.inside() == 'up':
+                return 'bottom'
+            elif self.orientation() == 'horizontal' and self.inside() == 'down':
+                return 'top'
+            elif self.orientation() == 'vertical' and self.inside() == 'up':
+                return 'left'
+            elif self.orientation() == 'vertical' and self.inside() == 'down':
+                return 'right'
+            else:
+                return None
+        except:
+            return None
 
     def autoscale(self):
         """
@@ -635,32 +652,30 @@ class Ticks(object):
 
         This method probably never needs to be called by the user.
         """
-        try:
-            if self._axis.orientation() == 'horizontal' and self._axis.inside() == 'up':  # bottom axis
-                self._labelProps.update({'horizontalalignment': 'center',
-                                   'verticalalignment': 'top',
-                                  })
-            elif self._axis.orientation() == 'horizontal' and self._axis.inside() == 'down':  # top axis
-                self._labelProps.update({'horizontalalignment': 'center',
-                                   'verticalalignment': 'bottom',
-                                  })
-            elif self._axis.orientation() == 'vertical' and self._axis.inside() == 'up':  # left axis
-                self._labelProps.update({'horizontalalignment': 'right',
-                                   'verticalalignment': 'center',
-                                  })
-            elif self._axis.orientation() == 'vertical' and self._axis.inside() == 'down':  # right axis
-                self._labelProps.update({'horizontalalignment': 'left',
-                                   'verticalalignment': 'center',
-                                  })
-            else:  # undefined axis
-                self._labelProps.update({'horizontalalignment': 'center',
-                                   'verticalalignment': 'center',
-                                  })
-        except:
+        
+        location = self._axis.location()
+
+        if location == 'bottom':
+            self._labelProps.update({'horizontalalignment': 'center',
+                               'verticalalignment': 'top',
+                              })
+        elif location == 'top':
+            self._labelProps.update({'horizontalalignment': 'center',
+                               'verticalalignment': 'bottom',
+                              })
+        elif location == 'left':
+            self._labelProps.update({'horizontalalignment': 'right',
+                               'verticalalignment': 'center',
+                              })
+        elif location == 'right':
+            self._labelProps.update({'horizontalalignment': 'left',
+                               'verticalalignment': 'center',
+                              })
+        else:  # undefined axis
             self._labelProps.update({'horizontalalignment': 'center',
                                'verticalalignment': 'center',
                               })
-
+    
     def _delTicks(self):
         """Delete the ticks list."""
         del self._ticks
