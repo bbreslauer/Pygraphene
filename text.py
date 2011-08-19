@@ -11,7 +11,7 @@ class Text(Artist):
     or a PyGraphene Font object.
 
     ======================  =================   =======
-    Keyword                 Possible Values     Description
+    Property                Possible Values     Description
     ======================  =================   =======
     text                    str ('')            The text that will be displayed.
     font                    | str ('Times')     The font that will be used. Either a Font object or the name of a font family.
@@ -28,35 +28,30 @@ class Text(Artist):
     ======================  =================   =======
     """
 
-    def __init__(self, backend, text='', **kwargs):
+    def __init__(self, backend, text='', **kwprops):
         """
-        If text is given as a kwarg in the initialization, it will not be used.
+        If text is given as a kwprops in the initialization, it will not be used.
         """
 
-        Artist.__init__(self, backend)
+        initialProperties = {'font': 'Times',
+                             'text': text,
+                             'horizontalalignment': 'center',
+                             'verticalalignment': 'center',
+                             'rotation': 'horizontal',
+                            }
+        initialProperties.update(kwprops)
 
-        self.setKwargs( font='Times',
-                        text=text,
-                        horizontalalignment='center',
-                        verticalalignment='center',
-                        rotation='horizontal',
-                        )
-
-        kwargs.pop('text', None)
-
-        self.setKwargs(**kwargs)
+        Artist.__init__(self, backend, **initialProperties)
 
     def setText(self, text):
         """Convenience method to set the text of this label."""
         if isinstance(text, str):
-            self.setKwargs(text=text)
+            self.setProps(text=text)
 
     def _draw(self, *args, **kwargs):
         return self._backend.drawText(  self._x,
                                         self._y,
                                         self._ox,
                                         self._oy,
-                                        **self.kwargs())
-
-
+                                        **self.props())
 

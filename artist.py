@@ -1,7 +1,7 @@
 
-from base import Kwobject
+from base import PObject
 
-class Artist(Kwobject):
+class Artist(PObject):
     """
     Base class for any object that draws onto a Figure.
 
@@ -31,7 +31,7 @@ class Artist(Kwobject):
     up and to the right.
 
     ======================  =================   =======
-    Keyword                 Possible Values     Description
+    Property                Possible Values     Description
     ======================  =================   =======
     color                   str ('#000000')     The primary color to be used when drawing this Artist.
     visible                 bool (True)         Determine whether to draw this Artist.
@@ -39,17 +39,17 @@ class Artist(Kwobject):
     """
 
 
-    def __init__(self, backend, *args, **kwargs):
+    def __init__(self, backend, *args, **kwprops):
         """
         **Constructor**
 
         Initialize the origin and position. Also set the backend for this Artist to draw with.
         """
 
-        initialKwargs = {'color': '#000000', 'visible': True}
-        initialKwargs.update(kwargs)
+        initialProperties = {'color': '#000000', 'visible': True}
+        initialProperties.update(kwprops)
 
-        Kwobject.__init__(self, initialKwargs)
+        PObject.__init__(self, initialProperties)
 
         self._backend = backend
         self._item = None
@@ -73,12 +73,12 @@ class Artist(Kwobject):
 
     def isVisible(self):
         """Return whether this Artist will be drawn."""
-        return self.kwargs('visible')
+        return self.props('visible')
 
     def setVisible(self, v=True):
         """Set whether to draw this Artist."""
         if isinstance(v, bool):
-            self.setKwargs(visible=v)
+            self.setProps(visible=v)
 
     def setInvisible(self):
         """Set whether to hide this Artist."""
@@ -88,15 +88,19 @@ class Artist(Kwobject):
         """
         Convenience method to set the primary color of this Artist.
 
-        color is anything valid as a color keyword.
+        color is anything valid as a color property.
         """
-        self.setKwargs(color=color)
+        self.setProps(color=color)
+
+    def color(self):
+        """Return the color of this Artist."""
+        return self.props('color')
 
     def draw(self, *args, **kwargs):
         """
         Draw this Artist if it is visible. args and kwargs may be
         used when drawing, but this is not guaranteed. Specifically,
-        kwargs is not used to update the Artist's keyword arguments.
+        kwargs is not used to update the Artist's properties.
 
         Implementation hint: After testing whether the Artist is
         visible, this method calls _draw. If subclassing Artist,

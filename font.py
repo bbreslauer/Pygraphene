@@ -1,7 +1,7 @@
 
-from base import Kwobject
+from base import PObject
 
-class Font(Kwobject):
+class Font(PObject):
     """
     Encapsulate a font.
 
@@ -9,7 +9,7 @@ class Font(Kwobject):
     of the font.
 
     ======================  =================   =======
-    Keyword                 Possible Values     Description
+    Property                Possible Values     Description
     ======================  =================   =======
     family                  str ('Times')       The font family to use. Needs to be recognized by the backend being used.
     style                   | 'Normal'          Italicize font.
@@ -23,59 +23,38 @@ class Font(Kwobject):
 
     """
 
-    defaultKwargs = {'family':  'Times',
-                     'style':   'Normal',
-                     'weight':  'Normal',
-                     'size':    12,
-                    }
 
-    def __init__(self, family='Times', style='Normal', weight='Normal', size=12):
-        defaultKwargs = {'family': family,
-                         'style': style,
-                         'weight': weight,
-                         'size': size,
-                        }
+    def __init__(self, *args, **kwprops):
+        initialProperties = {'family':  'Times',
+                             'style':   'Normal',
+                             'weight':  'Normal',
+                             'size':    12,
+                            }
 
-        Kwobject.__init__(self, defaultKwargs)
+        initialProperties.update(kwprops)
+        PObject.__init__(self, initialProperties)
 
     def setFamily(self, family):
         """
         Set the font family to use.
         """
-        self.setKwargs(family=family)
+        self.setProps(family=family)
 
     def setStyle(self, style):
         """
         Set the font style to use.
         """
-        self.setKwargs(style=style)
+        self.setProps(style=style)
 
     def setSize(self, size):
         """
         Set the font size to use.
         """
-        self.setKwargs(size=size)
+        self.setProps(size=size)
 
     def setWeight(self, weight):
         """
         Set the font weight to use.
         """
-        self.setKwargs(weight=weight)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        self.setProps(weight=weight)
 

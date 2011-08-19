@@ -12,7 +12,7 @@ class Marker(Artist):
     All markers have an edge line, a size, and a fill color.
 
     ======================  =================   =======
-    Keyword                 Possible Values     Description
+    Property                Possible Values     Description
     ======================  =================   =======
     color                   str ('#000000')     The color of the edge line.
     fillcolor               str ('#000000')     The color of the center of the marker.
@@ -29,8 +29,8 @@ class Marker(Artist):
 
     """
 
-    def __init__(self, backend, **kwargs):
-        Artist.__init__(self, backend, **kwargs)
+    def __init__(self, backend, **kwprops):
+        Artist.__init__(self, backend, **kwprops)
 
         self.setOrigin()
         self.setPosition()
@@ -39,25 +39,25 @@ class Marker(Artist):
         """
         Set the fill color of the marker.
         """
-        self.setKwargs(fillcolor=int(color))
+        self.setProps(fillcolor=int(color))
 
     def setWidth(self, width):
         """
         Set the width of the edge line.
         """
-        self.setKwargs(width=int(width))
+        self.setProps(width=int(width))
 
     def setStyle(self, style):
         """
         Set the style of the edge line.
         """
-        self.setKwargs(style=str(style))
+        self.setProps(style=str(style))
 
     def setCap(self, cap):
         """
         Set the cap of the edge line.
         """
-        self.setKwargs(cap=str(cap))
+        self.setProps(cap=str(cap))
 
 class CircleMarker(Marker):
     """
@@ -66,21 +66,25 @@ class CircleMarker(Marker):
     Radius must be an integer.
     """
 
-    def __init__(self, backend, radius=3, **kwargs):
+    def __init__(self, backend, radius=3, **kwprops):
+        # A SyntaxError or TypeError will be received if the user tries to
+        # supply the radius as an arg and a kwarg. So we don't have to worry
+        # about a radius property being set in Marker.__init__.
+
         self.setRadius(radius)
-        Marker.__init__(self, backend, **kwargs)
+        Marker.__init__(self, backend, **kwprops)
 
-    def setKwargs(self, args={}, **kwargs):
+    def setProps(self, props={}, **kwprops):
         """
-        Remove 'radius' from args and/or kwargs. Then set the radius, and
-        then set the kwargs.
+        Remove 'radius' from props and/or kwprops. Then set the radius, and
+        then set the kwprops. props takes precedence over kwprops.
         """
 
-        radius = kwargs.pop('radius', None)
-        radius = args.pop('radius', radius)
+        radius = kwprops.pop('radius', None)
+        radius = props.pop('radius', radius)
         self.setRadius(radius)
 
-        Marker.setKwargs(self, args, **kwargs)
+        Marker.setProps(self, props, **kwprops)
 
     def setRadius(self, radius):
         """
@@ -96,5 +100,5 @@ class CircleMarker(Marker):
                                         self._radius,
                                         self._ox,
                                         self._oy,
-                                        **self.kwargs())
+                                        **self.props())
 

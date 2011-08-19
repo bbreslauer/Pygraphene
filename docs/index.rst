@@ -6,15 +6,11 @@
 Welcome to PyGraphene's documentation!
 ======================================
 
-Keywords
---------
-Any object with keywords will have a base class of base.Kwobject.
+General Documentation
+=====================
 
-Any object with keywords also contains the keywords of all superclasses.
-
-To read a keyword table, the default value for a given keyword is the first
-entry in "Possible Values". If the value is a type instead of a value, then
-the default entry is in parentheses on the first line.
+* :doc:`general/properties`
+* :doc:`general/colors`
 
 Contents
 =========

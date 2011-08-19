@@ -11,7 +11,7 @@ class Line(Artist):
     how the line will appear.
 
     ======================  =================   =======
-    Keyword                 Possible Values     Description
+    Property                Possible Values     Description
     ======================  =================   =======
     width                   int (1)             The width of the line.
     style                   | 'solid'           The line style.
@@ -29,16 +29,16 @@ class Line(Artist):
 
     """
 
-    def __init__(self, backend, **kwargs):
+    def __init__(self, backend, **kwprops):
 
-        initialKwargs = {'width': 1,
+        initialProperties = {'width': 1,
                          'style': 'solid',
                          'cap': 'square',
                          'join': 'bevel',
                         }
-        initialKwargs.update(kwargs)
+        initialProperties.update(kwprops)
 
-        Artist.__init__(self, backend, **initialKwargs)
+        Artist.__init__(self, backend, **initialProperties)
 
         self.setOrigin()
         self.setPosition()
@@ -72,25 +72,25 @@ class Line(Artist):
         """
         Set the width of the line.
         """
-        self.setKwargs(width=int(width))
+        self.setProps(width=int(width))
 
     def setStyle(self, style):
         """
         Set the style of the line.
         """
-        self.setKwargs(style=str(style))
+        self.setProps(style=str(style))
 
     def setCap(self, cap):
         """
         Set the cap of the line.
         """
-        self.setKwargs(cap=str(cap))
+        self.setProps(cap=str(cap))
 
     def setJoin(self, join):
         """
         Set the join of the line.
         """
-        self.setKwargs(join=str(join))
+        self.setProps(join=str(join))
 
 
     def _draw(self, *args, **kwargs):
@@ -101,7 +101,7 @@ class Line(Artist):
                                         self._ey,
                                         self._ox,
                                         self._oy,
-                                        **self.kwargs())
+                                        **self.props())
 
 
 

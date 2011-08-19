@@ -9,7 +9,16 @@ class Plot(Artist):
     Abstract class defining necessary methods for any plot class.
     """
 
-    def __init__(self, backend):
+    def __init__(self, figure, backend):
+        """
+        **Constructor**
+
+        figure
+            The figure to draw the plot on.
+        backend
+            The backend that the figure uses.
+        """
+        self._figure = figure
         Artist.__init__(self, backend)
 
 class CartesianPlot(Plot):
@@ -26,18 +35,7 @@ class CartesianPlot(Plot):
     """
 
     def __init__(self, figure, backend):
-        """
-        **Constructor**
-
-        figure
-            The figure to draw the plot on.
-        backend
-            The backend that the figure uses.
-        """
-
-        Plot.__init__(self, backend)
-
-        self._figure = figure
+        Plot.__init__(self, figure, backend)
 
         self._title = Text(self._backend)
         self._title.setOrigin(0, 0)
@@ -171,7 +169,7 @@ class CartesianPlot(Plot):
         self._axes['top'].setDataRange(0, 10)
         self._axes['bottom'].setDataRange(0, 10)
 
-    def addAxis(self, key, **kwargs):
+    def addAxis(self, key, **kwprops):
         """
         Add a new axis to the plot, with its name given by key. If key already exists,
         do nothing.
@@ -180,16 +178,16 @@ class CartesianPlot(Plot):
         """
 
         if key not in self._axes.keys():
-            self._axes[key] = Axis(self._figure._backend, self, **kwargs)
+            self._axes[key] = Axis(self._figure._backend, self, **kwprops)
         return self._axes[key]
 
-    def addInitialAxes(self, **kwargs):
+    def addInitialAxes(self, **kwprops):
         """
         Create the initial 4 axes. These are given the names top, bottom, left, right.
         """
 
         for key in ('left', 'top', 'right', 'bottom'):
-            self.addAxis(key, **kwargs)
+            self.addAxis(key, **kwprops)
 
         self._axes['left'].setOrientation('vertical')
         self._axes['right'].setOrientation('vertical')
@@ -225,7 +223,7 @@ class CartesianPlot(Plot):
         if isinstance(title, Text):
             self._title = title
         elif isinstance(title, str):
-            self._title.setKwargs(text=title)
+            self._title.setProps(text=title)
 
     def setAxisLabel(self, key='bottom', label='', font=''):
         """

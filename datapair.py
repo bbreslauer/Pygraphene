@@ -13,7 +13,7 @@ class DataPair(object):
     
 # TODO should add line and marker visible attributes, so that it is easier and more
 # efficient to disable drawing of either one
-    def __init__(self, backend, x, y, xaxis, yaxis, lineArgs={}, markerArgs={}):
+    def __init__(self, backend, x, y, xaxis, yaxis, lineProps={}, markerProps={}):
         """
         **Constructor**
 
@@ -25,11 +25,11 @@ class DataPair(object):
             the Axis instances that this data will be drawn in reference to. Usually
             xaxis is the abscissa and yaxis is the ordinate, but they can be reversed.
 
-        lineArgs
-            Keyword arguments for the line segments that are drawn.
+        lineProps
+            Properties for the line segments that are drawn.
 
-        markerArgs
-            Keyword arguments for the markers that are drawn.
+        markerProps
+            Properties for the markers that are drawn.
         """
 
         self._backend = backend
@@ -39,10 +39,10 @@ class DataPair(object):
         self.setXAxis(xaxis)
         self.setYAxis(yaxis)
 
-        self._lineArgs = {}
-        self._markerArgs = {}
-        self.setLineArgs(**lineArgs)
-        self.setMarkerArgs(**markerArgs)
+        self._lineProps = {}
+        self._markerProps = {}
+        self.setLineProps(**lineProps)
+        self.setMarkerProps(**markerProps)
 
     def setX(self, x):
         """Set the x data."""
@@ -68,13 +68,13 @@ class DataPair(object):
         else:
             self._yaxis = None
 
-    def setLineArgs(self, **args):
+    def setLineProps(self, **kwprops):
         """Set the line arguments."""
-        self._lineArgs.update(args)
+        self._lineProps.update(kwprops)
 
-    def setMarkerArgs(self, **args):
+    def setMarkerProps(self, **kwprops):
         """Set the marker arguments."""
-        self._markerArgs.update(args)
+        self._markerProps.update(kwprops)
 
     def maxXValue(self):
         """Get the maximum value in the x data."""
@@ -116,7 +116,7 @@ class DataPair(object):
 
         # Make the line segments
         for i in range(min(len(xPlotCoords), len(yPlotCoords)) - 1):
-            line = Line(self._backend, **self._lineArgs)
+            line = Line(self._backend, **self._lineProps)
             line.setPoints( xPlotCoords[i],
                             yPlotCoords[i],
                             xPlotCoords[i+1],
@@ -130,7 +130,7 @@ class DataPair(object):
 
         # Make the markers
         for x, y in zip(xPlotCoords, yPlotCoords):
-            marker = markerClass(self._backend, **self._markerArgs)
+            marker = markerClass(self._backend, **self._markerProps)
             marker.setOrigin(ox, oy)
             marker.setPosition(x, y)
             markers.append(marker)

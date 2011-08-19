@@ -5,8 +5,6 @@ from backends.qt4pyside_backend import Qt4PySideBackend
 from plot import *
 from text import *
 
-
-
 class Figure(object):
     """
     Represents a figure that is being drawn on a canvas. The canvas is stored
@@ -94,14 +92,14 @@ class Figure(object):
         Set the title label to title.
 
         title can be either a str or a Text object. If it is a str, then
-        then current label's text is updated. If it is a Text object, then
+        the current label's text is updated. If it is a Text object, then
         the current label is replaced with title.
         """
 
         if isinstance(title, Text):
             self._title = title
         elif isinstance(title, str):
-            self._title.setKwargs(text=title)
+            self._title.setProps(text=title)
 
     def draw(self):
         """

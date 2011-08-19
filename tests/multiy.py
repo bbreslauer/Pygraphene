@@ -21,7 +21,7 @@ p.setRightPadding(100)
 
 p._axes['right'].unslave()
 p._datapairs[1].setYAxis(p._axes['right'])
-p._datapairs[1].setLineArgs(width=5, join='bevel')
+p._datapairs[1].setLineProps(width=5, join='bevel')
 p._axes['left'].autoscale()
 p._axes['right'].autoscale()
 p._axes['top'].hideTicks()
@@ -39,11 +39,11 @@ p._axes['y3'].autoscale()
 
 p._axes['right'].setColor('red')
 p._axes['right'].setTicksFont(Font('Courier', size=16, style='italic', weight='bold'))
-p._datapairs[1].setLineArgs(color='red')
-p._datapairs[1].setMarkerArgs(color='black', width=5, style='dot', fillcolor='green', radius=10)
+p._datapairs[1].setLineProps(color='red')
+p._datapairs[1].setMarkerProps(color='black', width=5, style='dot', fillcolor='green', radius=10)
 
-p._datapairs[2].setLineArgs(color='blue', width=2)
-p._datapairs[2].setLineArgs(width=5, style='dashdot', cap='round')
+p._datapairs[2].setLineProps(color='blue', width=2)
+p._datapairs[2].setLineProps(width=5, style='dashdot', cap='round')
 
 p.draw()
 

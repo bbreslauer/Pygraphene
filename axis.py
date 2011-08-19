@@ -42,13 +42,14 @@ class Axis(Line):
     cannot be both a slave and a master.
     """
 
-    def __init__(self, backend, plot, orientation='horizontal', inside='up', **kwargs):
+    def __init__(self, backend, plot, orientation='horizontal', inside='up', **kwprops):
+
         # Need to define the label before init'ing the Line. This is because we
         # override Line.setOrigin to include the label, but setOrigin is called
         # in Line.__init__.
         self._label = Text(backend)
 
-        Line.__init__(self, backend, **kwargs)
+        Line.__init__(self, backend, **kwprops)
 
         self._plot = plot
 
@@ -68,7 +69,7 @@ class Axis(Line):
         self._minorTicks = Ticks(self._backend, self, 'minor', labeler=NullLabeler())
         self._minorTicks.setLocator(num=3)
         self._minorTicks.setLength(3)
-        self._minorTicks._labelArgs.update(visible=False)
+        self._minorTicks._labelProps.update(visible=False)
 
 
         self._slavedTo = None  # pointer to this Axis' master
@@ -206,6 +207,14 @@ class Axis(Line):
         self.autoscale()
         return oldMaster
 
+    def orientation(self):
+        """Return the orientation of the Axis."""
+        return self._orientation
+
+    def inside(self):
+        """Return the inside side of the Axis."""
+        return self._inside
+
     def setOrientation(self, o):
         """
         Set the orientation of this Axis. Valid values are 'horizontal' and 'vertical'.
@@ -221,7 +230,7 @@ class Axis(Line):
 
         if o in ('horizontal', 'vertical'):
             self._orientation = o
-        elif self._orientation != None:
+        elif self.orientation() != None:
             return
         else:
             self._orientation = 'horizontal'
@@ -248,7 +257,7 @@ class Axis(Line):
 
         if i in ('up', 'down'):
             self._inside = i
-        elif self._inside != None:
+        elif self.inside() != None:
             return
         else:
             self._inside = 'up'
@@ -267,7 +276,7 @@ class Axis(Line):
         * the Axis position is updated
         * the label position is updated
 
-        **Parameters:**
+        **Parameters**
 
         anchor
             The position of the Axis. If the Axis is horizontal,
@@ -307,7 +316,7 @@ class Axis(Line):
         If this method is the master of other Axis's, then it will set the data
         range on those other Axis instances as well.
 
-        **Parameters:**
+        **Parameters**
 
         start
             The starting data coordinate.
@@ -356,7 +365,7 @@ class Axis(Line):
 
         font is any string or a Font object.
         """
-        self._label.setKwargs(font=font)
+        self._label.setProps(font=font)
 
     def setLabelText(self, text):
         """
@@ -364,7 +373,7 @@ class Axis(Line):
 
         text is any string
         """
-        self._label.setKwargs(text=text)
+        self._label.setProps(text=text)
 
     def setLabelPosition(self):
         """
@@ -384,37 +393,42 @@ class Axis(Line):
         # if we do that, then the setting method here would need to add the origin and the
         # current value in order to get the new origin.
         try:
-            if self._orientation == 'horizontal' and self._inside == 'up':  # bottom axis
-                self._label.setKwargs({'horizontalalignment': 'center',
+            # BOTTOM axis
+            if self.orientation() == 'horizontal' and self.inside() == 'up':
+                self._label.setProps({'horizontalalignment': 'center',
                                    'verticalalignment': 'top',
                                    'rotation': 'horizontal',
                                   })
                 self._label.setPosition(self._plotLength / 2, self._plotAnchor - 25)
-            elif self._orientation == 'horizontal' and self._inside == 'down':  # top axis
-                self._label.setKwargs({'horizontalalignment': 'center',
+            # TOP axis
+            elif self.orientation() == 'horizontal' and self.inside() == 'down':
+                self._label.setProps({'horizontalalignment': 'center',
                                    'verticalalignment': 'bottom',
                                    'rotation': 'horizontal',
                                   })
                 self._label.setPosition(self._plotLength / 2, self._plotAnchor + 25)
-            elif self._orientation == 'vertical' and self._inside == 'up':  # left axis
-                self._label.setKwargs({'horizontalalignment': 'right',
+            # LEFT axis
+            elif self.orientation() == 'vertical' and self.inside() == 'up':
+                self._label.setProps({'horizontalalignment': 'right',
                                    'verticalalignment': 'center',
                                    'rotation': 'vertical',
                                   })
                 self._label.setPosition(self._plotAnchor - 25, self._plotLength / 2)
-            elif self._orientation == 'vertical' and self._inside == 'down':  # right axis
-                self._label.setKwargs({'horizontalalignment': 'left',
+            # RIGHT axis
+            elif self.orientation() == 'vertical' and self.inside() == 'down':
+                self._label.setProps({'horizontalalignment': 'left',
                                    'verticalalignment': 'center',
                                    'rotation': 'vertical',
                                   })
                 self._label.setPosition(self._plotAnchor + 25, self._plotLength / 2)
-            else:  # undefined axis
-                self._label.setKwargs({'horizontalalignment': 'center',
+            # UNDEFINED axis
+            else:
+                self._label.setProps({'horizontalalignment': 'center',
                                    'verticalalignment': 'center',
                                   })
                 self._label.setPosition(0, 0)
         except:
-            self._label.setKwargs({'horizontalalignment': 'center',
+            self._label.setProps({'horizontalalignment': 'center',
                                'verticalalignment': 'center',
                               })
             self._label.setPosition(0, 0)
@@ -465,7 +479,7 @@ class Axis(Line):
 
         self.setDataRange(start, end, autoscaled=True)
 
-    def setTicksLocator(self, which='major', locator=None, **kwargs):
+    def setTicksLocator(self, which='major', locator=None, **kwprops):
         """
         Set the Locator instance for the Ticks specified by which.
 
@@ -474,18 +488,18 @@ class Axis(Line):
             | 'major'
             | 'minor'
 
-        If locator is None (the default), then the kwargs are applied to the
+        If locator is None (the default), then the kwprops are applied to the
         current Ticks' Locator.
 
-        The kwargs are passed to the Locator instance that is used.
+        The kwprops are passed to the Locator instance that is used.
         """
 
         if which == 'minor':
-            self._minorTicks.setLocator(locator, **kwargs)
+            self._minorTicks.setLocator(locator, **kwprops)
         else:
-            self._majorTicks.setLocator(locator, **kwargs)
+            self._majorTicks.setLocator(locator, **kwprops)
 
-    def setTicksLabeler(self, which='major', labeler=None, **kwargs):
+    def setTicksLabeler(self, which='major', labeler=None, **kwprops):
         """
         Set the Labeler instance for the Ticks specified by which.
 
@@ -494,26 +508,26 @@ class Axis(Line):
             | 'major'
             | 'minor'
 
-        If labeler is None (the default), then the kwargs are applied to the
+        If labeler is None (the default), then the kwprops are applied to the
         current Ticks' Labeler.
 
-        The kwargs are passed to the Labeler instance that is used.
+        The kwprops are passed to the Labeler instance that is used.
         """
         
         if which == 'minor':
-            self._minorTicks.setLabeler(labeler, **kwargs)
+            self._minorTicks.setLabeler(labeler, **kwprops)
         else:
-            self._majorTicks.setLabeler(labeler, **kwargs)
+            self._majorTicks.setLabeler(labeler, **kwprops)
 
     def setAxisPosition(self):
         """
         Position the Axis based on the plot range and the orientation.
         """
         
-        if self._orientation == 'horizontal':
+        if self.orientation() == 'horizontal':
             self.setPosition(self._plotStart, self._plotAnchor)
             self.setEnd(self._plotEnd, self._plotAnchor)
-        elif self._orientation == 'vertical':
+        elif self.orientation() == 'vertical':
             self.setPosition(self._plotAnchor, self._plotStart)
             self.setEnd(self._plotAnchor, self._plotEnd)
 
@@ -591,11 +605,11 @@ class Ticks(object):
         """
 
         # defaults
-        self._tickMarkArgs = {
+        self._tickMarkProps = {
                             'width': 1,
                        }
 
-        self._labelArgs = {'horizontalalignment': 'center',
+        self._labelProps = {'horizontalalignment': 'center',
                            'verticalalignment': 'center',
                            'font': Font()
                           }
@@ -611,7 +625,7 @@ class Ticks(object):
         self._labeler = NullLabeler()
         self.setLocator(locator)
         self.setLabeler(labeler)
-        self._visible = True  # This class is not an Artist, so it doesn't have the visible keyword
+        self._visible = True  # This class is not an Artist, so it doesn't have the visible property
 
 
     def determineAxisPosition(self):
@@ -622,28 +636,28 @@ class Ticks(object):
         This method probably never needs to be called by the user.
         """
         try:
-            if self._axis._orientation == 'horizontal' and self._axis._inside == 'up':  # bottom axis
-                self._labelArgs.update({'horizontalalignment': 'center',
+            if self._axis.orientation() == 'horizontal' and self._axis.inside() == 'up':  # bottom axis
+                self._labelProps.update({'horizontalalignment': 'center',
                                    'verticalalignment': 'top',
                                   })
-            elif self._axis._orientation == 'horizontal' and self._axis._inside == 'down':  # top axis
-                self._labelArgs.update({'horizontalalignment': 'center',
+            elif self._axis.orientation() == 'horizontal' and self._axis.inside() == 'down':  # top axis
+                self._labelProps.update({'horizontalalignment': 'center',
                                    'verticalalignment': 'bottom',
                                   })
-            elif self._axis._orientation == 'vertical' and self._axis._inside == 'up':  # left axis
-                self._labelArgs.update({'horizontalalignment': 'right',
+            elif self._axis.orientation() == 'vertical' and self._axis.inside() == 'up':  # left axis
+                self._labelProps.update({'horizontalalignment': 'right',
                                    'verticalalignment': 'center',
                                   })
-            elif self._axis._orientation == 'vertical' and self._axis._inside == 'down':  # right axis
-                self._labelArgs.update({'horizontalalignment': 'left',
+            elif self._axis.orientation() == 'vertical' and self._axis.inside() == 'down':  # right axis
+                self._labelProps.update({'horizontalalignment': 'left',
                                    'verticalalignment': 'center',
                                   })
             else:  # undefined axis
-                self._labelArgs.update({'horizontalalignment': 'center',
+                self._labelProps.update({'horizontalalignment': 'center',
                                    'verticalalignment': 'center',
                                   })
         except:
-            self._labelArgs.update({'horizontalalignment': 'center',
+            self._labelProps.update({'horizontalalignment': 'center',
                                'verticalalignment': 'center',
                               })
 
@@ -658,7 +672,7 @@ class Ticks(object):
     def setFont(self, font):
         """Set the font for the tick labels."""
         if isinstance(font, str) or isinstance(font, Font):
-            self._labelArgs.update(font=font)
+            self._labelProps.update(font=font)
 
     def setVisible(self, v=True):
         """Set whether the Ticks are visible."""
@@ -677,7 +691,7 @@ class Ticks(object):
     def setWidth(self, width):
         """Set the default width for the Ticks."""
         if isinstance(width, int):
-            self._tickMarkArgs.update(width=width)
+            self._tickMarkProps.update(width=width)
 
     def setLocator(self, locator=None, **kwargs):
         """
@@ -690,7 +704,7 @@ class Ticks(object):
 
         if isinstance(locator, Locator):
             self._locator = locator
-        self._locator.setKwargs(**kwargs)
+        self._locator.setValues(**kwargs)
 
     def setLabeler(self, labeler, **kwargs):
         """
@@ -703,7 +717,7 @@ class Ticks(object):
 
         if isinstance(labeler, Labeler):
             self._labeler = labeler
-        self._labeler.setKwargs(**kwargs)
+        self._labeler.setValues(**kwargs)
 
     def makeTicks(self):
         """
@@ -742,13 +756,13 @@ class Ticks(object):
 
         # Create the ticks
         for loc, lab in zip(locations, labels):
-            self._labelArgs.update(text=str(lab))
+            self._labelProps.update(text=str(lab))
             tick = Tick(self._backend,
                         self._axis,
                         loc,
                         self._length,
-                        self._tickMarkArgs,
-                        self._labelArgs)
+                        self._tickMarkProps,
+                        self._labelProps)
             self._ticks.append(tick)
 
     def removeTicks(self):
@@ -777,9 +791,9 @@ class Tick(object):
     """
 
 # TODO in conjunction with Ticks, length should be changed to a tickmarkarg if possible
-# actually, i don't think this is possible, because the Line kwargs doesn't have a concept of a length
+# actually, i don't think this is possible, because the Line kwprops doesn't have a concept of a length
 
-    def __init__(self, backend, axis, dataLoc, length, tickMarkArgs={}, labelArgs={}):
+    def __init__(self, backend, axis, dataLoc, length, tickMarkProps={}, labelProps={}):
         """
         **Constructor**
 
@@ -792,15 +806,15 @@ class Tick(object):
         length
             The length of the tick mark.
 
-        tickMarkArgs
+        tickMarkProps
             Keyword arguments for the tick mark Line object.
 
-        labelArgs
+        labelProps
             Keyword arguments for the label Text object.
         """
 
-        self._tickMark = Line(backend, **tickMarkArgs)
-        self._label = Text(backend, **labelArgs)
+        self._tickMark = Line(backend, **tickMarkProps)
+        self._label = Text(backend, **labelProps)
         self._axis = axis
         
         # Location where the tick should be placed, in data coords
@@ -808,22 +822,22 @@ class Tick(object):
 
         self._length = length
 
-    def setLabel(self, text=None, **kwargs):
+    def setLabel(self, text=None, **kwprops):
         """
-        Update the label Text object with the passed text and kwargs.
+        Update the label Text object with the passed text and kwprops.
 
         If text is not a string, then the label's text will not be changed.
 
-        If both text and kwargs['text'] are defined, the text argument takes precedence.
+        If both text and kwprops['text'] are defined, the text argument takes precedence.
         """
 
         if isinstance(text, str):
-            kwargs['text'] = text
-        self._label.setKwargs(**kwargs)
+            kwprops['text'] = text
+        self._label.setProps(**kwprops)
 
-    def setTickMarkArgs(self, **kwargs):
-        """Update the tick mark Line object with the passed kwargs."""
-        self._tickMark.setKwargs(**kwargs)
+    def setTickMarkProps(self, **kwprops):
+        """Update the tick mark Line object with the passed kwprops."""
+        self._tickMark.setProps(**kwprops)
 
     def setTickPosition(self):
         """
@@ -836,20 +850,20 @@ class Tick(object):
         startPosition = self._axis._plotAnchor
         endPosition = startPosition
 
-        if self._axis._inside == 'up':
+        if self._axis.inside() == 'up':
             endPosition = startPosition + self._length
-        elif self._axis._inside == 'down':
+        elif self._axis.inside() == 'down':
             endPosition = startPosition - self._length
 
         self._tickMark.setOrigin(self._axis._ox, self._axis._oy)
         self._label.setOrigin(self._axis._ox, self._axis._oy)
 
         # Actually set the positions of the tick mark and label
-        if self._axis._orientation == 'horizontal':
+        if self._axis.orientation() == 'horizontal':
             self._tickMark.setPosition(plotLocation, startPosition)
             self._tickMark.setEnd(plotLocation, endPosition)
             self._label.setPosition(plotLocation, startPosition)
-        elif self._axis._orientation == 'vertical':
+        elif self._axis.orientation() == 'vertical':
             self._tickMark.setPosition(startPosition, plotLocation)
             self._tickMark.setEnd(endPosition, plotLocation)
             self._label.setPosition(startPosition, plotLocation)
