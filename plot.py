@@ -97,42 +97,60 @@ class CartesianPlot(Plot):
         """
         Set the padding between the plot region (the area of the figure that this 
         plot can occupy) and the axes.
+
+        Padding values must be non-negative integers.
         """
-# TODO need to make sure all padding variables are always >=0
-        self._tpad = top
-        self._rpad = right
-        self._bpad = bottom
-        self._lpad = left
+        
+        if isinstance(top, int) and top >= 0:
+            self._tpad = top
+        if isinstance(right, int) and right >= 0:
+            self._rpad = right
+        if isinstance(bottom, int) and bottom >= 0:
+            self._bpad = bottom
+        if isinstance(left, int) and left >= 0:
+            self._lpad = left
         
         self.setAxesRegion()
 
     def setTopPadding(self, p):
         """
         Set the padding for just the top of the plot.
+
+        Padding value must be a non-negative integer.
         """
-        self._tpad = p
-        self.setAxesRegion()
+        if isinstance(p, int) and p >= 0:
+            self._tpad = p
+            self.setAxesRegion()
 
     def setRightPadding(self, p):
         """
         Set the padding for just the right of the plot.
+
+        Padding value must be a non-negative integer.
         """
-        self._rpad = p
-        self.setAxesRegion()
+        if isinstance(p, int) and p >= 0:
+            self._rpad = p
+            self.setAxesRegion()
 
     def setBottomPadding(self, p):
         """
         Set the padding for just the bottom of the plot.
+
+        Padding value must be a non-negative integer.
         """
-        self._bpad = p
-        self.setAxesRegion()
+        if isinstance(p, int) and p >= 0:
+            self._bpad = p
+            self.setAxesRegion()
 
     def setLeftPadding(self, p):
         """
         Set the padding for just the left of the plot.
+
+        Padding value must be a non-negative integer.
         """
-        self._lpad = p
-        self.setAxesRegion()
+        if isinstance(p, int) and p >= 0:
+            self._lpad = p
+            self.setAxesRegion()
 
     def setAxesRegion(self):
         """
