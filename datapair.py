@@ -92,24 +92,18 @@ class DataPair(object):
         """Get the minimum value in the y data."""
         return min(self._y)
 
-# TODO making the lines and markers should be separated out from
-# actually drawing them, and maybe we should subclass Artist, as is done with Axis
-    def draw(self, *args, **kwargs):
+    def makeLinesAndMarkers(self):
         """
-        Make the lines and markers and draw them to the Figure.
-
-        Note: This does not actually override Artist.draw() because DataPair does
-        not subclass Artist.
+        Create the Lines and Markers that will be drawn on the Figure.
         """
-
         ox = self._xaxis._ox
         oy = self._xaxis._oy
 
         xPlotCoords = map(lambda value: self._xaxis.mapDataToPlot(value), self._x)
         yPlotCoords = map(lambda value: self._yaxis.mapDataToPlot(value), self._y)
 
-        lineSegments = []
-        markers = []
+        self._lineSegments = []
+        self._markers = []
 
         # Default marker type
         markerClass = CircleMarker
@@ -123,16 +117,28 @@ class DataPair(object):
                             yPlotCoords[i+1],
                             ox,
                             oy)
-
-            # TODO is this really needed? do we save the lines for later use?
-            lineSegments.append(line)
-            line.draw()
+            self._lineSegments.append(line)
 
         # Make the markers
         for x, y in zip(xPlotCoords, yPlotCoords):
             marker = markerClass(self._backend, **self._markerProps)
             marker.setOrigin(ox, oy)
             marker.setPosition(x, y)
-            markers.append(marker)
+            self._markers.append(marker)
+
+    def draw(self, *args, **kwargs):
+        """
+        Draw the Lines and Markers to the Figure.
+
+        Note: This does not actually override Artist.draw() because DataPair does
+        not subclass Artist.
+        """
+
+        # Draw lines before markers so that the markers cover the lines when the overlap
+        # on the canvas.
+        for line in self._lineSegments:
+            line.draw()
+
+        for marker in self._markers:
             marker.draw()
 

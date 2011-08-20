@@ -284,5 +284,6 @@ class CartesianPlot(Plot):
         """
 
         for datapair in self._datapairs:
+            datapair.makeLinesAndMarkers()
             datapair.draw()
 
