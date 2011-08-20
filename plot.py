@@ -177,16 +177,6 @@ class CartesianPlot(Plot):
         self._axes['top'].setPlotRange(self._axesHeight, 0, self._axesWidth)
         self._axes['bottom'].setPlotRange(0, 0, self._axesWidth)
        
-    def setAxesDataRange(self):
-        """
-        Set the range of data represented by the axes.
-        """
-# TODO this is only really a default setup; change the method name, or add arguments
-        self._axes['left'].setDataRange(0, 10)
-        self._axes['right'].setDataRange(0, 10)
-        self._axes['top'].setDataRange(0, 10)
-        self._axes['bottom'].setDataRange(0, 10)
-
     def addAxis(self, key, **kwprops):
         """
         Add a new axis to the plot, with its name given by key. If key already exists,
