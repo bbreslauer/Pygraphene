@@ -53,15 +53,27 @@ class Axis(Line):
 
         self._plot = plot
 
+        #######
         # Set default location values
+        #######
         self.setOrigin(0.0, 0.0)
+
+        # plotStart, plotEnd are start and end position, in plot coordinates. if horizontal,
+        # these are x coordinates, if vertical, y coordinates.
+        # plotAnchor is the opposite; if horizontal, it is the y coordinate that the axis is
+        # located at.
+        # plotLength = plotEnd - plotStart
         self._plotAnchor = 0.0
         self._plotStart = 0.0
         self._plotEnd = 0.0
         self._plotLength = 0.0
+
+        # dataStart, dataEnd are the start and end position, in data coordinates.
+        # dataLength = dataEnd - dataStart
         self._dataStart = 0.0
         self._dataEnd = 0.0
         self._dataLength = 0.0
+
         self._autoscaled = True  # holds whether this Axis is currently being autoscaled to the data
 
         # Setup the major and minor ticks
@@ -87,8 +99,8 @@ class Axis(Line):
         """
         Set the origin, using figure coordinates.
         """
-        self._label.setOrigin(x, y)
         Line.setOrigin(self, x, y)
+        self.setLabelOrigin()
 
     def mapDataToPlot(self, value):
         """
@@ -236,6 +248,7 @@ class Axis(Line):
             self._orientation = 'horizontal'
 
         self.setAxisPosition()
+        self.setLabelOrigin()
         self.setLabelPosition()
         self._majorTicks.determineAxisPosition()
         self._minorTicks.determineAxisPosition()
@@ -262,6 +275,7 @@ class Axis(Line):
         else:
             self._inside = 'up'
 
+        self.setLabelOrigin()
         self.setLabelPosition()
         self._majorTicks.determineAxisPosition()
         self._minorTicks.determineAxisPosition()
@@ -304,6 +318,7 @@ class Axis(Line):
         self._plotLength = end - start
 
         self.setAxisPosition()
+        self.setLabelOrigin()
         self.setLabelPosition()
 
     def setDataRange(self, start, end, fromMaster=False, autoscaled=False):
@@ -375,55 +390,73 @@ class Axis(Line):
         """
         self._label.setProps(text=text)
 
-    def setLabelPosition(self):
+    def setLabelOrigin(self):
+        """
+        Set the Axis label's origin.
+        
+        Currently the origin is set to be halfway down the Axis, offset by 25 pixels.
+
+        This method probably never needs to be called by the user. It is called when
+        the orientation, inside, or plot range are changed.
+        """
+        location = self.location()
+
+        # Add the plot origin to the offset that the label needs to get to the center
+        # of the axis, and make that the label's origin.
+        if location == 'bottom':
+            self._label.setOrigin(self._ox + self._plotLength / 2, self._oy + self._plotAnchor - 25)
+        elif location == 'top':
+            self._label.setOrigin(self._ox + self._plotLength / 2, self._oy + self._plotAnchor + 25)
+        elif location == 'left':
+            self._label.setOrigin(self._ox + self._plotAnchor - 25, self._oy + self._plotLength / 2)
+        elif location == 'right':
+            self._label.setOrigin(self._ox + self._plotAnchor + 25, self._oy + self._plotLength / 2)
+        else:
+            self._label.setOrigin(self._ox, self._oy)
+
+    def setLabelPosition(self, x=0, y=0, props=None):
         """
         Set the Axis label's alignment, rotation, and position.
 
-        Currently the position is set to be halfway down the Axis, offset by 25 pixels,
-        and centered there.
-
-        This method probably never needs to be called by the user.
-
-        Sometime in the future this method may be changed so that the user can
-        specify a custom offset for a label, so that they can locate it anywhere on the plot.
+        x, y
+            Positions for the label, from the label's origin.
+        props
+            A dictionary of Text properties. If this is not a dict,
+            then the default will be to center the label and rotate
+            it in the same direction as the axis is oriented.
         """
-
-        # TODO maybe we should be setting the origin, not the position here, so that
-        # the user can specify an offset as well and the offset is done with the position.
-        # if we do that, then the setting method here would need to add the origin and the
-        # current value in order to get the new origin.
         location = self.location()
 
-        if location == 'bottom':
-            self._label.setProps({'horizontalalignment': 'center',
+        if not isinstance(props, dict):
+            if location == 'bottom':
+                props = {'horizontalalignment': 'center',
                                'verticalalignment': 'top',
                                'rotation': 'horizontal',
-                              })
-            self._label.setPosition(self._plotLength / 2, self._plotAnchor - 25)
-        elif location == 'top':
-            self._label.setProps({'horizontalalignment': 'center',
+                              }
+            elif location == 'top':
+                props = {'horizontalalignment': 'center',
                                'verticalalignment': 'bottom',
                                'rotation': 'horizontal',
-                              })
-            self._label.setPosition(self._plotLength / 2, self._plotAnchor + 25)
-        elif location == 'left':
-            self._label.setProps({'horizontalalignment': 'right',
+                              }
+            elif location == 'left':
+                props = {'horizontalalignment': 'right',
                                'verticalalignment': 'center',
                                'rotation': 'vertical',
-                              })
-            self._label.setPosition(self._plotAnchor - 25, self._plotLength / 2)
-        elif location == 'right':
-            self._label.setProps({'horizontalalignment': 'left',
+                              }
+            elif location == 'right':
+                props = {'horizontalalignment': 'left',
                                'verticalalignment': 'center',
                                'rotation': 'vertical',
-                              })
-            self._label.setPosition(self._plotAnchor + 25, self._plotLength / 2)
-        else:
-            self._label.setProps({'horizontalalignment': 'center',
+                              }
+            else:
+                props = {'horizontalalignment': 'center',
                                'verticalalignment': 'center',
                                'rotation': 'horizontal',
-                              })
-            self._label.setPosition(0, 0)
+                              }
+
+
+        self._label.setProps(props)
+        self._label.setPosition(x, y)
 
     def location(self):
         """

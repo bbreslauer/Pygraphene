@@ -247,6 +247,14 @@ class CartesianPlot(Plot):
             except:
                 pass
 
+    def axis(self, key):
+        """
+        Return the axis with the name given by key. If the key does not exist,
+        then this raises a KeyError.
+        """
+        return self._axes[key]
+
+
     def _draw(self):
         self.drawAxes()
         self.drawData()
