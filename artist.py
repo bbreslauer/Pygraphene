@@ -108,6 +108,7 @@ class Artist(PObject):
         should not be overridden.
         """
 
+        self.remove()
         if self.isVisible():
             self._item = self._draw(*args, **kwargs)
 

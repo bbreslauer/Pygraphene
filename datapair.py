@@ -154,6 +154,20 @@ class DataPair(object):
                 marker.setPosition(x, y)
                 self._markers.append(marker)
 
+    def remove(self):
+        """
+        Remove all the Lines and Markers from the Figure.
+        """
+        try:
+            for line in self._lineSegments:
+                line.remove()
+
+            for marker in self._markers:
+                marker.remove()
+        except:
+            # self._lineSegments or self._markers probably doesn't exist yet
+            pass
+
     def draw(self, *args, **kwargs):
         """
         Draw the Lines and Markers to the Figure.
@@ -161,6 +175,9 @@ class DataPair(object):
         Note: This does not actually override Artist.draw() because DataPair does
         not subclass Artist.
         """
+
+        # Need to save the current lineSegments and markers so that they can be removed from
+        # the plot when the plot is next drawn
 
         # Draw lines before markers so that the markers cover the lines when the overlap
         # on the canvas.
@@ -171,4 +188,7 @@ class DataPair(object):
         if self.markersVisible():
             for marker in self._markers:
                 marker.draw()
+
+        self._oldLineSegments = self._lineSegments
+        self._oldMarkers = self._markers
 

@@ -262,7 +262,6 @@ class CartesianPlot(Plot):
         """
         return self._axes[key]
 
-
     def _draw(self):
         self.drawAxes()
         self.drawData()
@@ -292,6 +291,7 @@ class CartesianPlot(Plot):
         """
 
         for datapair in self._datapairs:
+            datapair.remove()
             datapair.makeLinesAndMarkers()
             datapair.draw()
 
