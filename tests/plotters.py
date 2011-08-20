@@ -18,6 +18,9 @@ p.setAxisLabel('top', 'top')
 p.setAxisLabel('left', 'left')
 p.setAxisLabel('right', 'right')
 
+#p._datapairs[0].setMarkersVisible(True)
+#p._datapairs[0].setLinesVisible(False)
+
 #p.axis('bottom').setLabelPosition(100,200)
 #p.axis('right').setLabelPosition(-300,-100)
 #p._axes['right'].setVisible(False)

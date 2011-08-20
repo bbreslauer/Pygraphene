@@ -11,9 +11,7 @@ class DataPair(object):
     x and y axes, and maintains the lines and markers that are drawn.
     """
     
-# TODO should add line and marker visible attributes, so that it is easier and more
-# efficient to disable drawing of either one
-    def __init__(self, backend, x, y, xaxis, yaxis, lineProps={}, markerProps={}):
+    def __init__(self, backend, x, y, xaxis, yaxis, linesVisible=True, markersVisible=True, lineProps={}, markerProps={}):
         """
         **Constructor**
 
@@ -25,11 +23,16 @@ class DataPair(object):
             the Axis instances that this data will be drawn in reference to. Usually
             xaxis is the abscissa and yaxis is the ordinate, but they can be reversed.
 
-        lineProps
-            Properties for the line segments that are drawn.
+        linesVisible, markersVisible
+            Specify whether the lines and markers should be visible universally for this
+            datapair. Individual lines or markers can be hidden by updating those
+            individual objects. These attributes are used to be more efficient if some
+            things are not going to be drawn. If the lines or markers are changed from
+            hidden to visible, the DataPair.makeLinesAndMarkers should be called before
+            calling DataPair.draw or else they may not appear.
 
-        markerProps
-            Properties for the markers that are drawn.
+        lineProps, markerProps
+            Properties for the line segments and markers that are drawn.
         """
 
         self._backend = backend
@@ -39,6 +42,8 @@ class DataPair(object):
         self.setXAxis(xaxis)
         self.setYAxis(yaxis)
 
+        self._linesVisible = linesVisible
+        self._markersVisible = markersVisible
         self._lineProps = {}
         self._markerProps = {}
         self.setLineProps(**lineProps)
@@ -68,6 +73,16 @@ class DataPair(object):
         else:
             self._yaxis = None
 
+    def setLinesVisible(self, v):
+        """Set whether the lines are visible universally."""
+        if isinstance(v, bool):
+            self._linesVisible = v
+
+    def setMarkersVisible(self, v):
+        """Set whether the markers are visible universally."""
+        if isinstance(v, bool):
+            self._markersVisible = v
+
     def setLineProps(self, **kwprops):
         """Set the line arguments."""
         self._lineProps.update(kwprops)
@@ -75,6 +90,14 @@ class DataPair(object):
     def setMarkerProps(self, **kwprops):
         """Set the marker arguments."""
         self._markerProps.update(kwprops)
+
+    def linesVisible(self):
+        """Return whether the lines are universally visible."""
+        return self._linesVisible
+
+    def markersVisible(self):
+        """Return whether the markers are universally visible."""
+        return self._markersVisible
 
     def maxXValue(self):
         """Get the maximum value in the x data."""
@@ -95,6 +118,9 @@ class DataPair(object):
     def makeLinesAndMarkers(self):
         """
         Create the Lines and Markers that will be drawn on the Figure.
+
+        The Lines and Markers will only be created if they are currently
+        set to be visible in this DataPair.
         """
         ox = self._xaxis._ox
         oy = self._xaxis._oy
@@ -109,22 +135,24 @@ class DataPair(object):
         markerClass = CircleMarker
 
         # Make the line segments
-        for i in range(min(len(xPlotCoords), len(yPlotCoords)) - 1):
-            line = Line(self._backend, **self._lineProps)
-            line.setPoints( xPlotCoords[i],
-                            yPlotCoords[i],
-                            xPlotCoords[i+1],
-                            yPlotCoords[i+1],
-                            ox,
-                            oy)
-            self._lineSegments.append(line)
+        if self.linesVisible():
+            for i in range(min(len(xPlotCoords), len(yPlotCoords)) - 1):
+                line = Line(self._backend, **self._lineProps)
+                line.setPoints( xPlotCoords[i],
+                                yPlotCoords[i],
+                                xPlotCoords[i+1],
+                                yPlotCoords[i+1],
+                                ox,
+                                oy)
+                self._lineSegments.append(line)
 
         # Make the markers
-        for x, y in zip(xPlotCoords, yPlotCoords):
-            marker = markerClass(self._backend, **self._markerProps)
-            marker.setOrigin(ox, oy)
-            marker.setPosition(x, y)
-            self._markers.append(marker)
+        if self.markersVisible():
+            for x, y in zip(xPlotCoords, yPlotCoords):
+                marker = markerClass(self._backend, **self._markerProps)
+                marker.setOrigin(ox, oy)
+                marker.setPosition(x, y)
+                self._markers.append(marker)
 
     def draw(self, *args, **kwargs):
         """
@@ -136,9 +164,11 @@ class DataPair(object):
 
         # Draw lines before markers so that the markers cover the lines when the overlap
         # on the canvas.
-        for line in self._lineSegments:
-            line.draw()
-
-        for marker in self._markers:
-            marker.draw()
+        if self.linesVisible():
+            for line in self._lineSegments:
+                line.draw()
+    
+        if self.markersVisible():
+            for marker in self._markers:
+                marker.draw()
 
