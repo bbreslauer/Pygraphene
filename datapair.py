@@ -11,7 +11,7 @@ class DataPair(object):
     x and y axes, and maintains the lines and markers that are drawn.
     """
     
-    def __init__(self, backend, x, y, xaxis, yaxis, linesVisible=True, markersVisible=True, lineProps={}, markerProps={}):
+    def __init__(self, canvas, x, y, xaxis, yaxis, linesVisible=True, markersVisible=True, lineProps={}, markerProps={}):
         """
         **Constructor**
 
@@ -35,7 +35,7 @@ class DataPair(object):
             Properties for the line segments and markers that are drawn.
         """
 
-        self._backend = backend
+        self._canvas = canvas
 
         self.setX(x)
         self.setY(y)
@@ -137,7 +137,7 @@ class DataPair(object):
         # Make the line segments
         if self.linesVisible():
             for i in range(min(len(xPlotCoords), len(yPlotCoords)) - 1):
-                line = Line(self._backend, **self._lineProps)
+                line = Line(self._canvas, **self._lineProps)
                 line.setPoints( xPlotCoords[i],
                                 yPlotCoords[i],
                                 xPlotCoords[i+1],
@@ -149,7 +149,7 @@ class DataPair(object):
         # Make the markers
         if self.markersVisible():
             for x, y in zip(xPlotCoords, yPlotCoords):
-                marker = markerClass(self._backend, **self._markerProps)
+                marker = markerClass(self._canvas, **self._markerProps)
                 marker.setOrigin(ox, oy)
                 marker.setPosition(x, y)
                 self._markers.append(marker)

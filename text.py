@@ -28,7 +28,7 @@ class Text(Artist):
     ======================  =================   =======
     """
 
-    def __init__(self, backend, text='', **kwprops):
+    def __init__(self, canvas, text='', **kwprops):
         """
         If text is given as a kwprops in the initialization, it will not be used.
         """
@@ -41,7 +41,7 @@ class Text(Artist):
                             }
         initialProperties.update(kwprops)
 
-        Artist.__init__(self, backend, **initialProperties)
+        Artist.__init__(self, canvas, **initialProperties)
 
     def setText(self, text):
         """Convenience method to set the text of this label."""
@@ -49,7 +49,7 @@ class Text(Artist):
             self.setProps(text=text)
 
     def _draw(self, *args, **kwargs):
-        return self._backend.drawText(  self._x,
+        return self._canvas.drawText(  self._x,
                                         self._y,
                                         self._ox,
                                         self._oy,

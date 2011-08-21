@@ -70,7 +70,7 @@ def plot(*args, **kwargs):
         fig = FigureManager.getActive()
     plot = fig.getCurrentPlot()
     if plot is None:
-        plot = CartesianPlot(fig, fig._backend)
+        plot = CartesianPlot(fig, fig._canvas)
         fig.addPlot(plot)
         plot.setPlotLocation(1, 1, 1)
 
@@ -79,7 +79,7 @@ def plot(*args, **kwargs):
         x = args.pop(0)
         y = args.pop(0)
 
-        d = DataPair(fig._backend, x, y, plot._axes['bottom'], plot._axes['left'])
+        d = DataPair(fig._canvas, x, y, plot._axes['bottom'], plot._axes['left'])
         plot.addDataPair(d)
 
     return plot
@@ -106,12 +106,12 @@ def show():
 
 def listFonts():
     """
-    List all the available fonts for the backend that is currently
+    List all the available fonts for the canvas that is currently
     in use.
     """
 
     figure = Figure(600, 400)
-    figure._backend.listFonts()
+    figure._canvas.listFonts()
 
 
 

@@ -11,7 +11,7 @@ class Font(PObject):
     ======================  =================   =======
     Property                Possible Values     Description
     ======================  =================   =======
-    family                  str ('Times')       The font family to use. Needs to be recognized by the backend being used.
+    family                  str ('Times')       The font family to use. Needs to be recognized by the canvas being used.
     style                   | 'Normal'          Italicize font.
                             | 'Italic'
                             | 'Oblique'

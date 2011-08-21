@@ -29,8 +29,8 @@ class Marker(Artist):
 
     """
 
-    def __init__(self, backend, **kwprops):
-        Artist.__init__(self, backend, **kwprops)
+    def __init__(self, canvas, **kwprops):
+        Artist.__init__(self, canvas, **kwprops)
 
         self.setOrigin()
         self.setPosition()
@@ -66,13 +66,13 @@ class CircleMarker(Marker):
     Radius must be an integer.
     """
 
-    def __init__(self, backend, radius=3, **kwprops):
+    def __init__(self, canvas, radius=3, **kwprops):
         # A SyntaxError or TypeError will be received if the user tries to
         # supply the radius as an arg and a kwarg. So we don't have to worry
         # about a radius property being set in Marker.__init__.
 
         self.setRadius(radius)
-        Marker.__init__(self, backend, **kwprops)
+        Marker.__init__(self, canvas, **kwprops)
 
     def setProps(self, props={}, **kwprops):
         """
@@ -95,7 +95,7 @@ class CircleMarker(Marker):
             self._radius = radius
 
     def _draw(self, *args, **kwargs):
-        return self._backend.drawCircle(self._x,
+        return self._canvas.drawCircle(self._x,
                                         self._y,
                                         self._radius,
                                         self._ox,

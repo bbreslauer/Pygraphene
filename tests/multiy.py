@@ -50,7 +50,7 @@ p.draw()
 #pixmap = QPixmap(600, 400)
 #painter = QPainter()
 #painter.begin(pixmap)
-#p._figure._backend._scene.render(painter)
+#p._figure._canvas._scene.render(painter)
 #painter.end()
 #pixmap.save('multiy.png')
 

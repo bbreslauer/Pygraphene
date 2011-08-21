@@ -14,13 +14,13 @@ from datapair import *
 app = QApplication(sys.argv)
 
 f = Figure(600, 400)
-p = CartesianPlot(f, f._backend)
-p2 = CartesianPlot(f, f._backend)
+p = CartesianPlot(f, f._canvas)
+p2 = CartesianPlot(f, f._canvas)
 f.addPlot(p)
 f.addPlot(p2)
 
-p.setPlotRegion(0, 0, f._backend._scene.width()/2, f._backend._scene.height())
-p2.setPlotRegion(f._backend._scene.width()/2, 0, f._backend._scene.width()/2, f._backend._scene.height())
+p.setPlotRegion(0, 0, f._canvas._scene.width()/2, f._canvas._scene.height())
+p2.setPlotRegion(f._canvas._scene.width()/2, 0, f._canvas._scene.width()/2, f._canvas._scene.height())
 
 for axis in p._axes.values():
     axis._majorTicks.makeTicks(11, 0, 10)
@@ -33,7 +33,7 @@ p._axes['bottom'].setWidth(2)
 p._axes['right'].hideTicks()
 p._axes['top'].hideTicks()
 
-d = DataPair(f._backend, [1,2,3,4,5,6,7], [1,2,9,5,9,1,0,5], p._axes['bottom'], p._axes['left'])
+d = DataPair(f._canvas, [1,2,3,4,5,6,7], [1,2,9,5,9,1,0,5], p._axes['bottom'], p._axes['left'])
 p.addDataPair(d)
 
 f.draw()

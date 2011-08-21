@@ -1,6 +1,6 @@
 
 
-from backends.qt4pyside_backend import Qt4PySideBackend
+from canvas.qt4pyside_canvas import Qt4PySideCanvas
 
 from plot import *
 from text import *
@@ -8,7 +8,7 @@ from text import *
 class Figure(object):
     """
     Represents a figure that is being drawn on a canvas. The canvas is stored
-    as a backend, which must be a subclass of BackendBase. The Figure can contain
+    as a canvas, which must be a subclass of BaseCanvas. The Figure can contain
     an unlimited number of Plots.
 
     One Plot being designated as the current Plot at any given time. This is used
@@ -23,9 +23,9 @@ class Figure(object):
             The width and height of the figure, in pixels.
         """
 
-        self._backend = Qt4PySideBackend(width, height)
+        self._canvas = Qt4PySideCanvas(width, height)
 
-        self._title = Text(self._backend)
+        self._title = Text(self._canvas)
         self._title.setOrigin(0, 0)
         self._title.setPosition(width / 2, height - 10)
         self.setTitle('')
@@ -81,11 +81,11 @@ class Figure(object):
 
     def width(self):
         """Return the width of the Figure."""
-        return self._backend._scene.width()
+        return self._canvas._scene.width()
 
     def height(self):
         """Return the height of the Figure."""
-        return self._backend._scene.height()
+        return self._canvas._scene.height()
 
     def setTitle(self, title):
         """
@@ -103,10 +103,10 @@ class Figure(object):
 
     def draw(self):
         """
-        Show the backend, draw all plots, and draw the Figure title.
+        Show the canvas, draw all plots, and draw the Figure title.
         """
 
-        self._backend.show()
+        self._canvas.show()
 
         for p in self._plots:
             p.draw()
@@ -127,5 +127,5 @@ class Figure(object):
         """
         Wipe the canvas clean.
         """
-        self._backend.clear()
+        self._canvas.clear()
 

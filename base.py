@@ -4,7 +4,7 @@ class PObject(object):
     """
     A standard Python object that contains a set of properties.
 
-    Properties are used by the backend to customize how to draw an object (i.e. a line, circle, etc).
+    Properties are used by the canvas to customize how to draw an object (i.e. a line, circle, etc).
     """
 
     def __init__(self, props={}, **kwprops):

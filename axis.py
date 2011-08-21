@@ -42,14 +42,14 @@ class Axis(Line):
     cannot be both a slave and a master.
     """
 
-    def __init__(self, backend, plot, orientation='horizontal', inside='up', **kwprops):
+    def __init__(self, canvas, plot, orientation='horizontal', inside='up', **kwprops):
 
         # Need to define the label before init'ing the Line. This is because we
         # override Line.setOrigin to include the label, but setOrigin is called
         # in Line.__init__.
-        self._label = Text(backend)
+        self._label = Text(canvas)
 
-        Line.__init__(self, backend, **kwprops)
+        Line.__init__(self, canvas, **kwprops)
 
         self._plot = plot
 
@@ -77,8 +77,8 @@ class Axis(Line):
         self._autoscaled = True  # holds whether this Axis is currently being autoscaled to the data
 
         # Setup the major and minor ticks
-        self._majorTicks = Ticks(self._backend, self, 'major', labeler=StringLabeler())
-        self._minorTicks = Ticks(self._backend, self, 'minor', labeler=NullLabeler())
+        self._majorTicks = Ticks(self._canvas, self, 'major', labeler=StringLabeler())
+        self._minorTicks = Ticks(self._canvas, self, 'minor', labeler=NullLabeler())
         self._minorTicks.setLocator(num=3)
         self._minorTicks.setLength(3)
         self._minorTicks._labelProps.update(visible=False)
@@ -624,7 +624,7 @@ class Ticks(object):
 # TODO need to move the length into the individual ticks, so that it can be modified on an individual tick basis
 # should do this in tickmarkargs, but need to determine if this creates a problem with their positions
 
-    def __init__(self, backend, axis, type_='major', length=5, width=1, font=None, locator=None, labeler=None):
+    def __init__(self, canvas, axis, type_='major', length=5, width=1, font=None, locator=None, labeler=None):
         """
         **Constructor**
 
@@ -665,7 +665,7 @@ class Ticks(object):
                           }
 
         self._ticks = []
-        self._backend = backend
+        self._canvas = canvas
         self._axis = axis
         self._type = type_
         self._length = length
@@ -805,7 +805,7 @@ class Ticks(object):
         # Create the ticks
         for loc, lab in zip(locations, labels):
             self._labelProps.update(text=str(lab))
-            tick = Tick(self._backend,
+            tick = Tick(self._canvas,
                         self._axis,
                         loc,
                         self._length,
@@ -841,7 +841,7 @@ class Tick(object):
 # TODO in conjunction with Ticks, length should be changed to a tickmarkarg if possible
 # actually, i don't think this is possible, because the Line kwprops doesn't have a concept of a length
 
-    def __init__(self, backend, axis, dataLoc, length, tickMarkProps={}, labelProps={}):
+    def __init__(self, canvas, axis, dataLoc, length, tickMarkProps={}, labelProps={}):
         """
         **Constructor**
 
@@ -861,8 +861,8 @@ class Tick(object):
             Keyword arguments for the label Text object.
         """
 
-        self._tickMark = Line(backend, **tickMarkProps)
-        self._label = Text(backend, **labelProps)
+        self._tickMark = Line(canvas, **tickMarkProps)
+        self._label = Text(canvas, **labelProps)
         self._axis = axis
         
         # Location where the tick should be placed, in data coords

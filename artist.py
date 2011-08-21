@@ -15,9 +15,9 @@ class Artist(PObject):
 
     **Coordinates**
 
-    The specific backend being used will have its own coordinates
+    The specific canvas being used will have its own coordinates
     specifying positions of items on its canvas. To convert from
-    PyGraphene coordinates to the backend's coordinates, each backend
+    PyGraphene coordinates to the canvas's coordinates, each canvas
     must provide figureToScene and sceneToFigure methods.
     
     Figure coordinates start in the bottom-left corner of the canvas
@@ -39,11 +39,11 @@ class Artist(PObject):
     """
 
 
-    def __init__(self, backend, *args, **kwprops):
+    def __init__(self, canvas, *args, **kwprops):
         """
         **Constructor**
 
-        Initialize the origin and position. Also set the backend for this Artist to draw with.
+        Initialize the origin and position. Also set the canvas for this Artist to draw with.
         """
 
         initialProperties = {'color': '#000000', 'visible': True}
@@ -51,7 +51,7 @@ class Artist(PObject):
 
         PObject.__init__(self, initialProperties)
 
-        self._backend = backend
+        self._canvas = canvas
         self._item = None
 
         self.setOrigin()
@@ -121,12 +121,12 @@ class Artist(PObject):
 
     def remove(self):
         """
-        Remove this Artist from the backend, but do not delete the Artist.
+        Remove this Artist from the canvas, but do not delete the Artist.
         """
         
         if self._item is not None:
             try:
-                self._backend.remove(self._item)
+                self._canvas.remove(self._item)
             except:
                 # Don't worry if it cannot be deleted; it probably doesn't exist anymore
                 pass

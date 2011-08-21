@@ -2,13 +2,15 @@
 from PySide.QtGui import *
 from PySide.QtCore import Qt
 
-from backend_base import BackendBase
+from base_canvas import BaseCanvas
 
 
-class Qt4PySideBackend(BackendBase):
+class Qt4PySideCanvas(BaseCanvas):
     """
-    Abstract class representing all the methods a backend must implement.
+    Abstract class representing all the methods a canvas must implement.
     """
+
+    #scene and canvas are used interchangably.
 
     def __init__(self, width, height):
 
@@ -21,9 +23,9 @@ class Qt4PySideBackend(BackendBase):
     def show(self):
         self._view.show()
 
-    def figureToScene(self, x, y, ox=0, oy=0):
+    def figureToCanvas(self, x, y, ox=0, oy=0):
         """
-        Convert from figure coords to scene coords.
+        Convert from figure coords to canvas coords.
 
         ox, oy = origin in figure coordinates
         """
@@ -31,15 +33,15 @@ class Qt4PySideBackend(BackendBase):
         # Shift x value to the right
         x += ox
 
-        # Shift y value up, and then invert to reach the scene
+        # Shift y value up, and then invert to reach the canvas
         y += oy
         y = self._scene.height() - y
 
         return (x, y)
 
-    def sceneToFigure(self, x, y, ox=0, oy=0):
+    def canvasToFigure(self, x, y, ox=0, oy=0):
         """
-        Convert from scene coords to figure coords.
+        Convert from canvas coords to figure coords.
         
         ox, oy = origin in figure coordinates
         """
@@ -47,7 +49,7 @@ class Qt4PySideBackend(BackendBase):
         # Shift x value to the left
         x -= ox
 
-        # Invert from scene to figure, then shift y value down
+        # Invert from canvas to figure, then shift y value down
         y = self._scene.height() - y
         y -= oy
 
@@ -63,8 +65,8 @@ class Qt4PySideBackend(BackendBase):
         to the top-left corner to display in Qt4.
         """
 
-        (sx, sy) = self.figureToScene(sx, sy, ox, oy)
-        (ex, ey) = self.figureToScene(ex, ey, ox, oy)
+        (sx, sy) = self.figureToCanvas(sx, sy, ox, oy)
+        (ex, ey) = self.figureToCanvas(ex, ey, ox, oy)
 
         return self._scene.addLine(sx, sy, ex, ey, makePen(**kwargs))
 
@@ -95,7 +97,7 @@ class Qt4PySideBackend(BackendBase):
         cx -= r
         cy += r
 
-        (cx, cy) = self.figureToScene(cx, cy, ox, oy)
+        (cx, cy) = self.figureToCanvas(cx, cy, ox, oy)
 
         fillcolor = kwargs.pop('fillcolor', '#000000')
 
@@ -158,7 +160,7 @@ class Qt4PySideBackend(BackendBase):
         elif kwargs['verticalalignment'] == 'center':
             y = y + height / 2
 
-        (x, y) = self.figureToScene(x, y, ox, oy)
+        (x, y) = self.figureToCanvas(x, y, ox, oy)
 
 #        if kwargs['rotation'] == 'horizontal':
 #            kwargs['rotation'] = 0
@@ -176,7 +178,7 @@ class Qt4PySideBackend(BackendBase):
 
     def remove(self, item):
         """
-        Remove the given item from the scene.
+        Remove the given item from the canvas.
         """
         self._scene.removeItem(item)
         del item

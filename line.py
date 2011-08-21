@@ -29,7 +29,7 @@ class Line(Artist):
 
     """
 
-    def __init__(self, backend, **kwprops):
+    def __init__(self, canvas, **kwprops):
 
         initialProperties = {'width': 1,
                          'style': 'solid',
@@ -38,7 +38,7 @@ class Line(Artist):
                         }
         initialProperties.update(kwprops)
 
-        Artist.__init__(self, backend, **initialProperties)
+        Artist.__init__(self, canvas, **initialProperties)
 
         self.setOrigin()
         self.setPosition()
@@ -95,7 +95,7 @@ class Line(Artist):
 
     def _draw(self, *args, **kwargs):
 
-        return self._backend.drawLine(  self._x,
+        return self._canvas.drawLine(  self._x,
                                         self._y,
                                         self._ex,
                                         self._ey,

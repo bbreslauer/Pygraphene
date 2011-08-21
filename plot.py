@@ -9,17 +9,17 @@ class Plot(Artist):
     Abstract class defining necessary methods for any plot class.
     """
 
-    def __init__(self, figure, backend):
+    def __init__(self, figure, canvas):
         """
         **Constructor**
 
         figure
             The figure to draw the plot on.
-        backend
-            The backend that the figure uses.
+        canvas
+            The canvas that the figure uses.
         """
         self._figure = figure
-        Artist.__init__(self, backend)
+        Artist.__init__(self, canvas)
 
 class CartesianPlot(Plot):
     """
@@ -34,10 +34,10 @@ class CartesianPlot(Plot):
     defined as the plot padding.
     """
 
-    def __init__(self, figure, backend):
-        Plot.__init__(self, figure, backend)
+    def __init__(self, figure, canvas):
+        Plot.__init__(self, figure, canvas)
 
-        self._title = Text(self._backend)
+        self._title = Text(self._canvas)
         self._title.setOrigin(0, 0)
         self.setTitle('')
 
@@ -186,7 +186,7 @@ class CartesianPlot(Plot):
         """
 
         if key not in self._axes.keys():
-            self._axes[key] = Axis(self._figure._backend, self, **kwprops)
+            self._axes[key] = Axis(self._figure._canvas, self, **kwprops)
         return self._axes[key]
 
     def addInitialAxes(self, **kwprops):
