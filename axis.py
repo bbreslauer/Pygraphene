@@ -49,6 +49,7 @@ class Axis(Line):
         # in Line.__init__.
         self._label = Text(canvas)
 
+        kwprops.update(aliased=True)
         Line.__init__(self, canvas, **kwprops)
 
         self._plot = plot
@@ -657,6 +658,7 @@ class Ticks(object):
         # defaults
         self._tickMarkProps = {
                             'width': 1,
+                            'aliased': True,
                        }
 
         self._labelProps = {'horizontalalignment': 'center',

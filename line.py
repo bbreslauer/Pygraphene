@@ -95,13 +95,13 @@ class Line(Artist):
 
     def _draw(self, *args, **kwargs):
 
-        return self._canvas.drawLine(  self._x,
-                                        self._y,
-                                        self._ex,
-                                        self._ey,
-                                        self._ox,
-                                        self._oy,
-                                        **self.props())
+        return self._canvas.drawLine(self._x,
+                                     self._y,
+                                     self._ex,
+                                     self._ey,
+                                     self._ox,
+                                     self._oy,
+                                     **self.props())
 
 
 

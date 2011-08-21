@@ -5,6 +5,19 @@ from PySide.QtCore import Qt
 from base_canvas import BaseCanvas
 
 
+
+class AliasedGraphicsLineItem(QGraphicsLineItem):
+    """
+    A QGraphicsLineItem that will always be drawn non-antialiased.
+    """
+
+    def __init__(self, *args):
+        QGraphicsLineItem.__init__(self, *args)
+
+    def paint(self, painter, option, widget=0):
+        painter.setRenderHints(QPainter.Antialiasing | QPainter.TextAntialiasing, False)
+        QGraphicsLineItem.paint(self, painter, option, widget)
+
 class Qt4PySideCanvas(BaseCanvas):
     """
     Abstract class representing all the methods a canvas must implement.
@@ -14,9 +27,11 @@ class Qt4PySideCanvas(BaseCanvas):
 
     def __init__(self, width, height):
 
+
         self._scene = QGraphicsScene(0, 0, width, height)
         self._view = QGraphicsView(self._scene)
         self._view.setAlignment(Qt.AlignLeft | Qt.AlignTop)
+        self._view.setRenderHints(QPainter.Antialiasing | QPainter.TextAntialiasing)
         
         self._view.show()
 
@@ -56,19 +71,29 @@ class Qt4PySideCanvas(BaseCanvas):
         return (x, y)
 
 
-    def drawLine(self, sx, sy, ex, ey, ox=0, oy=0, **kwargs):
+    def drawLine(self, sx, sy, ex, ey, ox=0, oy=0, aliased=False, **kwargs):
         """
         Draw a line from (sx, sy) to (ex, ey).
         The local origin is at (ox, oy).
 
         The origin is defined as the bottom left corner, so this will transform
         to the top-left corner to display in Qt4.
+
+        If aliased is False, then the line is drawn with anti-aliasing turned on.
+        If aliased is True, then the line is drawn without anti-aliasing.
         """
 
         (sx, sy) = self.figureToCanvas(sx, sy, ox, oy)
         (ex, ey) = self.figureToCanvas(ex, ey, ox, oy)
 
-        return self._scene.addLine(sx, sy, ex, ey, makePen(**kwargs))
+        if aliased:
+            line = AliasedGraphicsLineItem(sx, sy, ex, ey)
+            line.setPen(makePen(**kwargs))
+        else:
+            line = QGraphicsLineItem(sx, sy, ex, ey)
+            line.setPen(makePen(**kwargs))
+        self._scene.addItem(line)
+        return line
 
 
 
@@ -235,6 +260,7 @@ def makePen(**kwargs):
             }
 
     pen = QPen()
+    pen.setCosmetic(True)
     
     keys = kwargs.keys()
     if 'color' in keys: 
@@ -247,7 +273,7 @@ def makePen(**kwargs):
         pen.setCapStyle(caps[kwargs['cap']])
     if 'join' in keys:
         pen.setJoinStyle(joins[kwargs['join']])
-    
+
     return pen
 
 

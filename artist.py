@@ -35,6 +35,7 @@ class Artist(PObject):
     ======================  =================   =======
     color                   str ('#000000')     The primary color to be used when drawing this Artist.
     visible                 bool (True)         Determine whether to draw this Artist.
+    aliased                 bool (False)        Whether this Artist is antialiased (False) or aliased (True).
     ======================  =================   =======
     """
 
@@ -46,7 +47,10 @@ class Artist(PObject):
         Initialize the origin and position. Also set the canvas for this Artist to draw with.
         """
 
-        initialProperties = {'color': '#000000', 'visible': True}
+        initialProperties = {'color': '#000000',
+                             'visible': True,
+                             'aliased': False,
+                            }
         initialProperties.update(kwprops)
 
         PObject.__init__(self, initialProperties)
