@@ -2,6 +2,7 @@
 
 from canvas.qt4pyside_canvas import Qt4PySideCanvas
 
+from font import *
 from plot import *
 from text import *
 
@@ -15,7 +16,7 @@ class Figure(object):
     mainly for the non-OO plotter interface.
     """
 
-    def __init__(self, width, height):
+    def __init__(self, width=600, height=400):
         """
         **Constructor**
 
@@ -31,6 +32,9 @@ class Figure(object):
         self.setTitle('')
         self._plots = []
         self._currentPlot = None  # index of the current plot
+
+    def canvas(self):
+        return self._canvas
 
     def addPlot(self, plot):
         """
@@ -87,19 +91,28 @@ class Figure(object):
         """Return the height of the Figure."""
         return self._canvas._scene.height()
 
-    def setTitle(self, title):
+    def setTitle(self, text=None, font=None):
         """
-        Set the title label to title.
+        Set the title label.
 
-        title can be either a str or a Text object. If it is a str, then
+        text can be either a str or a Text object. If it is a str, then
         the current label's text is updated. If it is a Text object, then
-        the current label is replaced with title.
+        the current label is replaced with title. If it is neither of these
+        (i.e. None) then the text is not updated.
+
+        After that is done, if font is not None, then the title's font will
+        be updated. font can be a string or Font object.
         """
 
-        if isinstance(title, Text):
-            self._title = title
-        elif isinstance(title, str):
-            self._title.setProps(text=title)
+        if text is not None:
+            if isinstance(text, Text):
+                self._title = text
+            elif isinstance(text, str):
+                self._title.setProps(text=text)
+
+        if font is not None:
+            if isinstance(font, str) or isinstance(font, Font):
+                self._title.setProps(font=font)
 
     def draw(self):
         """

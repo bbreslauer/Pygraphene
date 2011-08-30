@@ -222,16 +222,28 @@ class CartesianPlot(Plot):
         if isinstance(datapair, DataPair):
             self._datapairs.append(datapair)
 
-    def setTitle(self, title):
+    def setTitle(self, text=None, font=None):
         """
-        Set the title of this plot. The title can be either a Text instance,
-        or a string.
+        Set the title label.
+
+        text can be either a str or a Text object. If it is a str, then
+        the current label's text is updated. If it is a Text object, then
+        the current label is replaced with title. If it is neither of these
+        (i.e. None) then the text is not updated.
+
+        After that is done, if font is not None, then the title's font will
+        be updated. font can be a string or Font object.
         """
 
-        if isinstance(title, Text):
-            self._title = title
-        elif isinstance(title, str):
-            self._title.setProps(text=title)
+        if text is not None:
+            if isinstance(text, Text):
+                self._title = text
+            elif isinstance(text, str):
+                self._title.setProps(text=text)
+
+        if font is not None:
+            if isinstance(font, str) or isinstance(font, Font):
+                self._title.setProps(font=font)
 
     def setAxisLabel(self, key='bottom', label='', font=''):
         """

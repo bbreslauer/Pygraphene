@@ -38,6 +38,9 @@ class Qt4PySideCanvas(BaseCanvas):
     def show(self):
         self._view.show()
 
+    def widget(self):
+        return self._view
+
     def figureToCanvas(self, x, y, ox=0, oy=0):
         """
         Convert from figure coords to canvas coords.
@@ -142,9 +145,12 @@ class Qt4PySideCanvas(BaseCanvas):
         horizontalalignment = str
         verticalalignment = str
         rotation = 'horizontal', 'vertical' or int (for degrees)
+
+        if font provides a color, then that is the text color.
         """
         
         t = QGraphicsTextItem(str(kwargs['text']))
+        t.setDefaultTextColor(kwargs['color'])
         t.setFont(makeFont(kwargs['font']))
        
         # Need to rotate first so that we can set the position correctly

@@ -1,6 +1,7 @@
 
 
 from artist import Artist
+from font import Font
 
 
 class Text(Artist):
@@ -9,6 +10,13 @@ class Text(Artist):
 
     The font used can be either a string with the font family name in it,
     or a PyGraphene Font object.
+
+    The Text object contains a color property from Artist, and if font is
+    a Font object, then it also contains a color property. The order of
+    priority for determining what color the text will be is:
+
+    1. if font is a Font, then use font's color
+    2. else, use the Text color
 
     ======================  =================   =======
     Property                Possible Values     Description
@@ -49,9 +57,16 @@ class Text(Artist):
             self.setProps(text=text)
 
     def _draw(self, *args, **kwargs):
+        props = self.props()
+        if isinstance(self.props('font'), Font):
+            try:
+                props.update(color=self.props('font').props('color'))
+            except:
+                pass
+
         return self._canvas.drawText(  self._x,
                                         self._y,
                                         self._ox,
                                         self._oy,
-                                        **self.props())
+                                        **props)
 
