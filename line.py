@@ -51,12 +51,28 @@ class Line(Artist):
         """
         self.setPosition(x, y)
 
+    def start(self):
+        """
+        Return the starting point of the line, in plot coordinates.
+
+        Returns (x, y)
+        """
+        return self.position()
+
     def setEnd(self, x=0, y=0):
         """
         Set the ending point of the line, in plot coordinates.
         """
         self._ex = float(x)
         self._ey = float(y)
+
+    def end(self):
+        """
+        Return the ending point of the line, in plot coordinates.
+        
+        Returns (x, y)
+        """
+        return self._ex, self._ey
 
     def setPoints(self, sx, sy, ex, ey, ox, oy):
         """

@@ -37,6 +37,9 @@ class CartesianPlot(Plot):
     def __init__(self, figure, canvas):
         Plot.__init__(self, figure, canvas)
 
+        # Make the plot background white
+        self.setColor('#ffffff')
+
         self._title = Text(self._canvas)
         self._title.setOrigin(0, 0)
         self.setTitle('')
@@ -160,8 +163,8 @@ class CartesianPlot(Plot):
         """
 
         # Origin of axes, in figure coords
-        self._axesOx = self._ox + self._tpad
-        self._axesOy = self._oy + self._tpad
+        self._axesOx = self._ox + self._lpad
+        self._axesOy = self._oy + self._bpad
 
         # Length of axes
         self._axesWidth = self._plotWidth - self._rpad - self._lpad
@@ -275,9 +278,24 @@ class CartesianPlot(Plot):
         return self._axes[key]
 
     def _draw(self):
+        self.drawBackground()
         self.drawAxes()
         self.drawData()
         self._title.draw()
+
+    def drawBackground(self):
+        """
+        Draw the background color of the plot. This only colors in the space
+        between the axes.
+        """
+        
+        sx, sy = self.axis('bottom').start()
+        ex, ey = self.axis('top').end()
+        ox, oy = self.axis('bottom').origin()
+
+        # origin of the plot is the position of the plot in figure coordinates
+        self._canvas.drawRect(sx, sy, ex, ey, ox, oy, lineProps={'color': self.color()}, fillProps={'color': self.color()})
+
 
     def drawAxes(self):
         """

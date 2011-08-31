@@ -61,12 +61,24 @@ class Artist(PObject):
         self.setOrigin()
         self.setPosition()
 
+    def origin(self):
+        """
+        Return the origin of this artist, in figure coordinates.
+        """
+        return self._ox, self._oy
+
     def setOrigin(self, x=0, y=0):
         """
         Set the origin, using figure coordinates.
         """
         self._ox = float(x)
         self._oy = float(y)
+
+    def position(self):
+        """
+        Return the position of this artist, in plot coordinates.
+        """
+        return self._x, self._y
 
     def setPosition(self, x=0, y=0):
         """

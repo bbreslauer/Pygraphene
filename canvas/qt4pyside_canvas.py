@@ -18,6 +18,18 @@ class AliasedGraphicsLineItem(QGraphicsLineItem):
         painter.setRenderHints(QPainter.Antialiasing | QPainter.TextAntialiasing, False)
         QGraphicsLineItem.paint(self, painter, option, widget)
 
+class AliasedGraphicsRectItem(QGraphicsRectItem):
+    """
+    A QGraphicsRectItem that will always be drawn non-antialiased.
+    """
+
+    def __init__(self, *args):
+        QGraphicsRectItem.__init__(self, *args)
+
+    def paint(self, painter, option, widget=0):
+        painter.setRenderHints(QPainter.Antialiasing | QPainter.TextAntialiasing, False)
+        QGraphicsRectItem.paint(self, painter, option, widget)
+
 class Qt4PySideCanvas(BaseCanvas):
     """
     Abstract class representing all the methods a canvas must implement.
@@ -100,15 +112,25 @@ class Qt4PySideCanvas(BaseCanvas):
 
 
 
-    def drawRect(self, sx, sy, ex, ey, ox=0, oy=0, fill=False):
+    def drawRect(self, sx, sy, ex, ey, ox=0, oy=0, lineProps={}, fillProps={}, **kwargs):
         """
         Draw a rectangle with corners (sx, sy) and (ex, ey).
         The local origin is at (ox, oy).
 
+        lineProps are valid properties for makePen
+        fillProps are valid properties for makeBrush
+
         """
 
-        pass
+        (sx, sy) = self.figureToCanvas(sx, sy, ox, oy)
+        (ex, ey) = self.figureToCanvas(ex, ey, ox, oy)
 
+        rect = AliasedGraphicsRectItem(sx, sy, ex-sx, ey-sy)
+        rect.setPen(makePen(**lineProps))
+        rect.setBrush(makeBrush(**fillProps))
+
+        self._scene.addItem(rect)
+        return rect
 
 
 
@@ -243,6 +265,9 @@ def makePen(**kwargs):
 
     color
     width
+    style
+    cap
+    join
     """
     
     styles = {  
@@ -282,6 +307,27 @@ def makePen(**kwargs):
 
     return pen
 
+def makeBrush(**kwargs):
+    """
+    Create a QBrush from the given properties. Valid properties are:
+
+    color
+    """
+
+    styles = {
+            'none': Qt.NoBrush,
+            'solid': Qt.SolidPattern,
+            }
+    
+    brush = QBrush(Qt.SolidPattern)
+
+    keys = kwargs.keys()
+    if 'color' in keys:
+        brush.setColor(kwargs['color'])
+    if 'style' in keys:
+        brush.setStyle(styles[kwargs['style']])
+
+    return brush
 
 def makeFont(font):
     """

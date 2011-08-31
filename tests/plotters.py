@@ -18,6 +18,8 @@ p.setAxisLabel('top', 'top')
 p.setAxisLabel('left', 'left')
 p.setAxisLabel('right', 'right')
 
+p.setColor('#00ff00')
+
 #p._datapairs[0].setMarkersVisible(True)
 #p._datapairs[0].setLinesVisible(False)
 
