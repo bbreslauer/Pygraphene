@@ -54,7 +54,13 @@ def plot(*args, **kwargs):
     """
     args are x1, y1, x2, y2, etc
 
-    kwargs are undef. as of now
+    Valid kwargs are:
+
+    new
+        Boolean specifying whether a new plot should be created on the current figure.
+        Defaults to False.
+    position
+        A 3-tuple specifying the location of this plot, of the form (numRows, numCols, numPlot).
 
     Uses the current figure, if one exists, otherwise creates a new figure.
     If the current figure has a current plot, then uses it, otherwise creates a
@@ -63,16 +69,23 @@ def plot(*args, **kwargs):
     Running plot() multiple times will add more data to the last defined plot.
     Running show() multiple times will show the last defined plot.
     """
+    
+    newPlot = False
+    if 'new' in kwargs.keys():
+        newPlot = True
 
     fig = FigureManager.getActive()
     if fig is None:
         figure()
         fig = FigureManager.getActive()
     plot = fig.getCurrentPlot()
-    if plot is None:
+    if plot is None or newPlot is True:
         plot = CartesianPlot(fig, fig._canvas)
         fig.addPlot(plot)
-        plot.setPlotLocation(1, 1, 1)
+        position = [1, 1, 1]
+        if 'position' in kwargs.keys():
+            position = kwargs['position']
+        plot.setPlotLocation(*position)
 
     args = list(args)
     while len(args) > 0:
