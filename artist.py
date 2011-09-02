@@ -1,7 +1,7 @@
 
-from base import PObject
+from base import *
 
-class Artist(PObject):
+class Artist(PObject, Parent):
     """
     Base class for any object that draws onto a Figure.
 
@@ -53,6 +53,7 @@ class Artist(PObject):
                             }
         initialProperties.update(kwprops)
 
+        Parent.__init__(self)
         PObject.__init__(self, initialProperties)
 
         self._canvas = canvas

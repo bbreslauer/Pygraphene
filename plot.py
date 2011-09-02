@@ -3,6 +3,7 @@ from artist import Artist
 from axis import Axis
 from datapair import DataPair
 from text import *
+from base import Parent
 
 class Plot(Artist):
     """
@@ -72,9 +73,12 @@ class CartesianPlot(Plot):
         should be on the figure, and which plot this is, and then calculate
         the appropriate region.
         """
-
+# TODO this logic is wrong
         row = num / nCols - 1    # -1 so that it is zero-indexed
         col = num % nCols
+
+        #print row
+        #print col
 
         plotWidth = float(self._figure.width()) / float(nCols)
         plotHeight = float(self._figure.height()) / float(nRows)
@@ -179,7 +183,13 @@ class CartesianPlot(Plot):
         self._axes['right'].setPlotRange(self._axesWidth, 0, self._axesHeight)
         self._axes['top'].setPlotRange(self._axesHeight, 0, self._axesWidth)
         self._axes['bottom'].setPlotRange(0, 0, self._axesWidth)
-       
+
+    def width(self):
+        return self._plotWidth
+
+    def height(self):
+        return self._plotHeight
+
     def addAxis(self, key, **kwprops):
         """
         Add a new axis to the plot, with its name given by key. If key already exists,
@@ -190,6 +200,7 @@ class CartesianPlot(Plot):
 
         if key not in self._axes.keys():
             self._axes[key] = Axis(self._figure._canvas, self, **kwprops)
+            self.addChild(self._axes[key])
         return self._axes[key]
 
     def addInitialAxes(self, **kwprops):
@@ -224,15 +235,17 @@ class CartesianPlot(Plot):
 # need to know the names of the axes to attach the data to.
         if isinstance(datapair, DataPair):
             self._datapairs.append(datapair)
+            self.addChild(datapair)
 
     def setTitle(self, text=None, font=None):
         """
         Set the title label.
 
-        text can be either a str or a Text object. If it is a str, then
+        text can be either a str, a Text object, or a dict. If it is a str, then
         the current label's text is updated. If it is a Text object, then
-        the current label is replaced with title. If it is neither of these
-        (i.e. None) then the text is not updated.
+        the current label is replaced with title. If it is a dict, then the
+        current Text object is updated with the properties in the dict. If it is none
+        of these (i.e. None) then the text is not updated.
 
         After that is done, if font is not None, then the title's font will
         be updated. font can be a string or Font object.
@@ -243,6 +256,8 @@ class CartesianPlot(Plot):
                 self._title = text
             elif isinstance(text, str):
                 self._title.setProps(text=text)
+            elif isinstance(text, dict):
+                self._title.setProps(**text)
 
         if font is not None:
             if isinstance(font, str) or isinstance(font, Font):
@@ -277,11 +292,16 @@ class CartesianPlot(Plot):
         """
         return self._axes[key]
 
+    def clear(self):
+        Parent.clear(self)
+        self._canvas.update()
+
     def _draw(self):
-        self.drawBackground()
+        item = self.drawBackground()
         self.drawAxes()
         self.drawData()
         self._title.draw()
+        return item
 
     def drawBackground(self):
         """
@@ -294,7 +314,7 @@ class CartesianPlot(Plot):
         ox, oy = self.axis('bottom').origin()
 
         # origin of the plot is the position of the plot in figure coordinates
-        self._canvas.drawRect(sx, sy, ex, ey, ox, oy, lineProps={'color': self.color()}, fillProps={'color': self.color()})
+        return self._canvas.drawRect(sx, sy, ex, ey, ox, oy, lineProps={'color': self.color()}, fillProps={'color': self.color()})
 
 
     def drawAxes(self):

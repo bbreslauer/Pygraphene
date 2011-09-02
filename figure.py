@@ -5,8 +5,9 @@ from canvas.qt4pyside_canvas import Qt4PySideCanvas
 from font import *
 from plot import *
 from text import *
+from base import *
 
-class Figure(object):
+class Figure(Parent):
     """
     Represents a figure that is being drawn on a canvas. The canvas is stored
     as a canvas, which must be a subclass of BaseCanvas. The Figure can contain
@@ -23,6 +24,8 @@ class Figure(object):
         width, height
             The width and height of the figure, in pixels.
         """
+
+        Parent.__init__(self)
 
         self._canvas = Qt4PySideCanvas(width, height)
 
@@ -41,6 +44,7 @@ class Figure(object):
         Add a Plot to the Figure and set it as current.
         """
         self._plots.append(plot)
+        self.addChild(plot)
         self._currentPlot = len(self._plots) - 1
 
     def delPlot(self, plot):
@@ -95,10 +99,11 @@ class Figure(object):
         """
         Set the title label.
 
-        text can be either a str or a Text object. If it is a str, then
+        text can be either a str, a Text object, or a dict. If it is a str, then
         the current label's text is updated. If it is a Text object, then
-        the current label is replaced with title. If it is neither of these
-        (i.e. None) then the text is not updated.
+        the current label is replaced with title. If it is a dict, then the
+        current Text object is updated with the properties in the dict. If it is none
+        of these (i.e. None) then the text is not updated.
 
         After that is done, if font is not None, then the title's font will
         be updated. font can be a string or Font object.
@@ -109,6 +114,8 @@ class Figure(object):
                 self._title = text
             elif isinstance(text, str):
                 self._title.setProps(text=text)
+            elif isinstance(text, dict):
+                self._title.setProps(**text)
 
         if font is not None:
             if isinstance(font, str) or isinstance(font, Font):
@@ -118,7 +125,7 @@ class Figure(object):
         """
         Show the canvas, draw all plots, and draw the Figure title.
         """
-
+        self.clear()
         self._canvas.show()
 
         for p in self._plots:
@@ -137,8 +144,6 @@ class Figure(object):
         self._currentPlot = None
 
     def clear(self):
-        """
-        Wipe the canvas clean.
-        """
-        self._canvas.clear()
+        Parent.clear(self)
+        self._canvas.update()
 

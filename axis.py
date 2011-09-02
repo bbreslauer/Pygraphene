@@ -5,6 +5,7 @@ from line import Line
 from text import Text
 from font import Font
 from locator import *
+from base import Parent
 
 class Axis(Line):
     """
@@ -52,6 +53,9 @@ class Axis(Line):
         kwprops.update(aliased=True)
         Line.__init__(self, canvas, **kwprops)
 
+        # Make this the parent of the label, for when they need to be cleared from the screen
+        self.addChild(self._label)
+
         self._plot = plot
 
         #######
@@ -84,6 +88,9 @@ class Axis(Line):
         self._minorTicks.setLength(3)
         self._minorTicks._labelProps.update(visible=False)
 
+        # Make this the parent of the ticks, for when they need to be cleared from the screen
+        self.addChild(self._majorTicks)
+        self.addChild(self._minorTicks)
 
         self._slavedTo = None  # pointer to this Axis' master
         self._masterOf = []    # list of pointers to this Axis' slaves
@@ -615,7 +622,7 @@ class Axis(Line):
 
 
 
-class Ticks(object):
+class Ticks(Parent):
     """
     A Ticks class collects together all the individual Tick objects (either major
     or minor) for a given Axis. It is intended to be used as an easy way to set
@@ -654,6 +661,8 @@ class Ticks(object):
         labeler
             The default Labeleer for the ticks.
         """
+
+        Parent.__init__(self)
 
         # defaults
         self._tickMarkProps = {
@@ -713,6 +722,8 @@ class Ticks(object):
     
     def _delTicks(self):
         """Delete the ticks list."""
+        for tick in self._ticks:
+            self.delChild(tick)
         del self._ticks
 
     def isVisible(self):
@@ -814,6 +825,7 @@ class Ticks(object):
                         self._tickMarkProps,
                         self._labelProps)
             self._ticks.append(tick)
+            self.addChild(tick)
 
     def removeTicks(self):
         """
@@ -834,7 +846,7 @@ class Ticks(object):
                 tick.setTickPosition()
                 tick.draw()
 
-class Tick(object):
+class Tick(Parent):
     """
     An individual tick mark, which contains both a Line and a Text label. It
     is attached to a specific axis.
@@ -863,9 +875,14 @@ class Tick(object):
             Keyword arguments for the label Text object.
         """
 
+        Parent.__init__(self)
+
         self._tickMark = Line(canvas, **tickMarkProps)
         self._label = Text(canvas, **labelProps)
         self._axis = axis
+
+        self.addChild(self._tickMark)
+        self.addChild(self._label)
         
         # Location where the tick should be placed, in data coords
         self._dataLocation = dataLoc

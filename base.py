@@ -46,3 +46,44 @@ class PObject(object):
         else:
             return self._properties[key]
 
+class Parent(object):
+    """
+    A class that is the parent to another class.
+
+    This is used so that clear can be called on one object and it will automatically
+    remove all of its children as well.
+    """
+
+    def __init__(self):
+        self._children = set()
+
+    def children(self):
+        return self._children
+
+    def addChild(self, child):
+        self._children.add(child)
+
+    def delChild(self, child):
+        try:
+            self._children.remove(child)
+        except KeyError:
+            # Child does not exist
+            pass
+
+    def remove(self):
+        """
+        Remove this object. Default is to do nothing. Usually this will be implemented
+        in an Artist subclass, in which case Artist should be subclassed first.
+        """
+        pass
+
+    def clear(self):
+        """
+        Removes the current object, and then
+        calls clear on all children in no specific order.
+        """
+
+        self.remove()
+        for c in self.children():
+            c.clear()
+

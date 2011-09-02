@@ -229,14 +229,31 @@ class Qt4PySideCanvas(BaseCanvas):
     def clear(self):
         self._scene.clear()
 
+    def update(self):
+        self._scene.update()
+
     def remove(self, item):
         """
         Remove the given item from the canvas.
         """
-        self._scene.removeItem(item)
-        del item
 
+        try:
+            if self._scene == item.scene():
+                self._scene.removeItem(item)
+        except:
+            "Failed to remove item: " + str(item)
 
+    def items(self, sx, sy, ex, ey, ox, oy):
+        """
+        Return a list of all the items on the canvas in a rectangle between
+        (sx, sy) and (ex, ey).
+        """
+        width = ex - sx
+        height = ey - sy
+        (sx, ey) = self.figureToCanvas(sx, sy, ox, oy)
+        (ex, sy) = self.figureToCanvas(ex, ey, ox, oy)
+
+        return self._scene.items(sx, sy, width, height, Qt.IntersectsItemShape, Qt.AscendingOrder)
 
     def listFonts(self):
         """

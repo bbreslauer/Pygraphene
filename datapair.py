@@ -154,6 +154,9 @@ class DataPair(object):
                 marker.setPosition(x, y)
                 self._markers.append(marker)
 
+    def clear(self):
+        self.remove()
+
     def remove(self):
         """
         Remove all the Lines and Markers from the Figure.
