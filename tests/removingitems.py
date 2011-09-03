@@ -21,8 +21,8 @@ figbutton.clicked.connect(clearfig)
 x = [1,2,3]
 y = [1,2,9]
 
-p = plot(x, y, new=True, position=[2, 1, 1])
-p2 = plot(x, y, new=True, position=[2, 1, 2])
+p = plot(x, y, '', new=True, position=[2, 1, 1])
+p2 = plot(x, y, '', new=True, position=[2, 1, 2])
 p.setColor('#ff0000')
 
 

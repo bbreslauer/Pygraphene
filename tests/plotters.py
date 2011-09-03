@@ -12,7 +12,7 @@ from plotter import *
 x = [1,2,3,4,5,6,7]
 y = [1,2,9,5,5,9,0]
 
-p = plot(x, y)
+p = plot(x, y, 'b o')
 p.setAxisLabel('bottom', 'bottom')
 p.setAxisLabel('top', 'top')
 p.setAxisLabel('left', 'left')

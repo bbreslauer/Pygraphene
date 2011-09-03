@@ -91,8 +91,9 @@ def plot(*args, **kwargs):
     while len(args) > 0:
         x = args.pop(0)
         y = args.pop(0)
+        fs = args.pop(0)
 
-        d = DataPair(fig._canvas, x, y, plot._axes['bottom'], plot._axes['left'])
+        d = DataPair(fig._canvas, x, y, fs, plot._axes['bottom'], plot._axes['left'])
         plot.addDataPair(d)
 
     return plot

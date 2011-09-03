@@ -11,7 +11,7 @@ class DataPair(object):
     x and y axes, and maintains the lines and markers that are drawn.
     """
     
-    def __init__(self, canvas, x, y, xaxis, yaxis, linesVisible=True, markersVisible=True, lineProps={}, markerProps={}):
+    def __init__(self, canvas, x, y, formatString='', xaxis=None, yaxis=None, linesVisible=True, markersVisible=True, lineProps={}, markerProps={}):
         """
         **Constructor**
 
@@ -19,6 +19,12 @@ class DataPair(object):
             lists of something that can be plotted. Normally these are numbers, but
             they can be anything that Axis.mapDataToPlot(), min(), and max() can
             interpret.
+
+        formatString
+            a string that specifies some simple line and marker properties. An example is
+            'ro' for circle markers, and markers and lines that are red. This is applied
+            before the lineProps and markerProps.
+
         xaxis, yaxis
             the Axis instances that this data will be drawn in reference to. Usually
             xaxis is the abscissa and yaxis is the ordinate, but they can be reversed.
@@ -37,15 +43,17 @@ class DataPair(object):
 
         self._canvas = canvas
 
+        self._lineProps = {}
+        self._markerProps = {}
+        self._linesVisible = linesVisible
+        self._markersVisible = markersVisible
+
         self.setX(x)
         self.setY(y)
         self.setXAxis(xaxis)
         self.setYAxis(yaxis)
+        self.setFormatString(formatString)
 
-        self._linesVisible = linesVisible
-        self._markersVisible = markersVisible
-        self._lineProps = {}
-        self._markerProps = {}
         self.setLineProps(**lineProps)
         self.setMarkerProps(**markerProps)
 
@@ -73,14 +81,100 @@ class DataPair(object):
         else:
             self._yaxis = None
 
-    def setLinesVisible(self, v):
+    def setFormatString(self, f):
+        """
+        Set the format string.
+
+        The string should consist of three characters, clm. c specifies the
+        color, l specifies the line, and m specifies the marker.  A color
+        must be specified, but if the line or marker should be hidden, a space
+        can be used in its place. A string that is not exactly three characters
+        long will not be processed (and so the defaults will be used instead).
+        If a string has an invalid character, then the default is used.
+
+        The following characters are valid:
+
+        =========   =====
+        Character   Color
+        =========   =====
+        r           red
+        g           green
+        b           blue
+        k           black
+        w           white
+        =========   =====
+
+        =========   =====
+        Character   Line Style
+        =========   =====
+        \-          solid
+        =           dashed
+        !           dash-dot
+        :           dotted
+        =========   =====
+
+        =========   =====
+        Character   Marker
+        =========   =====
+        o           circle
+        =========   =====
+
+        """
+# TODO make the markerChar actually do something
+
+        if len(f) != 3:
+            return
+
+        colors = {'r': '#ff0000',
+                  'g': '#00ff00',
+                  'b': '#0000ff',
+                  'k': '#000000',
+                  'w': '#ffffff',
+                 }
+
+        lines = {'-': 'solid',
+                 '=': 'dash',
+                 '!': 'dashdot',
+                 ':': 'dot',
+                }
+
+        markers = {'o': 'CircleMarker',
+                  }
+
+        colorChar  = f[0]
+        lineChar   = f[1]
+        markerChar = f[2]
+
+        lineProps = {}
+        markerProps = {}
+
+        if lineChar == ' ':
+            self.setLinesVisible(False)
+
+        if markerChar == ' ':
+            self.setMarkersVisible(False)
+
+        if colorChar in colors.keys():
+            lineProps['color'] = colors[colorChar]
+            markerProps['color'] = colors[colorChar]
+            markerProps['fillcolor'] = colors[colorChar]
+
+        if lineChar in lines.keys():
+            lineProps['style'] = lines[lineChar]
+
+        self.setLineProps(**lineProps)
+        self.setMarkerProps(**markerProps)
+
+
+    def setLinesVisible(self, v=True):
         """Set whether the lines are visible universally."""
         if isinstance(v, bool):
             self._linesVisible = v
 
-    def setMarkersVisible(self, v):
+    def setMarkersVisible(self, v=True):
         """Set whether the markers are visible universally."""
         if isinstance(v, bool):
+            print v
             self._markersVisible = v
 
     def setLineProps(self, **kwprops):
@@ -147,6 +241,7 @@ class DataPair(object):
                 self._lineSegments.append(line)
 
         # Make the markers
+        print self.markersVisible()
         if self.markersVisible():
             for x, y in zip(xPlotCoords, yPlotCoords):
                 marker = markerClass(self._canvas, **self._markerProps)
