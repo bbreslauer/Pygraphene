@@ -68,6 +68,7 @@ class CartesianPlot(Plot):
         plot, but in the future it may take x and y arguments.
         """
 
+        self._title.setOrigin(*self.origin())
         self._title.setPosition(self._plotWidth / 2, self._plotHeight - 10)
 
     def setPlotLocation(self, nRows, nCols, num):
@@ -76,18 +77,23 @@ class CartesianPlot(Plot):
         should be on the figure, and which plot this is, and then calculate
         the appropriate region.
         """
-# TODO this logic is wrong
-        row = num / nCols - 1    # -1 so that it is zero-indexed
-        col = num % nCols
 
-        #print row
-        #print col
+        
+        num -= 1  # need to zero-index the plot number so that div and mod work properly
+        row = num / nCols
+        col = num % nCols
+        
+        # We are setting the plot region using figure coordinates, which are from
+        # the bottom to the top. But plot #1 should be at the top-left corner, so
+        # to convert to the top, we invert the row value. The -1 is used because
+        # we still need to specify the bottom-left corner of the plot.
+        invertRow = nRows - row - 1
 
         plotWidth = float(self._figure.width()) / float(nCols)
         plotHeight = float(self._figure.height()) / float(nRows)
 
         x = float(col) * plotWidth
-        y = float(row) * plotHeight
+        y = float(invertRow) * plotHeight
 
         self.setPlotRegion(x, y, plotWidth, plotHeight)
 

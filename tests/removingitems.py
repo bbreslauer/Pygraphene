@@ -26,6 +26,9 @@ p2 = plot(x, y, new=True, position=[2, 1, 2])
 p.setColor('#ff0000')
 
 
+p.setTitle('original')
+p2.setTitle('second plot')
+
 
 def clearp():
     p.clear()
