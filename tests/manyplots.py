@@ -10,10 +10,6 @@ from plotter import *
 x = [1,2,3]
 y = [1,2,9]
 
-#p1 = plot(x, y, new=True, position=[3, 1, 1])
-#p2 = plot(x, y, new=True, position=[3, 1, 2])
-#p3 = plot(x, y, new=True, position=[3, 1, 3])
-
 
 
 p1 = plot(new=True, position=[3, 5, 1])
