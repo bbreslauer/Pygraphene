@@ -59,6 +59,9 @@ class CartesianPlot(Plot):
 
         self.setPadding()
 
+    def title(self):
+        return self._title
+
     def setTitlePosition(self):
         """
         Set the position for the title. Currently, this is centered at the top of the
@@ -237,6 +240,18 @@ class CartesianPlot(Plot):
             self._datapairs.append(datapair)
             self.addChild(datapair)
 
+    def removeDataPair(self, datapair):
+        """
+        Remove the specified DataPair from this plot. Returns True if it was removed,
+        False if it was not or the specified DataPair did not exist in the Plot.
+        """
+
+        try:
+            self._datapairs.remove(datapair)
+            return True
+        except:
+            return False
+
     def setTitle(self, text=None, font=None):
         """
         Set the title label.
@@ -297,6 +312,7 @@ class CartesianPlot(Plot):
         self._canvas.update()
 
     def _draw(self):
+        self.clear()
         item = self.drawBackground()
         self.drawAxes()
         self.drawData()
@@ -339,7 +355,7 @@ class CartesianPlot(Plot):
         """
         Draw all the data attached to this plot.
         """
-
+        
         for datapair in self._datapairs:
             datapair.remove()
             datapair.makeLinesAndMarkers()

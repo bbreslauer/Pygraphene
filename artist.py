@@ -62,6 +62,12 @@ class Artist(PObject, Parent):
         self.setOrigin()
         self.setPosition()
 
+    def canvas(self):
+        """
+        Return the canvas object.
+        """
+        return self._canvas
+
     def origin(self):
         """
         Return the origin of this artist, in figure coordinates.
@@ -128,6 +134,7 @@ class Artist(PObject, Parent):
         self.remove()
         if self.isVisible():
             self._item = self._draw(*args, **kwargs)
+            self._canvas.update()
 
     def _draw(self, *args, **kwargs):
         """

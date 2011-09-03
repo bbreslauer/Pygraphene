@@ -44,6 +44,7 @@ p._datapairs[1].setMarkerProps(color='black', width=5, style='dot', fillcolor='g
 
 p._datapairs[2].setLineProps(color='blue', width=2)
 p._datapairs[2].setLineProps(width=5, style='dashdot', cap='round')
+#p.removeDataPair(p._datapairs[2])
 
 p.draw()
 

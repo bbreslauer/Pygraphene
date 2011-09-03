@@ -93,6 +93,9 @@ class CircleMarker(Marker):
 
         if isinstance(radius, int):
             self._radius = radius
+        if isinstance(radius, float):
+            self._radius = int(radius)
+
 
     def _draw(self, *args, **kwargs):
         return self._canvas.drawCircle(self._x,

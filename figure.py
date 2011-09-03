@@ -95,6 +95,9 @@ class Figure(Parent):
         """Return the height of the Figure."""
         return self._canvas._scene.height()
 
+    def title(self):
+        return self._title
+
     def setTitle(self, text=None, font=None):
         """
         Set the title label.
