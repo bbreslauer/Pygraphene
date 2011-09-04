@@ -82,6 +82,98 @@ class LinearLocator(Locator):
         num = kwargs.pop('num', None)
         self.setNum(num)
 
+class FixedLocator(Locator):
+    """
+    Define tick locations with a list of values that are passed in.
+    """
+
+    def __init__(self, locations=[], nTicks=None):
+        """
+        **Constructor**
+
+        locations
+            The locations that ticks should be found at. Must be a list, but
+            not necessarily of numbers.
+        nTicks
+            How many ticks should be provided. Must be either None or an
+            integer. If nTicks is None, then
+            all locations will be provided. If nTicks < 2, then 2 location
+            will be provided.
+        """
+
+        Locator.__init__(self)
+
+        self._locations = []
+        self.setLocations(locations)
+        self.setNTicks(nTicks)
+
+    def setLocations(self, locations):
+        """
+        Set the locations for the ticks. The passed locations will be
+        sorted by number.
+        """
+
+        if isinstance(locations, list) or isinstance(locations, tuple):
+            self._locations = locations
+
+    def setNTicks(self, nTicks):
+        """
+        Set nTicks.
+        """
+
+        if nTicks is None:
+            self._nTicks = None
+        elif isinstance(nTicks, int):
+            if nTicks < 2:
+                self._nTicks = 2
+            else:
+                self._nTicks = nTicks
+
+    def locations(self, start, end, axisType='major'):
+        """
+        Return the list of locations, subsampled if nTicks is not None.
+
+        Disregards the start and end parameters.
+        """
+# TODO should subsample such that the min. value is always displayed
+# TODO have not tested this with minor axes
+
+        # Do not subsample
+        if self._nTicks is None or self._nTicks >= len(self._locations):
+            return self._locations
+
+        # Subsample. Always include the two end values in the locations list
+        if self._nTicks < 2:
+            self._nTicks = 2
+        n = self._nTicks - 1
+
+        locs = []
+
+        subsamplingDistance = float(len(self._locations) - 1) / float(n)
+
+        for i in range(n):
+            locs.append(self._locations[int(round(i * subsamplingDistance))])
+
+        locs.append(self._locations[-1])
+
+        return locs
+
+    def setValues(self, **kwargs):
+        """
+        Accepted keywords:
+
+        * locations
+        * nTicks
+
+        """
+
+        keys = kwargs.keys()
+
+        if 'locations' in keys:
+            self.setLocations(kwargs['locations'])
+        if 'nTicks' in keys:
+            self.setNTicks(kwargs['nTicks'])
+
 
 # TODO it doesn't seem like labeler needs to be instantiated. maybe it does when given
 # a list of values to print out, instead of using the locations given to it
