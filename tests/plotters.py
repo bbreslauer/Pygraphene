@@ -20,6 +20,8 @@ p.setAxisLabel('right', 'right')
 
 p.setColor('#00ff00')
 
+p.axis('top').ticks('major').setVisible(False)
+
 #p._datapairs[0].setMarkersVisible(True)
 #p._datapairs[0].setLinesVisible(False)
 

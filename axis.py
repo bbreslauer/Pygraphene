@@ -40,7 +40,9 @@ class Axis(Line):
     will share the same data range. A user can only change the data range on the
     master Axis, not the slave (nothing will happen if the user tries to modify the
     slave's data range). An Axis can be either a slave, a master, or neither; it
-    cannot be both a slave and a master.
+    cannot be both a slave and a master. This is for two reasons: 1) to simplify what
+    the user needs to worry about, and 2) more importantly, to prevent infinite loops
+    if Axis objects are slaved such that Axis1->Axis2->Axis1 occur.
     """
 
     def __init__(self, canvas, plot, orientation='horizontal', inside='up', **kwprops):
@@ -165,7 +167,7 @@ class Axis(Line):
         Slave this Axis to other Axis.
 
         Before slaving this Axis, the method will ensure that this Axis is not
-        current the master for any other Axis. If it is, the slaving will fail
+        currently the master for any other Axis. If it is, the slaving will fail
         and this method will return false.
 
         In addition, if this Axis is currently slaved, it will unslave itself
@@ -175,8 +177,12 @@ class Axis(Line):
         """
 
         if isinstance(other, Axis):
+            # This Axis is a master, so do not slave
             if len(self._masterOf) > 0:
-                # This Axis is a master, so do not slave
+                return False
+
+            # other Axis is a slave, so do not slave
+            if other._slavedTo is not None:
                 return False
 
             # Keep the previous master around in case we need to revert
@@ -197,6 +203,7 @@ class Axis(Line):
                 oldMaster.addSlave(self)
 
             return ret
+        return False
 
     def addSlave(self, slave):
         """
@@ -377,17 +384,34 @@ class Axis(Line):
             for axis in self._masterOf:
                 axis.setDataRange(start, end, True, autoscaled)
 
-    def setTicksFont(self, font):
-        """Helper method to set the font for both major and minor Ticks."""
+    def setTicksFont(self, font, applyToSlaves=False):
+        """
+        Helper method to set the font for both major and minor Ticks.
+
+        If applyToSlaves is True, then the Locator instance will be applied to all
+        slaved Axis objects.
+        """
+
         self._majorTicks.setFont(font)
         self._minorTicks.setFont(font)
+
+        if applyToSlaves:
+            for axis in self._masterOf:
+                # applyToSlaves is False because any Axis that is a slave
+                # cannot be a master to other slaves.
+                axis.setTicksFont(font, False)
 
     def setLabelFont(self, font):
         """
         Set the Axis label's font.
 
-        font is any string or a Font object.
+        font is any string, a Font object, or a dictionary.
+        If a string, the font family is defined by the string.
+        If a Font object, the object is passed directly along.
+        If a dictionary, the existing Font object is updated with
+        the dictionary's values.
         """
+        # TODO actually implement the dictionary handling
         self._label.setProps(font=font)
 
     def setLabelText(self, text):
@@ -537,7 +561,7 @@ class Axis(Line):
 
         self.setDataRange(start, end, autoscaled=True)
 
-    def setTicksLocator(self, which='major', locator=None, **kwprops):
+    def setTicksLocator(self, which='major', locator=None, applyToSlaves=False, **kwprops):
         """
         Set the Locator instance for the Ticks specified by which.
 
@@ -549,6 +573,9 @@ class Axis(Line):
         If locator is None (the default), then the kwprops are applied to the
         current Ticks' Locator.
 
+        If applyToSlaves is True, then the Locator instance will be applied to all
+        slaved Axis objects.
+
         The kwprops are passed to the Locator instance that is used.
         """
 
@@ -557,7 +584,13 @@ class Axis(Line):
         else:
             self._majorTicks.setLocator(locator, **kwprops)
 
-    def setTicksLabeler(self, which='major', labeler=None, **kwprops):
+        if applyToSlaves:
+            for axis in self._masterOf:
+                # applyToSlaves is False because any Axis that is a slave
+                # cannot be a master to other slaves.
+                axis.setTicksLocator(which, locator, False, **kwprops)
+
+    def setTicksLabeler(self, which='major', labeler=None, applyToSlaves=False, **kwprops):
         """
         Set the Labeler instance for the Ticks specified by which.
 
@@ -569,6 +602,9 @@ class Axis(Line):
         If labeler is None (the default), then the kwprops are applied to the
         current Ticks' Labeler.
 
+        If applyToSlaves is True, then the Locator instance will be applied to all
+        slaved Axis objects.
+
         The kwprops are passed to the Labeler instance that is used.
         """
         
@@ -576,6 +612,12 @@ class Axis(Line):
             self._minorTicks.setLabeler(labeler, **kwprops)
         else:
             self._majorTicks.setLabeler(labeler, **kwprops)
+
+        if applyToSlaves:
+            for axis in self._masterOf:
+                # applyToSlaves is False because any Axis that is a slave
+                # cannot be a master to other slaves.
+                axis.setTicksLabeler(which, labeler, False, **kwprops)
 
     def setAxisPosition(self):
         """
@@ -598,6 +640,17 @@ class Axis(Line):
         """Helper method to show all the Ticks."""
         self._majorTicks.setVisible(True)
         self._minorTicks.setVisible(True)
+
+    def ticks(self, which='major'):
+        """
+        Return the Ticks object corresponding to which.
+
+        which is a string, and can be either major or minor.
+        """
+        if which == 'major':
+            return self._majorTicks
+        elif which == 'minor':
+            return self._minorTicks
 
     def drawTicks(self):
         """

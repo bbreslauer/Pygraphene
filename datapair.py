@@ -174,7 +174,6 @@ class DataPair(object):
     def setMarkersVisible(self, v=True):
         """Set whether the markers are visible universally."""
         if isinstance(v, bool):
-            print v
             self._markersVisible = v
 
     def setLineProps(self, **kwprops):
@@ -241,7 +240,6 @@ class DataPair(object):
                 self._lineSegments.append(line)
 
         # Make the markers
-        print self.markersVisible()
         if self.markersVisible():
             for x, y in zip(xPlotCoords, yPlotCoords):
                 marker = markerClass(self._canvas, **self._markerProps)
