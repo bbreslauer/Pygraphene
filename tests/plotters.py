@@ -9,6 +9,8 @@ from PySide.QtGui import *
 
 from plotter import *
 
+from font import Font
+
 x = [1,2,3,4,5,6,7]
 y = [1,2,9,5,5,9,0]
 
@@ -21,6 +23,10 @@ p.setAxisLabel('right', 'right')
 p.setColor('#00ff00')
 
 p.axis('top').ticks('major').setVisible(False)
+
+p.axis('top').setLabelFont('Comic Sans Ms')
+p.axis('left').setLabelFont({'family': 'Comic Sans Ms', 'weight': 'bold'})
+p.axis('right').setLabelFont(Font(weight='bold'))
 
 #p._datapairs[0].setMarkersVisible(True)
 #p._datapairs[0].setLinesVisible(False)

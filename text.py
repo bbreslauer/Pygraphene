@@ -22,8 +22,9 @@ class Text(Artist):
     Property                Possible Values     Description
     ======================  =================   =======
     text                    str ('')            The text that will be displayed.
-    font                    | str ('Times')     The font that will be used. Either a Font object or the name of a font family.
-                            | Font
+    font                    | str ('Times')     The font that will be used. Either a Font object the name of a font family, or
+                            | Font              a dictionary of Font properties.
+                            | dict
     horizontalalignment     | 'center'          Define where the horizontal anchor point is located in reference to the text.
                             | 'right'
                             | 'left'
@@ -55,6 +56,30 @@ class Text(Artist):
         """Convenience method to set the text of this label."""
         if isinstance(text, str):
             self.setProps(text=text)
+
+    def setProps(self, props={}, **kwprops):
+        """
+        If font is given as a string or a dict, convert it into a Font object.
+
+        Then call Artist.setProps.
+        """
+
+        # font might be defined in both props and kwprops, so do all of this
+        # twice
+        for d in (props, kwprops):
+            if 'font' in d.keys():
+                currentFont = Font()
+                if 'font' in self.props().keys():
+                    currentFont = self.props('font')
+
+                if isinstance(d['font'], str):
+                    currentFont.setFamily(d['font'])
+                    d['font'] = currentFont
+                elif isinstance(d['font'], dict):
+                    currentFont.setProps(d['font'])
+                    d['font'] = currentFont
+
+        Artist.setProps(self, props, **kwprops)
 
     def _draw(self, *args, **kwargs):
         props = self.props()

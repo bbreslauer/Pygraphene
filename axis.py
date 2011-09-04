@@ -411,8 +411,8 @@ class Axis(Line):
         If a dictionary, the existing Font object is updated with
         the dictionary's values.
         """
-        # TODO actually implement the dictionary handling
-        self._label.setProps(font=font)
+        if isinstance(font, str) or isinstance(font, Font) or isinstance(font, dict):
+            self._label.setProps(font=font)
 
     def setLabelText(self, text):
         """
@@ -785,7 +785,7 @@ class Ticks(Parent):
 
     def setFont(self, font):
         """Set the font for the tick labels."""
-        if isinstance(font, str) or isinstance(font, Font):
+        if isinstance(font, str) or isinstance(font, Font) or isinstance(font, dict):
             self._labelProps.update(font=font)
 
     def setVisible(self, v=True):
