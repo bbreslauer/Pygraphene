@@ -84,7 +84,7 @@ class Axis(Line):
         self._autoscaled = True  # holds whether this Axis is currently being autoscaled to the data
 
         # Setup the major and minor ticks
-        self._majorTicks = Ticks(self._canvas, self, 'major', labeler=StringLabeler())
+        self._majorTicks = Ticks(self._canvas, self, 'major', labeler=FormatLabeler())
         self._minorTicks = Ticks(self._canvas, self, 'minor', labeler=NullLabeler())
         self._minorTicks.setLocator(num=3)
         self._minorTicks.setLength(3)
@@ -821,7 +821,7 @@ class Ticks(Parent):
             self._locator = locator
         self._locator.setValues(**kwargs)
 
-    def setLabeler(self, labeler, **kwargs):
+    def setLabeler(self, labeler=None, **kwargs):
         """
         Set the Labeler instance for these Ticks, and updates it
         with the passed kwargs.
@@ -868,6 +868,8 @@ class Ticks(Parent):
 
         # Compute the labels for the ticks
         labels = self._labeler.labels(locations)
+
+        #print labels
 
         # Create the ticks
         for loc, lab in zip(locations, labels):

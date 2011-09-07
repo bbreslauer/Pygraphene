@@ -299,9 +299,65 @@ class NullLabeler(Labeler):
 
 class StringLabeler(Labeler):
     """
-    Labels that are the same as the location value.
-    """
-    def labels(self, locations):
-        return map(str, locations)
+    Labels that are manually specified by the user.
 
+    If the user specifies fewer labels than the number of locations that
+    are requested, then empty strings are added. If there are too many
+    labels, then the label list is truncated.
+    """
+
+    def __init__(self, labels=[]):
+        self._labels = []
+        self.setLabels(labels)
+
+    def setLabels(self, labels):
+        if isinstance(labels, list) or isinstance(labels, tuple):
+            self._labels = list(labels)
+
+    def labels(self, locations):
+        locsLength = len(locations)
+        labelsLength = len(self._labels)
+
+        strings = []
+        if locsLength == labelsLength:
+            strings.extend(self._labels)
+        elif locsLength > labelsLength:
+            strings.extend(self._labels)
+            strings.extend([''] * (locsLength - labelsLength))
+        elif locsLength < labelsLength:
+            strings.extend(self._labels[:locsLength])
+
+        return map(str, strings)
+
+class FormatLabeler(Labeler):
+    """
+    Labels that are the same as the location value.
+
+    Optionally, a format string can be specified. This should follow the
+    python format string specifications. Defaults to None, in which case
+    the locations are just converted directly to strings.
+    """
+
+    def __init__(self, fmt=None):
+        self._fmt = None
+        self.setFormatter(fmt)
+
+    def setFormatter(self, fmt):
+        if isinstance(fmt, str) or fmt is None:
+            self._fmt = fmt
+
+    def labels(self, locations):
+        strings = map(str, locations)
+        if self._fmt is not None:
+            strings = map(lambda loc: self._fmt % loc, locations)
+
+        return strings
+
+class NullLabeler(Labeler):
+    """
+    Labels that are blank strings.
+    """
+
+    def labels(self, locations):
+        return [''] * len(locations)
 
