@@ -174,6 +174,62 @@ class FixedLocator(Locator):
         if 'nTicks' in keys:
             self.setNTicks(kwargs['nTicks'])
 
+class SpacedLocator(Locator):
+    """
+    Define tick locations by spacing ticks by 'base'.
+    """
+
+    def __init__(self, base=1.0):
+        """
+        **Constructor**
+
+        base
+            The spacing in the data coordinates between ticks.
+        """
+
+        Locator.__init__(self)
+
+        # in case someone passes in a non-num, we will still have a default
+        self._base = 1.0
+        self.setBase(base)
+
+    def setBase(self, base):
+        """
+        Set the base. base must be a positive int or float.
+        """
+        if isinstance(base, int) or isinstance(base, float):
+            if base > 0:
+                self._base = base
+
+    def locations(self, start, end, axisType='major'):
+        """
+        Return a list of data coordinates between start and end,
+        spaced by base but always including the start and end values.
+        """
+
+        base = self._base
+        locs = [start]
+        loc = start
+
+        while loc < end:
+            locs.append(loc)
+            loc += base
+
+        locs.append(end)
+
+        return locs
+
+
+    def setValues(self, **kwargs):
+        """
+        Accepted keywords:
+
+        * base
+
+        """
+        base = kwargs.pop('base', None)
+        self.setBase(base)
+
 
 # TODO it doesn't seem like labeler needs to be instantiated. maybe it does when given
 # a list of values to print out, instead of using the locations given to it
