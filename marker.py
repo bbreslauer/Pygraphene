@@ -11,6 +11,9 @@ class Marker(Artist):
     The shape of the marker is defined by the subclass that is used.
     All markers have an edge line, a size, and a fill color.
 
+    The size of the Marker should be an integer. This is a generalized
+    diameter-type size, in pixels.
+
     ======================  =================   =======
     Property                Possible Values     Description
     ======================  =================   =======
@@ -29,11 +32,22 @@ class Marker(Artist):
 
     """
 
-    def __init__(self, canvas, **kwprops):
+    def __init__(self, canvas, size=5, **kwprops):
+        # A SyntaxError or TypeError will be received if the user tries to
+        # supply the size as an arg AND a kwarg. So we don't have to worry
+        # about a size property being set in Marker.__init__.
+
         Artist.__init__(self, canvas, **kwprops)
 
         self.setOrigin()
         self.setPosition()
+        self.setSize(size)
+
+    def setSize(self, size):
+        """
+        Set the size of the marker.
+        """
+        self._size = size
 
     def setFillColor(self, color):
         """
@@ -59,49 +73,64 @@ class Marker(Artist):
         """
         self.setProps(cap=str(cap))
 
-class CircleMarker(Marker):
-    """
-    A circle marker.
-
-    Radius must be an integer.
-    """
-
-    def __init__(self, canvas, radius=3, **kwprops):
-        # A SyntaxError or TypeError will be received if the user tries to
-        # supply the radius as an arg and a kwarg. So we don't have to worry
-        # about a radius property being set in Marker.__init__.
-
-        self.setRadius(radius)
-        Marker.__init__(self, canvas, **kwprops)
-
     def setProps(self, props={}, **kwprops):
         """
-        Remove 'radius' from props and/or kwprops. Then set the radius, and
+        Remove 'size' from props and/or kwprops. Then set the size, and
         then set the kwprops. props takes precedence over kwprops.
         """
 
-        radius = kwprops.pop('radius', None)
-        radius = props.pop('radius', radius)
-        self.setRadius(radius)
+        size = kwprops.pop('size', None)
+        size = props.pop('size', size)
+        self.setSize(size)
 
-        Marker.setProps(self, props, **kwprops)
+        Artist.setProps(self, props, **kwprops)
 
-    def setRadius(self, radius):
-        """
-        Set radius of the circle. The radius must be an integer.
-        """
+class CircleMarker(Marker):
+    """
+    A circle marker.
+    """
 
-        if isinstance(radius, int):
-            self._radius = radius
-        if isinstance(radius, float):
-            self._radius = int(radius)
-
+    def __init__(self, canvas, size=6, **kwprops):
+        Marker.__init__(self, canvas, size, **kwprops)
 
     def _draw(self, *args, **kwargs):
         return self._canvas.drawCircle(self._x,
-                                        self._y,
-                                        self._radius,
-                                        self._ox,
-                                        self._oy,
-                                        **self.props())
+                                       self._y,
+                                       self._size / 2,
+                                       self._ox,
+                                       self._oy,
+                                       **self.props())
+
+class SquareMarker(Marker):
+    """
+    A square marker.
+    """
+
+    def __init__(self, canvas, size=5, **kwprops):
+        Marker.__init__(self, canvas, size, **kwprops)
+
+    def _draw(self, *args, **kwargs):
+        # Figure out how much to shift the start and end points, so that
+        # the full size is maintained.
+        lowerhalfsize = self._size / 2 + 1
+        upperhalfsize = self._size - lowerhalfsize
+
+        sx = self._x - lowerhalfsize
+        sy = self._y - lowerhalfsize
+        ex = self._x + upperhalfsize
+        ey = self._y + upperhalfsize
+
+        return self._canvas.drawRect(sx,
+                                     sy,
+                                     ex,
+                                     ey,
+                                     self._ox,
+                                     self._oy,
+                                     **self.props())
+
+
+
+
+
+
 

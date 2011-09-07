@@ -340,7 +340,7 @@ class CartesianPlot(Plot):
         ox, oy = self.axis('bottom').origin()
 
         # origin of the plot is the position of the plot in figure coordinates
-        return self._canvas.drawRect(sx, sy, ex, ey, ox, oy, lineProps={'color': self.color()}, fillProps={'color': self.color()})
+        return self._canvas.drawRect(sx, sy, ex, ey, ox, oy, **{'color': self.color(), 'fillcolor': self.color()})
 
 
     def drawAxes(self):

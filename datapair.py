@@ -47,6 +47,7 @@ class DataPair(object):
         self._markerProps = {}
         self._linesVisible = linesVisible
         self._markersVisible = markersVisible
+        self._markerClass = CircleMarker
 
         self.setX(x)
         self.setY(y)
@@ -117,10 +118,10 @@ class DataPair(object):
         Character   Marker
         =========   =====
         o           circle
+        s           square
         =========   =====
 
         """
-# TODO make the markerChar actually do something
 
         if len(f) != 3:
             return
@@ -137,9 +138,6 @@ class DataPair(object):
                  '!': 'dashdot',
                  ':': 'dot',
                 }
-
-        markers = {'o': 'CircleMarker',
-                  }
 
         colorChar  = f[0]
         lineChar   = f[1]
@@ -161,10 +159,25 @@ class DataPair(object):
 
         if lineChar in lines.keys():
             lineProps['style'] = lines[lineChar]
-
+        
+        self.setMarkerType(markerChar)
         self.setLineProps(**lineProps)
         self.setMarkerProps(**markerProps)
 
+    def setMarkerType(self, m='o'):
+        """
+        Set the marker type. This accepts any single character
+        string accepted as a marker for the format string.
+        """
+        
+        markers = {'o': CircleMarker,
+                   's': SquareMarker,
+                  }
+
+        if m in markers.keys():
+            self._markerClass = markers[m]
+        else:
+            self._markerClass = None
 
     def setLinesVisible(self, v=True):
         """Set whether the lines are visible universally."""
@@ -232,9 +245,6 @@ class DataPair(object):
         self._lineSegments = []
         self._markers = []
 
-        # Default marker type
-        markerClass = CircleMarker
-
         # Make the line segments
         if self.linesVisible():
             for i in range(min(len(xPlotCoords), len(yPlotCoords)) - 1):
@@ -248,9 +258,9 @@ class DataPair(object):
                 self._lineSegments.append(line)
 
         # Make the markers
-        if self.markersVisible():
+        if self.markersVisible() and self._markerClass is not None:
             for x, y in zip(xPlotCoords, yPlotCoords):
-                marker = markerClass(self._canvas, **self._markerProps)
+                marker = self._markerClass(self._canvas, **self._markerProps)
                 marker.setOrigin(ox, oy)
                 marker.setPosition(x, y)
                 self._markers.append(marker)

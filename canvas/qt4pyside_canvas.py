@@ -112,13 +112,10 @@ class Qt4PySideCanvas(BaseCanvas):
 
 
 
-    def drawRect(self, sx, sy, ex, ey, ox=0, oy=0, lineProps={}, fillProps={}, **kwargs):
+    def drawRect(self, sx, sy, ex, ey, ox=0, oy=0, **kwargs):
         """
         Draw a rectangle with corners (sx, sy) and (ex, ey).
         The local origin is at (ox, oy).
-
-        lineProps are valid properties for makePen
-        fillProps are valid properties for makeBrush
 
         """
 
@@ -126,8 +123,8 @@ class Qt4PySideCanvas(BaseCanvas):
         (ex, ey) = self.figureToCanvas(ex, ey, ox, oy)
 
         rect = AliasedGraphicsRectItem(sx, sy, ex-sx, ey-sy)
-        rect.setPen(makePen(**lineProps))
-        rect.setBrush(makeBrush(**fillProps))
+        rect.setPen(makePen(**kwargs))
+        rect.setBrush(makeBrush(**kwargs))
 
         self._scene.addItem(rect)
         return rect
@@ -143,15 +140,15 @@ class Qt4PySideCanvas(BaseCanvas):
         to the top-left corner to display in Qt4.
         """
 
+        r = int(round(r))
+
         # Shift the center of the circle to the corner, which is used by QT.
         cx -= r
         cy += r
 
         (cx, cy) = self.figureToCanvas(cx, cy, ox, oy)
 
-        fillcolor = kwargs.pop('fillcolor', '#000000')
-
-        return self._scene.addEllipse(cx, cy, 2*r, 2*r, makePen(**kwargs), QBrush(fillcolor, Qt.SolidPattern))
+        return self._scene.addEllipse(cx, cy, 2*r, 2*r, makePen(**kwargs), makeBrush(**kwargs))
 
 
 
@@ -286,6 +283,7 @@ def makePen(**kwargs):
     cap
     join
     """
+    # The properties use for makePen must be distinct from makeBrush.
     
     styles = {  
                 'solid': Qt.SolidLine,
@@ -328,8 +326,10 @@ def makeBrush(**kwargs):
     """
     Create a QBrush from the given properties. Valid properties are:
 
-    color
+    fillcolor
+    fillstyle
     """
+    # The properties use for makeBrush must be distinct from makePen.
 
     styles = {
             'none': Qt.NoBrush,
@@ -339,10 +339,10 @@ def makeBrush(**kwargs):
     brush = QBrush(Qt.SolidPattern)
 
     keys = kwargs.keys()
-    if 'color' in keys:
-        brush.setColor(kwargs['color'])
-    if 'style' in keys:
-        brush.setStyle(styles[kwargs['style']])
+    if 'fillcolor' in keys:
+        brush.setColor(kwargs['fillcolor'])
+    if 'fillstyle' in keys:
+        brush.setStyle(styles[kwargs['fillstyle']])
 
     return brush
 

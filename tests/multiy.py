@@ -15,7 +15,7 @@ y1 = [1,2,9,5,8,1,5]
 y2 = [1, 15, 90, 89, 90, 30, 34, 60, 0]
 y3 = [0, 0.01, 0.2, 0.6]
 
-p = plot(x, y1, '', x, y2, '', x, y3, '')
+p = plot(x, y1, 'k-s', x, y2, '', x, y3, '')
 
 p.setRightPadding(100)
 
@@ -40,9 +40,11 @@ p._axes['y3'].autoscale()
 p._axes['right'].setColor('red')
 p._axes['right'].setTicksFont(Font('Courier', size=16, style='italic', weight='bold'))
 p._datapairs[1].setLineProps(color='red')
-p._datapairs[1].setMarkerProps(color='black', width=5, style='dot', fillcolor='green', radius=10)
+p._datapairs[1].setMarkerProps(color='black', width=5, style='dot', fillcolor='green', size=20)
 
 p._datapairs[2].setLineProps(color='blue', width=2)
+p._datapairs[2].setMarkerType('s')
+p._datapairs[2].setMarkerProps(color='red', fillcolor='red', size=5)
 p._datapairs[2].setLineProps(width=5, style='dashdot', cap='round')
 #p.removeDataPair(p._datapairs[2])
 
