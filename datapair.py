@@ -167,11 +167,18 @@ class DataPair(object):
     def setMarkerType(self, m='o'):
         """
         Set the marker type. This accepts any single character
-        string accepted as a marker for the format string.
+        string accepted as a marker for the format string, or
+        the following strings:
+
+        none
+        circle
+        square
         """
         
         markers = {'o': CircleMarker,
+                   'circle': CircleMarker,
                    's': SquareMarker,
+                   'square': SquareMarker,
                   }
 
         if m in markers.keys():
@@ -194,7 +201,17 @@ class DataPair(object):
         self._lineProps.update(kwprops)
 
     def setMarkerProps(self, **kwprops):
-        """Set the marker arguments."""
+        """
+        Set the marker arguments.
+
+        In addition to accepting marker arguments, this also accepts
+        a keyword 'marker' which, if specified, will call setMarkerType
+        with the value.
+        """
+
+        if 'marker' in kwprops.keys():
+            self.setMarkerType(kwprops.pop('marker'))
+
         self._markerProps.update(kwprops)
 
     def linesVisible(self):

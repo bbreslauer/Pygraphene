@@ -110,15 +110,11 @@ class SquareMarker(Marker):
         Marker.__init__(self, canvas, size, **kwprops)
 
     def _draw(self, *args, **kwargs):
-        # Figure out how much to shift the start and end points, so that
-        # the full size is maintained.
-        lowerhalfsize = self._size / 2 + 1
-        upperhalfsize = self._size - lowerhalfsize
-
-        sx = self._x - lowerhalfsize
-        sy = self._y - lowerhalfsize
-        ex = self._x + upperhalfsize
-        ey = self._y + upperhalfsize
+        # These seem to be the appropriate offsets required
+        sx = self._x - (self._size / 2) - 2
+        sy = self._y - (self._size / 2)
+        ex = self._x + (self._size / 2) - 1
+        ey = self._y + (self._size / 2) + 1
 
         return self._canvas.drawRect(sx,
                                      sy,
