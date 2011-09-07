@@ -176,22 +176,29 @@ class FixedLocator(Locator):
 
 class SpacedLocator(Locator):
     """
-    Define tick locations by spacing ticks by 'base'.
+    Define tick locations by spacing ticks by 'base'. If 'anchor' is specified,
+    then ticks will be spaced starting from there instead of from the starting
+    edge of the axis.
     """
 
-    def __init__(self, base=1.0):
+    def __init__(self, base=1.0, anchor=None):
         """
         **Constructor**
 
         base
             The spacing in the data coordinates between ticks.
+
+        anchor
+            Where to anchor the ticks. Can be a number or None.
         """
 
         Locator.__init__(self)
 
         # in case someone passes in a non-num, we will still have a default
         self._base = 1.0
+        self._anchor = None
         self.setBase(base)
+        self.setAnchor(anchor)
 
     def setBase(self, base):
         """
@@ -201,34 +208,62 @@ class SpacedLocator(Locator):
             if base > 0:
                 self._base = base
 
+    def setAnchor(self, anchor):
+        """
+        Set the anchor. anchor must be an int, float, or None.
+        """
+        if isinstance(anchor, int) or isinstance(anchor, float) or anchor is None:
+            self._anchor = anchor
+
     def locations(self, start, end, axisType='major'):
         """
         Return a list of data coordinates between start and end,
-        spaced by base but always including the start and end values.
+        spaced by base.
+
+        If anchor is specified, then the ticks are spaced starting at
+        the anchor location. Otherwise, they start at 'start' and will
+        include the 'end' value, regardless of whether it is at
+        start + n * base.
         """
 
         base = self._base
-        locs = [start]
-        loc = start
+        anchor = self._anchor
+        locs = []
+        if anchor is None:
+            loc = start
 
-        while loc < end:
-            locs.append(loc)
-            loc += base
+            while loc < end:
+                locs.append(loc)
+                loc += base
 
-        locs.append(end)
+            locs.append(end)
+
+        # use anchor
+        else:
+            loc = anchor
+            while loc > start:
+                locs.insert(0, loc)
+                loc -= base
+
+            loc = anchor + base
+            while loc < end:
+                locs.append(loc)
+                loc += base
 
         return locs
-
 
     def setValues(self, **kwargs):
         """
         Accepted keywords:
 
         * base
+        * anchor
 
         """
         base = kwargs.pop('base', None)
+        anchor = kwargs.pop('anchor', '')  # None is a valid value, so need '' for nothing to happen
         self.setBase(base)
+        self.setAnchor(anchor)
 
 
 # TODO it doesn't seem like labeler needs to be instantiated. maybe it does when given
