@@ -4,7 +4,7 @@ from artist import Artist
 from line import Line
 from text import Text
 from font import Font
-from locator import *
+from ticker import *
 from base import Parent
 
 class Axis(Line):

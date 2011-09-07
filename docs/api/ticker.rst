@@ -1,9 +1,9 @@
-Locator
+Ticker
 ===========================
 
-.. inheritance-diagram:: locator
+.. inheritance-diagram:: ticker
 
-.. automodule:: locator
+.. automodule:: ticker
     :members:
     :undoc-members:
     :inherited-members:

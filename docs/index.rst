@@ -25,11 +25,11 @@ Contents
    api/figure
    api/font
    api/line
-   api/locator
    api/marker
    api/plot
    api/plotter
    api/text
+   api/ticker
 
 Indices and tables
 ==================
