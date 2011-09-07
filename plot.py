@@ -46,6 +46,7 @@ class CartesianPlot(Plot):
         self.setTitle('')
 
         self._axes = {}
+        self._defaultAxes = {}
         self.addInitialAxes()
 
         self._datapairs = []
@@ -233,16 +234,19 @@ class CartesianPlot(Plot):
         self._axes['right'].slaveTo(self._axes['left'])
         self._axes['top'].slaveTo(self._axes['bottom'])
 
+        self._defaultAxes['x'] = self._axes['bottom']
+        self._defaultAxes['y'] = self._axes['left']
+
     def addDataPair(self, datapair):
         """
         Add a DataPair to this plot. datapair must be a DataPair instance, or nothing
         happens.
         """
-# TODO should probably have some default x and y axes to attach this datapair to, 
-# in case it does not already have some defined. that way, this method is all
-# that needs to be used when putting the data on the plot, and the user does not
-# need to know the names of the axes to attach the data to.
         if isinstance(datapair, DataPair):
+            if datapair.xAxis() is None:
+                datapair.setXAxis(self._defaultAxes['x'])
+            if datapair.yAxis() is None:
+                datapair.setYAxis(self._defaultAxes['y'])
             self._datapairs.append(datapair)
             self.addChild(datapair)
 

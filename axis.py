@@ -682,9 +682,6 @@ class Ticks(Parent):
     properties for all the Ticks at once.
     """
 
-# TODO need to move the length into the individual ticks, so that it can be modified on an individual tick basis
-# should do this in tickmarkargs, but need to determine if this creates a problem with their positions
-
     def __init__(self, canvas, axis, type_='major', length=5, width=1, font=None, locator=None, labeler=None):
         """
         **Constructor**
@@ -798,12 +795,16 @@ class Ticks(Parent):
         self.setVisible(False)
 
     def setLength(self, length):
-        """Set the default length for the Ticks."""
+        """
+        Set the default length for the Ticks. The length must be an int.
+        """
         if isinstance(length, int):
             self._length = length
 
     def setWidth(self, width):
-        """Set the default width for the Ticks."""
+        """
+        Set the default width for the Ticks. The width must be an int.
+        """
         if isinstance(width, int):
             self._tickMarkProps.update(width=width)
 
@@ -905,9 +906,6 @@ class Tick(Parent):
     is attached to a specific axis.
     """
 
-# TODO in conjunction with Ticks, length should be changed to a tickmarkarg if possible
-# actually, i don't think this is possible, because the Line kwprops doesn't have a concept of a length
-
     def __init__(self, canvas, axis, dataLoc, length, tickMarkProps={}, labelProps={}):
         """
         **Constructor**
@@ -940,7 +938,8 @@ class Tick(Parent):
         # Location where the tick should be placed, in data coords
         self._dataLocation = dataLoc
 
-        self._length = length
+        self._length = 5
+        self.setLength(length)
 
     def setLabel(self, text=None, **kwprops):
         """
@@ -954,6 +953,14 @@ class Tick(Parent):
         if isinstance(text, str):
             kwprops['text'] = text
         self._label.setProps(**kwprops)
+
+    def setLength(self, length):
+        """
+        Update the length of the tick mark. The length must be an int.
+        """
+        if isinstance(length, int):
+            self._length = length
+
 
     def setTickMarkProps(self, **kwprops):
         """Update the tick mark Line object with the passed kwprops."""

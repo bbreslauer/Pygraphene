@@ -192,6 +192,14 @@ class DataPair(object):
         """Return whether the markers are universally visible."""
         return self._markersVisible
 
+    def xAxis(self):
+        """Return the x Axis instance."""
+        return self._xaxis
+
+    def yAxis(self):
+        """Return the y Axis instance."""
+        return self._yaxis
+
     def maxXValue(self):
         """Get the maximum value in the x data."""
         return max(self._x)
