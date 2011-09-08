@@ -682,7 +682,7 @@ class Ticks(Parent):
     properties for all the Ticks at once.
     """
 
-    def __init__(self, canvas, axis, type_='major', length=5, width=1, font=None, locator=None, labeler=None):
+    def __init__(self, canvas, axis, type_='major', length=5, width=1, direction='in', font=None, locator=None, labeler=None):
         """
         **Constructor**
 
@@ -701,6 +701,9 @@ class Ticks(Parent):
 
         width
             The default width for each tick.
+
+        direction
+            The direction of the tick relative to the axis.
 
         font
             The default font for each tick label.
@@ -730,6 +733,7 @@ class Ticks(Parent):
         self._axis = axis
         self._type = type_
         self._length = length
+        self._direction = direction
         self.setWidth(width)
         self.setFont(font)
         self._locator = LinearLocator()
@@ -800,6 +804,15 @@ class Ticks(Parent):
         """
         if isinstance(length, int):
             self._length = length
+
+    def setDirection(self, direction):
+        """
+        Update the direction of the tick mark. The direction must be either 'in'
+        or 'out', and refers to whether the tick mark should be inside or outside
+        the plot. The label will always be outside.
+        """
+        if direction in ('in', 'out'):
+            self._direction = direction
 
     def setWidth(self, width):
         """
@@ -890,6 +903,7 @@ class Ticks(Parent):
                         self._axis,
                         loc,
                         self._length,
+                        self._direction,
                         self._tickMarkProps,
                         self._labelProps)
             self._ticks.append(tick)
@@ -920,7 +934,7 @@ class Tick(Parent):
     is attached to a specific axis.
     """
 
-    def __init__(self, canvas, axis, dataLoc, length, tickMarkProps={}, labelProps={}):
+    def __init__(self, canvas, axis, dataLoc, length, direction, tickMarkProps={}, labelProps={}):
         """
         **Constructor**
 
@@ -932,6 +946,10 @@ class Tick(Parent):
 
         length
             The length of the tick mark.
+
+        direction
+            Whether the tick should be drawn to the inside or outside of the axis.
+            Valid values are 'in' and 'out'. Defaults to 'in'.
 
         tickMarkProps
             Keyword arguments for the tick mark Line object.
@@ -955,6 +973,9 @@ class Tick(Parent):
         self._length = 5
         self.setLength(length)
 
+        self._direction = 'in'
+        self.setDirection(direction)
+
     def setLabel(self, text=None, **kwprops):
         """
         Update the label Text object with the passed text and kwprops.
@@ -975,6 +996,14 @@ class Tick(Parent):
         if isinstance(length, int):
             self._length = length
 
+    def setDirection(self, direction):
+        """
+        Update the direction of the tick mark. The direction must be either 'in'
+        or 'out', and refers to whether the tick mark should be inside or outside
+        the plot. The label will always be outside.
+        """
+        if direction in ('in', 'out'):
+            self._direction = direction
 
     def setTickMarkProps(self, **kwprops):
         """Update the tick mark Line object with the passed kwprops."""
@@ -991,10 +1020,14 @@ class Tick(Parent):
         startPosition = self._axis._plotAnchor
         endPosition = startPosition
 
-        if self._axis.inside() == 'up':
+        if self._axis.inside() == 'up' and self._direction == 'in':
             endPosition = startPosition + self._length
-        elif self._axis.inside() == 'down':
+        elif self._axis.inside() == 'up' and self._direction == 'out':
             endPosition = startPosition - self._length
+        elif self._axis.inside() == 'down' and self._direction == 'in':
+            endPosition = startPosition - self._length
+        elif self._axis.inside() == 'down' and self._direction == 'out':
+            endPosition = startPosition + self._length
 
         self._tickMark.setOrigin(self._axis._ox, self._axis._oy)
         self._label.setOrigin(self._axis._ox, self._axis._oy)
