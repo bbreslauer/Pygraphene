@@ -132,6 +132,7 @@ class Figure(Parent):
         self._canvas.show()
 
         for p in self._plots:
+            p.clear()
             p.draw()
 
         self._title.draw()
