@@ -279,3 +279,55 @@ class StarMarker(Marker):
 
         return (line1, line2, line3, line4)
 
+class TriangleMarker(Marker):
+    """
+    A triangle.
+    """
+
+    def __init__(self, canvas, size=5, **kwprops):
+        Marker.__init__(self, canvas, size, **kwprops)
+        self._orientation = 'up'
+
+    def _draw(self, *args, **kwargs):
+
+        return self._canvas.drawTriangle(self._x,
+                                      self._y,
+                                      self._size,
+                                      self._orientation,
+                                      self._ox,
+                                      self._oy,
+                                      **self.props())
+
+class UpTriangleMarker(TriangleMarker):
+    """
+    A triangle pointing up.
+    """
+    pass
+
+class DownTriangleMarker(TriangleMarker):
+    """
+    A triangle pointing down.
+    """
+
+    def __init__(self, canvas, size=5, **kwprops):
+        TriangleMarker.__init__(self, canvas, size, **kwprops)
+        self._orientation = 'down'
+
+class LeftTriangleMarker(TriangleMarker):
+    """
+    A triangle pointing left.
+    """
+
+    def __init__(self, canvas, size=5, **kwprops):
+        TriangleMarker.__init__(self, canvas, size, **kwprops)
+        self._orientation = 'left'
+
+class RightTriangleMarker(TriangleMarker):
+    """
+    A triangle pointing right.
+    """
+
+    def __init__(self, canvas, size=5, **kwprops):
+        TriangleMarker.__init__(self, canvas, size, **kwprops)
+        self._orientation = 'right'
+

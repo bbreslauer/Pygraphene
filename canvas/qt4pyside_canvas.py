@@ -1,6 +1,6 @@
 
 from PySide.QtGui import *
-from PySide.QtCore import Qt
+from PySide.QtCore import Qt, QPointF
 
 from base_canvas import BaseCanvas
 
@@ -117,6 +117,8 @@ class Qt4PySideCanvas(BaseCanvas):
         Draw a rectangle with corners (sx, sy) and (ex, ey).
         The local origin is at (ox, oy).
 
+        The origin is defined as the bottom left corner, so this will transform
+        to the top-left corner to display in Qt4.
         """
 
         (sx, sy) = self.figureToCanvas(sx, sy, ox, oy)
@@ -152,6 +154,44 @@ class Qt4PySideCanvas(BaseCanvas):
 
 
 
+    def drawTriangle(self, cx, cy, l, orientation='up', ox=0, oy=0, **kwargs):
+        """
+        Draw an equilateral triangle centered at (cx, cy) and with side length l
+        The local origin is at (ox, oy).
+        The orientation can be 'up', 'down', 'left', 'right'.
+
+        The origin is defined as the bottom left corner, so this will transform
+        to the top-left corner to display in Qt4.
+        """
+
+        halfHeight = l * 0.866 / 2.
+        halfLength = l / 2.
+
+        (cx, cy) = self.figureToCanvas(cx, cy, ox, oy)
+
+        triangle = QPolygonF()
+        if orientation == 'up':
+            triangle.append(QPointF(cx - halfLength, cy + halfHeight))
+            triangle.append(QPointF(cx + halfLength, cy + halfHeight))
+            triangle.append(QPointF(cx,              cy - halfHeight))
+            triangle.append(QPointF(cx - halfLength, cy + halfHeight))
+        elif orientation == 'down':
+            triangle.append(QPointF(cx - halfLength, cy - halfHeight))
+            triangle.append(QPointF(cx + halfLength, cy - halfHeight))
+            triangle.append(QPointF(cx,              cy + halfHeight))
+            triangle.append(QPointF(cx - halfLength, cy - halfHeight))
+        elif orientation == 'right':
+            triangle.append(QPointF(cx - halfHeight, cy - halfLength))
+            triangle.append(QPointF(cx - halfHeight, cy + halfLength))
+            triangle.append(QPointF(cx + halfHeight, cy             ))
+            triangle.append(QPointF(cx - halfHeight, cy - halfLength))
+        elif orientation == 'left':
+            triangle.append(QPointF(cx + halfHeight, cy - halfLength))
+            triangle.append(QPointF(cx + halfHeight, cy + halfLength))
+            triangle.append(QPointF(cx - halfHeight, cy             ))
+            triangle.append(QPointF(cx + halfHeight, cy - halfLength))
+
+        return self._scene.addPolygon(triangle, makePen(**kwargs), makeBrush(**kwargs))
 
 
     def drawText(self, x, y, ox=0, oy=0, **kwargs):
