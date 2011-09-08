@@ -119,6 +119,11 @@ class DataPair(object):
         =========   =====
         o           circle
         s           square
+        |           vertical
+        \-          horizontal
+        +           plus
+        x           x
+        *           star
         =========   =====
 
         """
@@ -173,12 +178,27 @@ class DataPair(object):
         none
         circle
         square
+        vertical line
+        horizontal line
+        plus
+        x
+        star
         """
         
         markers = {'o': CircleMarker,
                    'circle': CircleMarker,
                    's': SquareMarker,
                    'square': SquareMarker,
+                   '|': VerticalMarker,
+                   'vertical': VerticalMarker,
+                   '-': HorizontalMarker,
+                   '_': HorizontalMarker,
+                   'horizontal': HorizontalMarker,
+                   '+': PlusMarker,
+                   'plus': PlusMarker,
+                   'x': XMarker,
+                   '*': StarMarker,
+                   'star': StarMarker,
                   }
 
         if m in markers.keys():

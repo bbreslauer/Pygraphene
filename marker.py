@@ -47,7 +47,8 @@ class Marker(Artist):
         """
         Set the size of the marker.
         """
-        self._size = size
+        if size is not None:
+            self._size = size
 
     def setFillColor(self, color):
         """
@@ -124,9 +125,157 @@ class SquareMarker(Marker):
                                      self._oy,
                                      **self.props())
 
+class VerticalMarker(Marker):
+    """
+    A vertical line.
+    """
 
+    def __init__(self, canvas, size=5, **kwprops):
+        Marker.__init__(self, canvas, size, **kwprops)
+        self.setProps(aliased=True)
+    
+    def _draw(self, *args, **kwargs):
+        down = self._size / 2
+        up = self._size - down
 
+        return self._canvas.drawLine(self._x,
+                                      self._y - down,
+                                      self._x,
+                                      self._y + up,
+                                      self._ox,
+                                      self._oy,
+                                      **self.props())
 
+class HorizontalMarker(Marker):
+    """
+    A horizontal line.
+    """
 
+    def __init__(self, canvas, size=5, **kwprops):
+        Marker.__init__(self, canvas, size, **kwprops)
+        self.setProps(aliased=True)
 
+    def _draw(self, *args, **kwargs):
+        down = self._size / 2
+        up = self._size - down
+
+        return self._canvas.drawLine(self._x - down,
+                                      self._y,
+                                      self._x + up,
+                                      self._y,
+                                      self._ox,
+                                      self._oy,
+                                      **self.props())
+
+class PlusMarker(Marker):
+    """
+    A + sign.
+    """
+
+    def __init__(self, canvas, size=5, **kwprops):
+        Marker.__init__(self, canvas, size, **kwprops)
+        self.setProps(aliased=True)
+
+    def _draw(self, *args, **kwargs):
+        down = self._size / 2
+        up = self._size - down
+
+        line1 = self._canvas.drawLine(self._x - down,
+                                      self._y,
+                                      self._x + up,
+                                      self._y,
+                                      self._ox,
+                                      self._oy,
+                                      **self.props())
+
+        line2 = self._canvas.drawLine(self._x,
+                                      self._y - down,
+                                      self._x,
+                                      self._y + up,
+                                      self._ox,
+                                      self._oy,
+                                      **self.props())
+
+        return (line1, line2)
+
+class XMarker(Marker):
+    """
+    A x sign.
+    """
+
+    def __init__(self, canvas, size=5, **kwprops):
+        Marker.__init__(self, canvas, size, **kwprops)
+        self.setProps(aliased=True)
+
+    def _draw(self, *args, **kwargs):
+        # The length of a side is (self._size / 2) * 1/sqrt(2)
+        a = self._size / 2 * 0.707
+
+        line1 = self._canvas.drawLine(self._x - a,
+                                      self._y - a,
+                                      self._x + a,
+                                      self._y + a,
+                                      self._ox,
+                                      self._oy,
+                                      **self.props())
+
+        line2 = self._canvas.drawLine(self._x - a,
+                                      self._y + a,
+                                      self._x + a,
+                                      self._y - a,
+                                      self._ox,
+                                      self._oy,
+                                      **self.props())
+
+        return (line1, line2)
+
+class StarMarker(Marker):
+    """
+    An asterisk (*).
+    """
+
+    def __init__(self, canvas, size=5, **kwprops):
+        Marker.__init__(self, canvas, size, **kwprops)
+        self.setProps(aliased=True)
+
+    def _draw(self, *args, **kwargs):
+        down = self._size / 2
+        up = self._size - down
+
+        # The length of a side is (self._size / 2) * 1/sqrt(2)
+        a = self._size / 2 * 0.707
+
+        line1 = self._canvas.drawLine(self._x - down,
+                                      self._y,
+                                      self._x + up,
+                                      self._y,
+                                      self._ox,
+                                      self._oy,
+                                      **self.props())
+
+        line2 = self._canvas.drawLine(self._x,
+                                      self._y - down,
+                                      self._x,
+                                      self._y + up,
+                                      self._ox,
+                                      self._oy,
+                                      **self.props())
+
+        line3 = self._canvas.drawLine(self._x - a,
+                                      self._y - a,
+                                      self._x + a,
+                                      self._y + a,
+                                      self._ox,
+                                      self._oy,
+                                      **self.props())
+
+        line4 = self._canvas.drawLine(self._x - a,
+                                      self._y + a,
+                                      self._x + a,
+                                      self._y - a,
+                                      self._ox,
+                                      self._oy,
+                                      **self.props())
+
+        return (line1, line2, line3, line4)
 

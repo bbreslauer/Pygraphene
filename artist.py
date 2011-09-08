@@ -150,7 +150,11 @@ class Artist(PObject, Parent):
         
         if self._item is not None:
             try:
-                self._canvas.remove(self._item)
+                if isinstance(self._item, list) or isinstance(self._item, tuple):
+                    for i in self._item:
+                        self._canvas.remove(i)
+                else:
+                    self._canvas.remove(self._item)
             except:
                 # Don't worry if it cannot be deleted; it probably doesn't exist anymore
                 pass
