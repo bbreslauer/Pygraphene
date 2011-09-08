@@ -834,6 +834,18 @@ class Ticks(Parent):
             self._labeler = labeler
         self._labeler.setValues(**kwargs)
 
+    def setTickMarkProps(self, **kwprops):
+        """
+        Update the default tick mark properties with kwprops.
+        """
+        self._tickMarkProps.update(kwprops)
+
+    def setTickLabelProps(self, **kwprops):
+        """
+        Update the default tick label properties with kwprops.
+        """
+        self._labelProps.update(kwprops)
+
     def makeTicks(self):
         """
         Create the individual Tick instances, but do not actually draw them.

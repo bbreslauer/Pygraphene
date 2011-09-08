@@ -354,12 +354,12 @@ class CartesianPlot(Plot):
             if axis._autoscaled:
                 axis.autoscale()
 
-        # need to draw ticks here so that they don't cover up the axis
-        for axis in axes:
-            axis.drawTicks()
-
         for axis in axes:
             axis.draw()
+        
+        # need to draw ticks here so that they cover up the axis
+        for axis in axes:
+            axis.drawTicks()
 
     def drawData(self):
         """
