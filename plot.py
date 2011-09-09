@@ -41,7 +41,7 @@ class CartesianPlot(Plot):
         # Make the plot background white
         self.setColor('#ffffff')
 
-        self._title = Text(self._canvas)
+        self._title = Text(self.canvas())
         self._title.setOrigin(0, 0)
         self.setTitle('')
 
@@ -209,7 +209,7 @@ class CartesianPlot(Plot):
         """
 
         if key not in self._axes.keys():
-            self._axes[key] = Axis(self._figure._canvas, self, **kwprops)
+            self._axes[key] = Axis(self._figure.canvas(), self, **kwprops)
             self.addChild(self._axes[key])
         return self._axes[key]
 
@@ -319,7 +319,7 @@ class CartesianPlot(Plot):
 
     def clear(self):
         Parent.clear(self)
-        self._canvas.update()
+        self.canvas().update()
 
     def _draw(self):
         self.clear()
@@ -340,7 +340,7 @@ class CartesianPlot(Plot):
         ox, oy = self.axis('bottom').origin()
 
         # origin of the plot is the position of the plot in figure coordinates
-        return self._canvas.drawRect(sx, sy, ex, ey, ox, oy, **{'color': self.color(), 'fillcolor': self.color()})
+        return self.canvas().drawRect(sx, sy, ex, ey, ox, oy, **{'color': self.color(), 'fillcolor': self.color()})
 
 
     def drawAxes(self):

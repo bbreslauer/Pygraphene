@@ -84,8 +84,8 @@ class Axis(Line):
         self._autoscaled = True  # holds whether this Axis is currently being autoscaled to the data
 
         # Setup the major and minor ticks
-        self._majorTicks = Ticks(self._canvas, self, 'major', labeler=FormatLabeler())
-        self._minorTicks = Ticks(self._canvas, self, 'minor', labeler=NullLabeler())
+        self._majorTicks = Ticks(self.canvas(), self, 'major', labeler=FormatLabeler())
+        self._minorTicks = Ticks(self.canvas(), self, 'minor', labeler=NullLabeler())
         self._minorTicks.setLocator(num=3)
         self._minorTicks.setLength(3)
         self._minorTicks._labelProps.update(visible=False)
@@ -742,6 +742,8 @@ class Ticks(Parent):
         self.setLabeler(labeler)
         self._visible = True  # This class is not an Artist, so it doesn't have the visible property
 
+    def canvas(self):
+        return self._canvas
 
     def determineAxisPosition(self):
         """
@@ -899,7 +901,7 @@ class Ticks(Parent):
         # Create the ticks
         for loc, lab in zip(locations, labels):
             self._labelProps.update(text=str(lab))
-            tick = Tick(self._canvas,
+            tick = Tick(self.canvas(),
                         self._axis,
                         loc,
                         self._length,

@@ -80,7 +80,7 @@ def plot(*args, **kwargs):
         fig = FigureManager.getActive()
     plot = fig.getCurrentPlot()
     if plot is None or newPlot is True:
-        plot = CartesianPlot(fig, fig._canvas)
+        plot = CartesianPlot(fig, fig.canvas())
         fig.addPlot(plot)
         position = [1, 1, 1]
         if 'position' in kwargs.keys():
@@ -96,7 +96,7 @@ def plot(*args, **kwargs):
         else:
             fs = ''
 
-        d = DataPair(fig._canvas, x, y, fs)
+        d = DataPair(fig.canvas(), x, y, fs)
         plot.addDataPair(d)
 
     return plot
@@ -128,7 +128,7 @@ def listFonts():
     """
 
     figure = Figure(600, 400)
-    figure._canvas.listFonts()
+    figure.canvas().listFonts()
 
 
 

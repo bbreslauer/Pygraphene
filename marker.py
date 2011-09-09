@@ -95,7 +95,7 @@ class CircleMarker(Marker):
         Marker.__init__(self, canvas, size, **kwprops)
 
     def _draw(self, *args, **kwargs):
-        return self._canvas.drawCircle(self._x,
+        return self.canvas().drawCircle(self._x,
                                        self._y,
                                        self._size / 2,
                                        self._ox,
@@ -117,7 +117,7 @@ class SquareMarker(Marker):
         ex = self._x + (self._size / 2) - 1
         ey = self._y + (self._size / 2) + 1
 
-        return self._canvas.drawRect(sx,
+        return self.canvas().drawRect(sx,
                                      sy,
                                      ex,
                                      ey,
@@ -138,7 +138,7 @@ class VerticalMarker(Marker):
         down = self._size / 2
         up = self._size - down
 
-        return self._canvas.drawLine(self._x,
+        return self.canvas().drawLine(self._x,
                                       self._y - down,
                                       self._x,
                                       self._y + up,
@@ -159,7 +159,7 @@ class HorizontalMarker(Marker):
         down = self._size / 2
         up = self._size - down
 
-        return self._canvas.drawLine(self._x - down,
+        return self.canvas().drawLine(self._x - down,
                                       self._y,
                                       self._x + up,
                                       self._y,
@@ -180,7 +180,7 @@ class PlusMarker(Marker):
         down = self._size / 2
         up = self._size - down
 
-        line1 = self._canvas.drawLine(self._x - down,
+        line1 = self.canvas().drawLine(self._x - down,
                                       self._y,
                                       self._x + up,
                                       self._y,
@@ -188,7 +188,7 @@ class PlusMarker(Marker):
                                       self._oy,
                                       **self.props())
 
-        line2 = self._canvas.drawLine(self._x,
+        line2 = self.canvas().drawLine(self._x,
                                       self._y - down,
                                       self._x,
                                       self._y + up,
@@ -211,7 +211,7 @@ class XMarker(Marker):
         # The length of a side is (self._size / 2) * 1/sqrt(2)
         a = self._size / 2 * 0.707
 
-        line1 = self._canvas.drawLine(self._x - a,
+        line1 = self.canvas().drawLine(self._x - a,
                                       self._y - a,
                                       self._x + a,
                                       self._y + a,
@@ -219,7 +219,7 @@ class XMarker(Marker):
                                       self._oy,
                                       **self.props())
 
-        line2 = self._canvas.drawLine(self._x - a,
+        line2 = self.canvas().drawLine(self._x - a,
                                       self._y + a,
                                       self._x + a,
                                       self._y - a,
@@ -245,7 +245,7 @@ class StarMarker(Marker):
         # The length of a side is (self._size / 2) * 1/sqrt(2)
         a = self._size / 2 * 0.707
 
-        line1 = self._canvas.drawLine(self._x - down,
+        line1 = self.canvas().drawLine(self._x - down,
                                       self._y,
                                       self._x + up,
                                       self._y,
@@ -253,7 +253,7 @@ class StarMarker(Marker):
                                       self._oy,
                                       **self.props())
 
-        line2 = self._canvas.drawLine(self._x,
+        line2 = self.canvas().drawLine(self._x,
                                       self._y - down,
                                       self._x,
                                       self._y + up,
@@ -261,7 +261,7 @@ class StarMarker(Marker):
                                       self._oy,
                                       **self.props())
 
-        line3 = self._canvas.drawLine(self._x - a,
+        line3 = self.canvas().drawLine(self._x - a,
                                       self._y - a,
                                       self._x + a,
                                       self._y + a,
@@ -269,7 +269,7 @@ class StarMarker(Marker):
                                       self._oy,
                                       **self.props())
 
-        line4 = self._canvas.drawLine(self._x - a,
+        line4 = self.canvas().drawLine(self._x - a,
                                       self._y + a,
                                       self._x + a,
                                       self._y - a,
@@ -290,7 +290,7 @@ class TriangleMarker(Marker):
 
     def _draw(self, *args, **kwargs):
 
-        return self._canvas.drawTriangle(self._x,
+        return self.canvas().drawTriangle(self._x,
                                       self._y,
                                       self._size,
                                       self._orientation,

@@ -89,7 +89,7 @@ class Text(Artist):
             except:
                 pass
 
-        return self._canvas.drawText(  self._x,
+        return self.canvas().drawText(  self._x,
                                         self._y,
                                         self._ox,
                                         self._oy,

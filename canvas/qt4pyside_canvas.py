@@ -53,6 +53,9 @@ class Qt4PySideCanvas(BaseCanvas):
     def widget(self):
         return self._view
 
+    def scene(self):
+        return self._scene
+
     def figureToCanvas(self, x, y, ox=0, oy=0):
         """
         Convert from figure coords to canvas coords.

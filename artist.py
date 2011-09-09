@@ -134,7 +134,7 @@ class Artist(PObject, Parent):
         self.remove()
         if self.isVisible():
             self._item = self._draw(*args, **kwargs)
-            self._canvas.update()
+            self.canvas().update()
 
     def _draw(self, *args, **kwargs):
         """
@@ -152,9 +152,9 @@ class Artist(PObject, Parent):
             try:
                 if isinstance(self._item, list) or isinstance(self._item, tuple):
                     for i in self._item:
-                        self._canvas.remove(i)
+                        self.canvas().remove(i)
                 else:
-                    self._canvas.remove(self._item)
+                    self.canvas().remove(self._item)
             except:
                 # Don't worry if it cannot be deleted; it probably doesn't exist anymore
                 pass

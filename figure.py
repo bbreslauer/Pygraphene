@@ -29,7 +29,7 @@ class Figure(Parent):
 
         self._canvas = Qt4PySideCanvas(width, height)
 
-        self._title = Text(self._canvas)
+        self._title = Text(self.canvas())
         self._title.setOrigin(0, 0)
         self._title.setPosition(width / 2, height - 10)
         self.setTitle('')
@@ -89,11 +89,11 @@ class Figure(Parent):
 
     def width(self):
         """Return the width of the Figure."""
-        return self._canvas._scene.width()
+        return self.canvas().scene().width()
 
     def height(self):
         """Return the height of the Figure."""
-        return self._canvas._scene.height()
+        return self.canvas().scene().height()
 
     def title(self):
         return self._title
@@ -129,7 +129,7 @@ class Figure(Parent):
         Show the canvas, draw all plots, and draw the Figure title.
         """
         self.clear()
-        self._canvas.show()
+        self.canvas().show()
 
         for p in self._plots:
             p.clear()
@@ -149,5 +149,5 @@ class Figure(Parent):
 
     def clear(self):
         Parent.clear(self)
-        self._canvas.update()
+        self.canvas().update()
 

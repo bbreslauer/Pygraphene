@@ -58,6 +58,9 @@ class DataPair(object):
         self.setLineProps(**lineProps)
         self.setMarkerProps(**markerProps)
 
+    def canvas(self):
+        return self._canvas
+
     def setX(self, x):
         """Set the x data."""
         if isinstance(x, list):
@@ -285,7 +288,7 @@ class DataPair(object):
         # Make the line segments
         if self.linesVisible():
             for i in range(min(len(xPlotCoords), len(yPlotCoords)) - 1):
-                line = Line(self._canvas, **self._lineProps)
+                line = Line(self.canvas(), **self._lineProps)
                 line.setPoints( xPlotCoords[i],
                                 yPlotCoords[i],
                                 xPlotCoords[i+1],
@@ -297,7 +300,7 @@ class DataPair(object):
         # Make the markers
         if self.markersVisible() and self._markerClass is not None:
             for x, y in zip(xPlotCoords, yPlotCoords):
-                marker = self._markerClass(self._canvas, **self._markerProps)
+                marker = self._markerClass(self.canvas(), **self._markerProps)
                 marker.setOrigin(ox, oy)
                 marker.setPosition(x, y)
                 self._markers.append(marker)

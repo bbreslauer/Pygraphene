@@ -111,7 +111,7 @@ class Line(Artist):
 
     def _draw(self, *args, **kwargs):
 
-        return self._canvas.drawLine(self._x,
+        return self.canvas().drawLine(self._x,
                                      self._y,
                                      self._ex,
                                      self._ey,
