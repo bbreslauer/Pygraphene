@@ -368,8 +368,6 @@ class DataPair(object):
         Note: This does not actually override Artist.draw() because DataPair does
         not subclass Artist.
         """
-        print "lines: " + str(len(self._lineSegments))
-        print "markers: " + str(len(self._markers))
 
         # Need to save the current lineSegments and markers so that they can be removed from
         # the plot when the plot is next drawn
