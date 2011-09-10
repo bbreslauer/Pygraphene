@@ -58,6 +58,7 @@ class Artist(PObject, Parent):
 
         self._canvas = canvas
         self._item = None
+        self._clipPath = None
 
         self.setOrigin()
         self.setPosition()
@@ -118,6 +119,30 @@ class Artist(PObject, Parent):
     def color(self):
         """Return the color of this Artist."""
         return self.props('color')
+
+    def setClipPath(self, clipPath):
+        """
+        A clip path is a rectangle that the Artist will be drawn within.
+        If part of the Artist is intended to be drawn outside the clip path,
+        it will not be drawn on the screen.
+
+        clipPath should be a 4-tuple of the form (x, y, width, height). x
+        and y must be in figure coordinates. Alternatively, clipPath can be
+        None.
+        """
+
+        if clipPath is None or (len(clipPath) == 4 and (isinstance(clipPath, tuple) or isinstance(clipPath, list))):
+            self._clipPath = clipPath
+
+    def clipPath(self):
+        """
+        Return the clip path.
+
+        clipPath will be a 4-tuple of the form (x, y, width, height). x
+        and y must be in figure coordinates. Alternatively, clipPath can be
+        None.
+        """
+        return self._clipPath
 
     def draw(self, *args, **kwargs):
         """

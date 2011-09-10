@@ -15,7 +15,7 @@ from ticker import *
 x = [1,2,3,4,5,6,7]
 y = [1,2,9,5,5,9,0]
 
-p = plot(x, y, 'b o')
+p = plot(x, y, 'b-o')
 p.setAxisLabel('bottom', 'bottom')
 p.setAxisLabel('top', 'top')
 p.setAxisLabel('left', 'left')
@@ -33,6 +33,9 @@ p.axis('bottom').setTicksLocator('major', FixedLocator(x, 9))
 #p.axis('bottom').setTicksLocator('major', LinearLocator(15))
 p.axis('right').setTicksLabeler('major', FormatLabeler('%.3f'))
 #p.axis('bottom').setTicksLabeler('major', StringLabeler(x))
+
+p.axis('bottom').setDataRange(0, 5.5)
+p.axis('left').setDataRange(0, 8.5)
 
 #p._datapairs[0].setMarkersVisible(True)
 #p._datapairs[0].setLinesVisible(False)

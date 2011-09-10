@@ -117,6 +117,7 @@ class Line(Artist):
                                      self._ey,
                                      self._ox,
                                      self._oy,
+                                     clipPath=self.clipPath(),
                                      **self.props())
 
 

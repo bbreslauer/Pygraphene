@@ -6,17 +6,31 @@ from base_canvas import BaseCanvas
 
 
 
-class AliasedGraphicsLineItem(QGraphicsLineItem):
+class GraphicsLineItem(QGraphicsLineItem):
+
+    def __init__(self, *args):
+        self._clipPath = None
+        QGraphicsLineItem.__init__(self, *args)
+
+    def setClipRect(self, clipPath=None):
+        self._clipPath = clipPath
+
+    def paint(self, painter, option, widget=0):
+        if self._clipPath is not None:
+            painter.setClipRect(*self._clipPath)
+        QGraphicsLineItem.paint(self, painter, option, widget)
+
+class AliasedGraphicsLineItem(GraphicsLineItem):
     """
     A QGraphicsLineItem that will always be drawn non-antialiased.
     """
 
     def __init__(self, *args):
-        QGraphicsLineItem.__init__(self, *args)
+        GraphicsLineItem.__init__(self, *args)
 
     def paint(self, painter, option, widget=0):
         painter.setRenderHints(QPainter.Antialiasing | QPainter.TextAntialiasing, False)
-        QGraphicsLineItem.paint(self, painter, option, widget)
+        GraphicsLineItem.paint(self, painter, option, widget)
 
 class AliasedGraphicsRectItem(QGraphicsRectItem):
     """
@@ -89,7 +103,7 @@ class Qt4PySideCanvas(BaseCanvas):
         return (x, y)
 
 
-    def drawLine(self, sx, sy, ex, ey, ox=0, oy=0, aliased=False, **kwargs):
+    def drawLine(self, sx, sy, ex, ey, ox=0, oy=0, aliased=False, clipPath=None, **kwargs):
         """
         Draw a line from (sx, sy) to (ex, ey).
         The local origin is at (ox, oy).
@@ -99,6 +113,11 @@ class Qt4PySideCanvas(BaseCanvas):
 
         If aliased is False, then the line is drawn with anti-aliasing turned on.
         If aliased is True, then the line is drawn without anti-aliasing.
+
+        clipPath defines the path that the line will be clipped to. Anything outside
+        the clipPath will not be drawn. clipPath can be either None, in which case
+        there will be no clipping, or a 4-tuple of the form (x, y, width, height).
+        x and y must be in figure coordinates.
         """
 
         (sx, sy) = self.figureToCanvas(sx, sy, ox, oy)
@@ -108,8 +127,13 @@ class Qt4PySideCanvas(BaseCanvas):
             line = AliasedGraphicsLineItem(sx, sy, ex, ey)
             line.setPen(makePen(**kwargs))
         else:
-            line = QGraphicsLineItem(sx, sy, ex, ey)
+            line = GraphicsLineItem(sx, sy, ex, ey)
             line.setPen(makePen(**kwargs))
+
+        if clipPath is not None:
+            line.setFlags(QGraphicsItem.ItemClipsToShape)
+            line.setClipRect(clipPath)
+
         self._scene.addItem(line)
         return line
 

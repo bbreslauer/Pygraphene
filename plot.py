@@ -195,10 +195,21 @@ class CartesianPlot(Plot):
         self._axes['bottom'].setPlotRange(0, 0, self._axesWidth)
 
     def width(self):
+        """Return the width of the plot."""
         return self._plotWidth
 
     def height(self):
+        """Return the height of the plot."""
         return self._plotHeight
+
+    def axesRegion(self):
+        """
+        Return the region that data can be displayed in. Return a
+        4-tuple of the form (x, y, width, height). x and y are in
+        figure coordinates.
+
+        """
+        return (self._axesOx, self._axesOy, self._axesWidth, self._axesHeight)
 
     def addAxis(self, key, **kwprops):
         """
@@ -248,6 +259,7 @@ class CartesianPlot(Plot):
             if datapair.yAxis() is None:
                 datapair.setYAxis(self._defaultAxes['y'])
             self._datapairs.append(datapair)
+            datapair.setPlot(self)
             self.addChild(datapair)
 
     def removeDataPair(self, datapair):

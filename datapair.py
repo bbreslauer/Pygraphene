@@ -3,6 +3,7 @@
 from artist import Artist
 from line import Line
 from axis import Axis
+#from plot import Plot
 from marker import *
 
 class DataPair(object):
@@ -11,7 +12,7 @@ class DataPair(object):
     x and y axes, and maintains the lines and markers that are drawn.
     """
     
-    def __init__(self, canvas, x, y, formatString='', xaxis=None, yaxis=None, linesVisible=True, markersVisible=True, lineProps={}, markerProps={}):
+    def __init__(self, canvas, x, y, formatString='', plot=None, xaxis=None, yaxis=None, linesVisible=True, markersVisible=True, lineProps={}, markerProps={}):
         """
         **Constructor**
 
@@ -53,6 +54,7 @@ class DataPair(object):
         self.setY(y)
         self.setXAxis(xaxis)
         self.setYAxis(yaxis)
+        self.setPlot(plot)
         self.setFormatString(formatString)
 
         self.setLineProps(**lineProps)
@@ -84,6 +86,17 @@ class DataPair(object):
             self._yaxis = yaxis
         else:
             self._yaxis = None
+
+    def setPlot(self, plot):
+        """Set the plot this DataPair is attached to."""
+        #if isinstance(plot, Plot):
+        if True:
+            self._plot = plot
+        else:
+            self._plot = None
+
+    def plot(self):
+        return self._plot
 
     def setFormatString(self, f):
         """
@@ -276,8 +289,18 @@ class DataPair(object):
         The Lines and Markers will only be created if they are currently
         set to be visible in this DataPair.
         """
-        ox = self._xaxis._ox
-        oy = self._xaxis._oy
+
+        # TODO this will not work if self._xaxis is not at the bottom of the plot
+        # need to fix this
+#        ox = self._xaxis._ox
+#        oy = self._xaxis._oy
+
+        (ox, oy, w, h) = self.plot().axesRegion()
+
+        minX = self.xAxis().position()[0]
+        maxX = self.xAxis().end()[0]
+        minY = self.yAxis().position()[1]
+        maxY = self.yAxis().end()[1]
 
         xPlotCoords = map(lambda value: self._xaxis.mapDataToPlot(value), self._x)
         yPlotCoords = map(lambda value: self._yaxis.mapDataToPlot(value), self._y)
@@ -288,18 +311,39 @@ class DataPair(object):
         # Make the line segments
         if self.linesVisible():
             for i in range(min(len(xPlotCoords), len(yPlotCoords)) - 1):
+                x1 = xPlotCoords[i]
+                x2 = xPlotCoords[i+1]
+                y1 = yPlotCoords[i]
+                y2 = yPlotCoords[i+1]
+
+                # Do not bother making this line because it is entirely 
+                # outside the plot's view. This does not get all the possible
+                # lines, but will get some fraction of them. The rest will
+                # be clipped by the canvas, so we don't really have to worry
+                # about them. This is primarily useful for instances like when
+                # x=range(0, 1000) but the plot is only showing (0, 10).
+                if (x1 < minX and x2 < minX) or (x1 > maxX and x2 > maxX) \
+                or (y1 < minY and y2 < minY) or (y1 > maxY and y2 > maxY):
+                    continue
+
                 line = Line(self.canvas(), **self._lineProps)
-                line.setPoints( xPlotCoords[i],
-                                yPlotCoords[i],
-                                xPlotCoords[i+1],
-                                yPlotCoords[i+1],
-                                ox,
-                                oy)
+                line.setPoints(x1,
+                               y1,
+                               x2,
+                               y2,
+                               ox,
+                               oy)
+                line.setClipPath(self.plot().axesRegion())
                 self._lineSegments.append(line)
 
         # Make the markers
         if self.markersVisible() and self._markerClass is not None:
             for x, y in zip(xPlotCoords, yPlotCoords):
+                # Do not bother making this marker because it is outside
+                # the plot's view
+                if (x < minX or x > maxX) or (y < minY or y > maxY):
+                    continue
+
                 marker = self._markerClass(self.canvas(), **self._markerProps)
                 marker.setOrigin(ox, oy)
                 marker.setPosition(x, y)
@@ -329,6 +373,8 @@ class DataPair(object):
         Note: This does not actually override Artist.draw() because DataPair does
         not subclass Artist.
         """
+        print "lines: " + str(len(self._lineSegments))
+        print "markers: " + str(len(self._markers))
 
         # Need to save the current lineSegments and markers so that they can be removed from
         # the plot when the plot is next drawn
