@@ -290,11 +290,6 @@ class DataPair(object):
         set to be visible in this DataPair.
         """
 
-        # TODO this will not work if self._xaxis is not at the bottom of the plot
-        # need to fix this
-#        ox = self._xaxis._ox
-#        oy = self._xaxis._oy
-
         (ox, oy, w, h) = self.plot().axesRegion()
 
         minX = self.xAxis().position()[0]
