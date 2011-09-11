@@ -14,6 +14,7 @@ from ticker import *
 
 x = [1,2,3,4,5,6,7]
 y = [1,2,9,5,5,9,0]
+x2 = [1,2,2.5,5,6,7]
 
 p = plot(x, y, 'b-^')
 p.setAxisLabel('bottom', 'bottom')
@@ -29,8 +30,8 @@ p.axis('top').setLabelFont('Comic Sans Ms')
 p.axis('left').setLabelFont({'family': 'Comic Sans Ms', 'weight': 'bold'})
 p.axis('right').setLabelFont(Font(weight='bold'))
 
-p.axis('bottom').setTicksLocator('major', FixedLocator(x, 9))
-p.axis('bottom').setTicksLocator('major', LinearLocator(15))
+p.axis('bottom').setTicksLocator('major', FixedLocator(x2, 9))
+#p.axis('bottom').setTicksLocator('major', LinearLocator(15))
 p.axis('bottom').setTicksLabeler('major', FormatLabeler('%.3g'))
 p.axis('right').setTicksLabeler('major', FormatLabeler('%.3f'))
 #p.axis('bottom').setTicksLabeler('major', StringLabeler(x))

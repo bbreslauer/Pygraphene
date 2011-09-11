@@ -38,7 +38,7 @@ p._axes['y3'].autoscale()
 
 
 p._axes['right'].setColor('red')
-p._axes['right'].setTicksFont(Font('Courier', size=16, style='italic', weight='bold'))
+p._axes['right'].setTicksFont('both', Font('Courier', size=16, style='italic', weight='bold'))
 p._datapairs[1].setLineProps(color='red')
 p._datapairs[1].setMarkerProps(color='black', width=5, style='dot', fillcolor='green', size=20)
 

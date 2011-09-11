@@ -384,22 +384,185 @@ class Axis(Line):
             for axis in self._masterOf:
                 axis.setDataRange(start, end, True, autoscaled)
 
-    def setTicksFont(self, font, applyToSlaves=False):
+    def setTicksFont(self, which='major', font=None, applyToSlaves=False):
         """
-        Helper method to set the font for both major and minor Ticks.
+        Set the Font for the Ticks specified by which.
+
+        which (a string specifying which ticks to apply the locator to)
+            | Can be one of:
+            | 'both'
+            | 'major'
+            | 'minor'
 
         If applyToSlaves is True, then the Locator instance will be applied to all
         slaved Axis objects.
         """
+        
+        if font is None:
+            return
 
-        self._majorTicks.setFont(font)
-        self._minorTicks.setFont(font)
+        if which == 'both':
+            self._majorTicks.setFont(font)
+            self._minorTicks.setFont(font)
+        elif which == 'major':
+            self._majorTicks.setFont(font)
+        elif which == 'minor':
+            self._minorTicks.setFont(font)
 
         if applyToSlaves:
             for axis in self._masterOf:
                 # applyToSlaves is False because any Axis that is a slave
                 # cannot be a master to other slaves.
-                axis.setTicksFont(font, False)
+                axis.setTicksFont(which, font, False)
+
+    def setTicksLength(self, which='major', length=None, applyToSlaves=False):
+        """
+        Set the length for the Ticks specified by which.
+
+        which (a string specifying which ticks to apply the locator to)
+            | Can be one of:
+            | 'both'
+            | 'major'
+            | 'minor'
+
+        If applyToSlaves is True, then the length will be applied to all
+        slaved Axis objects.
+        """
+
+        if length is None:
+            return
+
+        if which == 'both':
+            self._majorTicks.setLength(length)
+            self._minorTicks.setLength(length)
+        elif which == 'major':
+            self._majorTicks.setLength(length)
+        elif which == 'minor':
+            self._minorTicks.setLength(length)
+
+        if applyToSlaves:
+            for axis in self._masterOf:
+                # applyToSlaves is False because any Axis that is a slave
+                # cannot be a master to other slaves.
+                axis.setTicksLength(which, length, False)
+
+    def setTicksWidth(self, which='major', width=None, applyToSlaves=False):
+        """
+        Set the width for the Ticks specified by which.
+
+        which (a string specifying which ticks to apply the locator to)
+            | Can be one of:
+            | 'both'
+            | 'major'
+            | 'minor'
+
+        If applyToSlaves is True, then the length will be applied to all
+        slaved Axis objects.
+        """
+
+        if width is None:
+            return
+
+        if which == 'both':
+            self._majorTicks.setWidth(width)
+            self._minorTicks.setWidth(width)
+        elif which == 'major':
+            self._majorTicks.setWidth(width)
+        elif which == 'minor':
+            self._minorTicks.setWidth(width)
+
+        if applyToSlaves:
+            for axis in self._masterOf:
+                # applyToSlaves is False because any Axis that is a slave
+                # cannot be a master to other slaves.
+                axis.setTicksWidth(which, width, False)
+
+    def setTicksDirection(self, which='major', direction=None, applyToSlaves=False):
+        """
+        Set the direction for the Ticks specified by which.
+
+        which (a string specifying which ticks to apply the locator to)
+            | Can be one of:
+            | 'both'
+            | 'major'
+            | 'minor'
+
+        If applyToSlaves is True, then the length will be applied to all
+        slaved Axis objects.
+        """
+
+        if direction is None:
+            return
+
+        if which == 'both':
+            self._majorTicks.setDirection(direction)
+            self._minorTicks.setDirection(direction)
+        elif which == 'major':
+            self._majorTicks.setDirection(direction)
+        elif which == 'minor':
+            self._minorTicks.setDirection(direction)
+
+        if applyToSlaves:
+            for axis in self._masterOf:
+                # applyToSlaves is False because any Axis that is a slave
+                # cannot be a master to other slaves.
+                axis.setTicksDirection(which, direction, False)
+
+    def setTickMarkProps(self, which='major', applyToSlaves=False, **kwprops):
+        """
+        Set the tick mark props for the Ticks specified by which.
+
+        which (a string specifying which ticks to apply the locator to)
+            | Can be one of:
+            | 'both'
+            | 'major'
+            | 'minor'
+
+        If applyToSlaves is True, then the length will be applied to all
+        slaved Axis objects.
+        """
+
+        if which == 'both':
+            self._majorTicks.setTickMarkProps(**kwprops)
+            self._minorTicks.setTickMarkProps(**kwprops)
+        elif which == 'major':
+            self._majorTicks.setTickMarkProps(**kwprops)
+        elif which == 'minor':
+            self._minorTicks.setTickMarkProps(**kwprops)
+
+        if applyToSlaves:
+            for axis in self._masterOf:
+                # applyToSlaves is False because any Axis that is a slave
+                # cannot be a master to other slaves.
+                axis.setTickMarkProps(which, False, **kwprops)
+
+    def setTickLabelProps(self, which='major', applyToSlaves=False, **kwprops):
+        """
+        Set the tick label props for the Ticks specified by which.
+
+        which (a string specifying which ticks to apply the locator to)
+            | Can be one of:
+            | 'both'
+            | 'major'
+            | 'minor'
+
+        If applyToSlaves is True, then the length will be applied to all
+        slaved Axis objects.
+        """
+
+        if which == 'both':
+            self._majorTicks.setTickLabelProps(**kwprops)
+            self._minorTicks.setTickLabelProps(**kwprops)
+        elif which == 'major':
+            self._majorTicks.setTickLabelProps(**kwprops)
+        elif which == 'minor':
+            self._minorTicks.setTickLabelProps(**kwprops)
+
+        if applyToSlaves:
+            for axis in self._masterOf:
+                # applyToSlaves is False because any Axis that is a slave
+                # cannot be a master to other slaves.
+                axis.setTickLabelProps(which, False, **kwprops)
 
     def setLabelFont(self, font):
         """
@@ -567,6 +730,7 @@ class Axis(Line):
 
         which (a string specifying which ticks to apply the locator to)
             | Can be one of:
+            | 'both'
             | 'major'
             | 'minor'
 
@@ -579,10 +743,16 @@ class Axis(Line):
         The kwprops are passed to the Locator instance that is used.
         """
 
-        if which == 'minor':
-            self._minorTicks.setLocator(locator, **kwprops)
-        else:
+        if locator is None:
+            return
+
+        if which == 'both':
             self._majorTicks.setLocator(locator, **kwprops)
+            self._minorTicks.setLocator(locator, **kwprops)
+        elif which == 'major':
+            self._majorTicks.setLocator(locator, **kwprops)
+        elif which == 'minor':
+            self._minorTicks.setLocator(locator, **kwprops)
 
         if applyToSlaves:
             for axis in self._masterOf:
@@ -596,6 +766,7 @@ class Axis(Line):
 
         which (a string specifying which ticks to apply the labeler to)
             | Can be one of:
+            | 'both'
             | 'major'
             | 'minor'
 
@@ -607,11 +778,17 @@ class Axis(Line):
 
         The kwprops are passed to the Labeler instance that is used.
         """
-        
-        if which == 'minor':
-            self._minorTicks.setLabeler(labeler, **kwprops)
-        else:
+
+        if labeler is None:
+            return
+
+        if which == 'both':
             self._majorTicks.setLabeler(labeler, **kwprops)
+            self._minorTicks.setLabeler(labeler, **kwprops)
+        elif which == 'major':
+            self._majorTicks.setLabeler(labeler, **kwprops)
+        elif which == 'minor':
+            self._minorTicks.setLabeler(labeler, **kwprops)
 
         if applyToSlaves:
             for axis in self._masterOf:
@@ -732,10 +909,17 @@ class Ticks(Parent):
         self._canvas = canvas
         self._axis = axis
         self._type = type_
-        self._length = length
-        self._direction = direction
+
+        self._length = 5
+        self._width = 1
+        self._direction = 'in'
+        self._font = Font()
+
+        self.setLength(length)
         self.setWidth(width)
+        self.setDirection(direction)
         self.setFont(font)
+
         self._locator = LinearLocator()
         self._labeler = NullLabeler()
         self.setLocator(locator)
