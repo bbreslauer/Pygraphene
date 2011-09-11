@@ -7,6 +7,9 @@ from base_canvas import BaseCanvas
 
 
 class GraphicsLineItem(QGraphicsLineItem):
+    """
+    A QGraphicsLineItem that has a clip path.
+    """
 
     def __init__(self, *args):
         self._clipPath = None
@@ -22,7 +25,7 @@ class GraphicsLineItem(QGraphicsLineItem):
 
 class AliasedGraphicsLineItem(GraphicsLineItem):
     """
-    A QGraphicsLineItem that will always be drawn non-antialiased.
+    A GraphicsLineItem that will always be drawn non-antialiased.
     """
 
     def __init__(self, *args):
@@ -32,17 +35,70 @@ class AliasedGraphicsLineItem(GraphicsLineItem):
         painter.setRenderHints(QPainter.Antialiasing | QPainter.TextAntialiasing, False)
         GraphicsLineItem.paint(self, painter, option, widget)
 
-class AliasedGraphicsRectItem(QGraphicsRectItem):
+class GraphicsRectItem(QGraphicsRectItem):
     """
-    A QGraphicsRectItem that will always be drawn non-antialiased.
+    A QGraphicsRectItem that has a clip path.
     """
 
     def __init__(self, *args):
+        self._clipPath = None
         QGraphicsRectItem.__init__(self, *args)
+
+    def setClipRect(self, clipPath=None):
+        self._clipPath = clipPath
+
+    def paint(self, painter, option, widget=0):
+        if self._clipPath is not None:
+            painter.setClipRect(*self._clipPath)
+        QGraphicsRectItem.paint(self, painter, option, widget)
+
+class AliasedGraphicsRectItem(GraphicsRectItem):
+    """
+    A GraphicsRectItem that will always be drawn non-antialiased.
+    """
+
+    def __init__(self, *args):
+        GraphicsRectItem.__init__(self, *args)
 
     def paint(self, painter, option, widget=0):
         painter.setRenderHints(QPainter.Antialiasing | QPainter.TextAntialiasing, False)
-        QGraphicsRectItem.paint(self, painter, option, widget)
+        GraphicsRectItem.paint(self, painter, option, widget)
+
+class GraphicsEllipseItem(QGraphicsEllipseItem):
+    """
+    A QGraphicsEllipseItem that has a clip path.
+    """
+
+    def __init__(self, *args):
+        self._clipPath = None
+        QGraphicsEllipseItem.__init__(self, *args)
+
+    def setClipRect(self, clipPath=None):
+        self._clipPath = clipPath
+
+    def paint(self, painter, option, widget=0):
+        if self._clipPath is not None:
+            painter.setClipRect(*self._clipPath)
+        QGraphicsEllipseItem.paint(self, painter, option, widget)
+
+class GraphicsPolygonItem(QGraphicsPolygonItem):
+    """
+    A QGraphicsPolygonItem that has a clip path.
+    """
+
+    def __init__(self, *args):
+        self._clipPath = None
+        QGraphicsPolygonItem.__init__(self, *args)
+
+    def setClipRect(self, clipPath=None):
+        self._clipPath = clipPath
+
+    def paint(self, painter, option, widget=0):
+        if self._clipPath is not None:
+            painter.setClipRect(*self._clipPath)
+        QGraphicsPolygonItem.paint(self, painter, option, widget)
+
+
 
 class Qt4PySideCanvas(BaseCanvas):
     """
@@ -171,13 +227,18 @@ class Qt4PySideCanvas(BaseCanvas):
 
         r = int(round(r))
 
-        # Shift the center of the circle to the corner, which is used by QT.
-        cx -= r
-        cy += r
+        # Qt uses the corner of the circle, not the center.
+        x = cx - r
+        y = cy + r
 
-        (cx, cy) = self.figureToCanvas(cx, cy, ox, oy)
+        (x, y) = self.figureToCanvas(x, y, ox, oy)
 
-        return self._scene.addEllipse(cx, cy, 2*r, 2*r, makePen(**kwargs), makeBrush(**kwargs))
+        circle = GraphicsEllipseItem(x, y, 2*r, 2*r)
+        circle.setPen(makePen(**kwargs))
+        circle.setBrush(makeBrush(**kwargs))
+
+        self._scene.addItem(circle)
+        return circle
 
 
 
@@ -218,7 +279,12 @@ class Qt4PySideCanvas(BaseCanvas):
             triangle.append(QPointF(cx - halfHeight, cy             ))
             triangle.append(QPointF(cx + halfHeight, cy - halfLength))
 
-        return self._scene.addPolygon(triangle, makePen(**kwargs), makeBrush(**kwargs))
+        polygon = GraphicsPolygonItem(triangle)
+        polygon.setPen(makePen(**kwargs))
+        polygon.setBrush(makeBrush(**kwargs))
+
+        self._scene.addItem(polygon)
+        return polygon
 
 
     def drawText(self, x, y, ox=0, oy=0, **kwargs):
@@ -279,13 +345,7 @@ class Qt4PySideCanvas(BaseCanvas):
 
         (x, y) = self.figureToCanvas(x, y, ox, oy)
 
-#        if kwargs['rotation'] == 'horizontal':
-#            kwargs['rotation'] = 0
-#        elif kwargs['rotation'] == 'vertical':
-#            kwargs['rotation'] = -90
-
         t.setPos(x, y)
-#        t.setRotation(kwargs['rotation'])
         self._scene.addItem(t)
 
         return t

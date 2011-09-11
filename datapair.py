@@ -135,11 +135,15 @@ class DataPair(object):
         =========   =====
         o           circle
         s           square
-        |           vertical
+        \|          vertical
         \-          horizontal
-        +           plus
+        \+          plus
         x           x
-        *           star
+        \*          star
+        ^           uptriangle
+        v           downtriangle
+        <           lefttriangle
+        >           righttriangle
         =========   =====
 
         """
@@ -199,6 +203,10 @@ class DataPair(object):
         plus
         x
         star
+        uptriangle
+        downtriangle
+        lefttriangle
+        righttriangle
         """
         
         markers = {'o': CircleMarker,
@@ -215,6 +223,14 @@ class DataPair(object):
                    'x': XMarker,
                    '*': StarMarker,
                    'star': StarMarker,
+                   '^': UpTriangleMarker,
+                   'uptriangle': UpTriangleMarker,
+                   'v': DownTriangleMarker,
+                   'downtriangle': DownTriangleMarker,
+                   '<': LeftTriangleMarker,
+                   'lefttriangle': LeftTriangleMarker,
+                   '>': RightTriangleMarker,
+                   'righttriangle': RightTriangleMarker,
                   }
 
         if m in markers.keys():
