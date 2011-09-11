@@ -886,6 +886,7 @@ class Ticks(Parent):
 
         # Compute the locations of the ticks
         if self._type == 'minor':
+            # TODO another method should be devised for getting the majorLocations
             majorLocations = self._axis._majorTicks._locator.locations(start, end)
             locations = []
             for i in range(len(majorLocations) - 1):
@@ -896,10 +897,12 @@ class Ticks(Parent):
         # Compute the labels for the ticks
         labels = self._labeler.labels(locations)
 
-        #print labels
-
         # Create the ticks
         for loc, lab in zip(locations, labels):
+            # Do not create a tick if it is outside of the plot range to be displayed
+            if (loc < start) or (loc > end):
+                continue
+
             self._labelProps.update(text=str(lab))
             tick = Tick(self.canvas(),
                         self._axis,

@@ -69,7 +69,7 @@ class LinearLocator(Locator):
         for i in range(num):
             locs.append(start)
             start += delta
-        
+
         return locs
 
     def setValues(self, **kwargs):
