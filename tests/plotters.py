@@ -30,7 +30,8 @@ p.axis('left').setLabelFont({'family': 'Comic Sans Ms', 'weight': 'bold'})
 p.axis('right').setLabelFont(Font(weight='bold'))
 
 p.axis('bottom').setTicksLocator('major', FixedLocator(x, 9))
-#p.axis('bottom').setTicksLocator('major', LinearLocator(15))
+p.axis('bottom').setTicksLocator('major', LinearLocator(15))
+p.axis('bottom').setTicksLabeler('major', FormatLabeler('%.3g'))
 p.axis('right').setTicksLabeler('major', FormatLabeler('%.3f'))
 #p.axis('bottom').setTicksLabeler('major', StringLabeler(x))
 

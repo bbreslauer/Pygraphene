@@ -66,9 +66,14 @@ class LinearLocator(Locator):
 
         locs = []
 
-        for i in range(num):
+        # If the last location is start + num*delta, we could get a roundoff
+        # error and the last location is not displayed. So we add the delta
+        # for all but the last location, and use end as the last one.
+        for i in range(num - 1):
             locs.append(start)
             start += delta
+
+        locs.append(end)
 
         return locs
 
