@@ -225,10 +225,12 @@ class SpacedLocator(Locator):
         Return a list of data coordinates between start and end,
         spaced by base.
 
-        If anchor is specified, then the ticks are spaced starting at
-        the anchor location. Otherwise, they start at 'start' and will
-        include the 'end' value, regardless of whether it is at
-        start + n * base.
+        If anchor is None, then the locations start at 'start' and end
+        at the first location >= 'end'.
+
+        If anchor is specified, then the ticks are spaced off of the anchor
+        value. The closed values beyond or equal to 'start' and 'end' will
+        be included.
         """
 
         base = self._base
@@ -241,7 +243,7 @@ class SpacedLocator(Locator):
                 locs.append(loc)
                 loc += base
 
-            locs.append(end)
+            locs.append(loc)
 
         # use anchor
         else:
@@ -250,10 +252,14 @@ class SpacedLocator(Locator):
                 locs.insert(0, loc)
                 loc -= base
 
+            locs.insert(0, loc)
+
             loc = anchor + base
             while loc < end:
                 locs.append(loc)
                 loc += base
+
+            locs.append(loc)
 
         return locs
 

@@ -743,9 +743,6 @@ class Axis(Line):
         The kwprops are passed to the Locator instance that is used.
         """
 
-        if locator is None:
-            return
-
         if which == 'both':
             self._majorTicks.setLocator(locator, **kwprops)
             self._minorTicks.setLocator(locator, **kwprops)
@@ -778,9 +775,6 @@ class Axis(Line):
 
         The kwprops are passed to the Labeler instance that is used.
         """
-
-        if labeler is None:
-            return
 
         if which == 'both':
             self._majorTicks.setLabeler(labeler, **kwprops)
