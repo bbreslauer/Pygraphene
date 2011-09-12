@@ -7,7 +7,7 @@ from plot import *
 from text import *
 from base import *
 
-class Figure(Parent):
+class Figure(Artist):
     """
     Represents a figure that is being drawn on a canvas. The canvas is stored
     as a canvas, which must be a subclass of BaseCanvas. The Figure can contain
@@ -25,9 +25,12 @@ class Figure(Parent):
             The width and height of the figure, in pixels.
         """
 
-        Parent.__init__(self)
-
         self._canvas = Qt4PySideCanvas(width, height)
+
+        Artist.__init__(self, self._canvas)
+
+        # Make the plot background white
+        self.setColor('#ffffff')
 
         self._title = Text(self.canvas())
         self._title.setOrigin(0, 0)
@@ -124,12 +127,15 @@ class Figure(Parent):
             if isinstance(font, str) or isinstance(font, Font):
                 self._title.setProps(font=font)
 
-    def draw(self):
+    def _draw(self):
         """
         Show the canvas, draw all plots, and draw the Figure title.
         """
         self.clear()
         self.canvas().show()
+
+        # Draw the background
+        self.canvas().drawRect(0, 0, self.canvas().scene().width(), self.canvas().scene().height(), 0, 0, **{'color': self.color(), 'fillcolor': self.color()})
 
         for p in self._plots:
             p.clear()
@@ -146,6 +152,13 @@ class Figure(Parent):
             del plot
         self._plots = []
         self._currentPlot = None
+
+    def save(self, filename):
+        """
+        Draw and save the canvas.
+        """
+        self.draw()
+        self.canvas().save(filename)
 
     def clear(self):
         Parent.clear(self)

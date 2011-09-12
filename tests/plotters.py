@@ -51,6 +51,7 @@ p.axis('left').setDataRange(0, 8.5)
 #p._figure.draw()
 #listFonts()
 
-show()
+#show()
 
+save('p.png')
 

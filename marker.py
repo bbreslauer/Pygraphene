@@ -111,16 +111,13 @@ class SquareMarker(Marker):
         Marker.__init__(self, canvas, size, **kwprops)
 
     def _draw(self, *args, **kwargs):
-        # These seem to be the appropriate offsets required
-        sx = self._x - (self._size / 2) - 2
-        sy = self._y - (self._size / 2)
-        ex = self._x + (self._size / 2) - 1
-        ey = self._y + (self._size / 2) + 1
+        down = self._size / 2
+        up = self._size - down - 1  # Need the -1 to account for the center of the square
 
-        return self.canvas().drawRect(sx,
-                                     sy,
-                                     ex,
-                                     ey,
+        return self.canvas().drawRect(self._x - down,
+                                     self._y - down,
+                                     self._x + up,
+                                     self._y + up,
                                      self._ox,
                                      self._oy,
                                      **self.props())

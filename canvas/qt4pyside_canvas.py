@@ -367,6 +367,30 @@ class Qt4PySideCanvas(BaseCanvas):
         except:
             "Failed to remove item: " + str(item)
 
+    def save(self, filename):
+        """
+        Save the canvas to a file.
+        """
+
+        painter = QPainter()
+
+        # How the canvas is saved depends on what kind of file is requested.
+        # PDF and PS use a QPrinter, others use a QPixmap.
+        if filename.split('.')[-1] in ('pdf', 'ps'):
+            printer = QPrinter()
+            printer.setOutputFileName(filename)
+            painter.begin(printer)
+            painter.setRenderHint(QPainter.Antialiasing)
+            self.scene().render(painter)
+            painter.end()
+        else:
+            pixmap = QPixmap(self.scene().width(), self.scene().height())
+            painter.begin(pixmap)
+            painter.setRenderHint(QPainter.Antialiasing)
+            self.scene().render(painter)
+            painter.end()
+            pixmap.save(filename)
+
     def items(self, sx, sy, ex, ey, ox, oy):
         """
         Return a list of all the items on the canvas in a rectangle between

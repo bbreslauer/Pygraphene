@@ -36,6 +36,7 @@ p._datapairs[2].setYAxis(p._axes['y3'])
 
 p._axes['y3'].autoscale()
 
+p._datapairs[0].setMarkerProps(size=3, width=0)
 
 p._axes['right'].setColor('red')
 p._axes['right'].setTicksFont('both', Font('Courier', size=16, style='italic', weight='bold'))
@@ -48,7 +49,7 @@ p._datapairs[2].setMarkerProps(color='red', fillcolor='red', size=5)
 p._datapairs[2].setLineProps(width=5, style='dashdot', cap='round')
 #p.removeDataPair(p._datapairs[2])
 
-p.draw()
+show()
 
 #pixmap = QPixmap(600, 400)
 #painter = QPainter()
@@ -57,7 +58,6 @@ p.draw()
 #painter.end()
 #pixmap.save('multiy.png')
 
+#FigureManager.getActive().save('b.png')
 
-app.exec_()
-sys.exit()
 

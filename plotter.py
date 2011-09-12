@@ -121,6 +121,16 @@ def show():
         fig.draw()
         _show_Qt()
 
+def save(filename):
+    """
+    Save the active figure to filename.
+    """
+
+    fig = FigureManager.getActive()
+    if fig is not None:
+        fig.save(filename)
+
+
 def listFonts():
     """
     List all the available fonts for the canvas that is currently
