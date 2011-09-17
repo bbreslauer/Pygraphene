@@ -302,7 +302,8 @@ class Qt4PySideCanvas(BaseCanvas):
         """
         
         t = QGraphicsTextItem(str(kwargs['text']))
-        t.setDefaultTextColor(kwargs['color'])
+        color = QColor(*kwargs['color'].rgba())
+        t.setDefaultTextColor(color)
         t.setFont(makeFont(kwargs['font']))
        
         # Need to rotate first so that we can set the position correctly
@@ -461,7 +462,8 @@ def makePen(**kwargs):
     
     keys = kwargs.keys()
     if 'color' in keys: 
-        pen.setColor(kwargs['color'])
+        color = QColor(*kwargs['color'].rgba())
+        pen.setColor(color)
     if 'width' in keys: 
         pen.setWidth(kwargs['width'])
     if 'style' in keys:
@@ -491,7 +493,8 @@ def makeBrush(**kwargs):
 
     keys = kwargs.keys()
     if 'fillcolor' in keys:
-        brush.setColor(kwargs['fillcolor'])
+        color = QColor(*kwargs['fillcolor'].rgba())
+        brush.setColor(color)
     if 'fillstyle' in keys:
         brush.setStyle(styles[kwargs['fillstyle']])
 

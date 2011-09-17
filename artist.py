@@ -1,5 +1,6 @@
 
 from base import *
+from color import Color
 
 class Artist(PObject, Parent):
     """
@@ -33,7 +34,8 @@ class Artist(PObject, Parent):
     ======================  =================   =======
     Property                Possible Values     Description
     ======================  =================   =======
-    color                   str ('#000000')     The primary color to be used when drawing this Artist.
+    color                   | Color             The primary color to be used when drawing this Artist.
+                            | Color format
     visible                 bool (True)         Determine whether to draw this Artist.
     aliased                 bool (False)        Whether this Artist is antialiased (False) or aliased (True).
     ======================  =================   =======
@@ -47,10 +49,11 @@ class Artist(PObject, Parent):
         Initialize the origin and position. Also set the canvas for this Artist to draw with.
         """
 
-        initialProperties = {'color': '#000000',
+        initialProperties = {'color': Color('black'),
                              'visible': True,
                              'aliased': False,
                             }
+
         initialProperties.update(kwprops)
 
         Parent.__init__(self)
@@ -112,13 +115,35 @@ class Artist(PObject, Parent):
         """
         Convenience method to set the primary color of this Artist.
 
-        color is anything valid as a color property.
+        color can be either a Color object or any valid Color format.
         """
+
+        if not isinstance(color, Color):
+            color = Color(color)
         self.setProps(color=color)
 
     def color(self):
         """Return the color of this Artist."""
-        return self.props('color')
+
+        color = self.props('color')
+        if not isinstance(color, Color):
+            color = Color(color)
+        return color
+
+    def setProps(self, props={}, **kwprops):
+        """
+        Remove 'color' from props and/or kwprops. Then set the color, and
+        then set the kwprops. props takes precedence over kwprops.
+        """
+
+        color = kwprops.pop('color', None)
+        color = props.pop('color', color)
+        if not isinstance(color, Color):
+            kwprops['color'] = Color(color)
+        else:
+            kwprops['color'] = color
+
+        PObject.setProps(self, props, **kwprops)
 
     def setClipPath(self, clipPath):
         """
@@ -183,4 +208,5 @@ class Artist(PObject, Parent):
             except:
                 # Don't worry if it cannot be deleted; it probably doesn't exist anymore
                 pass
+
 

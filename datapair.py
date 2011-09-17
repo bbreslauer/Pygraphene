@@ -3,6 +3,7 @@
 from artist import Artist
 from line import Line
 from axis import Axis
+from color import Color
 #from plot import Plot
 from marker import *
 
@@ -151,11 +152,11 @@ class DataPair(object):
         if len(f) != 3:
             return
 
-        colors = {'r': '#ff0000',
-                  'g': '#00ff00',
-                  'b': '#0000ff',
-                  'k': '#000000',
-                  'w': '#ffffff',
+        colors = {'r': Color('red'),
+                  'g': Color('green'),
+                  'b': Color('blue'),
+                  'k': Color('black'),
+                  'w': Color('white'),
                  }
 
         lines = {'-': 'solid',

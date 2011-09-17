@@ -1,6 +1,7 @@
 
 
 from artist import Artist
+from color import Color
 
 
 class Marker(Artist):
@@ -17,8 +18,10 @@ class Marker(Artist):
     ======================  =================   =======
     Property                Possible Values     Description
     ======================  =================   =======
-    color                   str ('#000000')     The color of the edge line.
-    fillcolor               str ('#000000')     The color of the center of the marker.
+    color                   | Color             The color of the edge line.
+                            | Color format
+    fillcolor               | Color             The color of the center of the marker.
+                            | Color format
     width                   int (1)             The width of the edge line.
     style                   | 'solid'           The edge line style.
                             | 'dash'
@@ -54,7 +57,7 @@ class Marker(Artist):
         """
         Set the fill color of the marker.
         """
-        self.setProps(fillcolor=int(color))
+        self.setProps(fillcolor=Color(color))
 
     def setWidth(self, width):
         """
@@ -83,6 +86,13 @@ class Marker(Artist):
         size = kwprops.pop('size', None)
         size = props.pop('size', size)
         self.setSize(size)
+
+        fillcolor = kwprops.pop('fillcolor', None)
+        fillcolor = props.pop('fillcolor', fillcolor)
+        if not isinstance(fillcolor, Color):
+            kwprops['fillcolor'] = Color(fillcolor)
+        else:
+            kwprops['fillcolor'] = fillcolor
 
         Artist.setProps(self, props, **kwprops)
 

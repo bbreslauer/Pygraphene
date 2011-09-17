@@ -11,6 +11,7 @@ from plotter import *
 
 from font import Font
 from ticker import *
+from color import *
 
 x = [1,2,3,4,5,6,7]
 y = [1,2,9,5,5,9,0]
@@ -22,7 +23,7 @@ p.setAxisLabel('top', 'top')
 p.setAxisLabel('left', 'left')
 p.setAxisLabel('right', 'right')
 
-p.setColor('#00ff00')
+p.setColor(Color('#ff0000aa'))
 
 p.axis('top').ticks('major').setVisible(False)
 
@@ -51,7 +52,9 @@ p.axis('left').setDataRange(0, 8.5)
 #p._figure.draw()
 #listFonts()
 
-#show()
+FigureManager.getActive().setColor((255, 255, 0))
 
-save('p.png')
+show()
+
+#save('p.png')
 

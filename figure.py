@@ -30,7 +30,7 @@ class Figure(Artist):
         Artist.__init__(self, self._canvas)
 
         # Make the plot background white
-        self.setColor('#ffffff')
+        self.setColor('white')
 
         self._title = Text(self.canvas())
         self._title.setOrigin(0, 0)

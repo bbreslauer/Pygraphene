@@ -10,7 +10,6 @@ General Documentation
 =====================
 
 * :doc:`general/properties`
-* :doc:`general/colors`
 
 Contents
 =========
@@ -21,6 +20,7 @@ Contents
    api/artist
    api/axis
    api/base
+   api/color
    api/datapair
    api/figure
    api/font

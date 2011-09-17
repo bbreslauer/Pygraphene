@@ -26,7 +26,7 @@ p._axes['left'].autoscale()
 p._axes['right'].autoscale()
 p._axes['top'].hideTicks()
 
-p.addAxis('y3', color='blue', width=2)
+p.addAxis('y3', color='red', width=2)
 p._axes['y3'].setOrientation('vertical')
 p._axes['y3'].setInside('down')
 p._axes['y3'].setPlotRange(p._axes['right']._plotAnchor + 50, p._axes['right']._plotStart, p._axes['right']._plotEnd)
