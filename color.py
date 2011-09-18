@@ -72,9 +72,9 @@ class Color(object):
 
         # Check which format is being used, and call the appropriate method
         if isinstance(color, Color):
-            self.setColor(color.rgba())
+            return self.setColor(color.rgba())
 
-        elif isinstance(color, tuple):
+        elif isinstance(color, tuple) or isinstance(color, list):
             if len(color) == 3:
                 return self.setRgb(color)
             elif len(color) == 4:
@@ -87,12 +87,12 @@ class Color(object):
                 elif len(color) == 9:
                     return self.setRgbaHex(color)
             else:
-                self.setName(color)
+                return self.setName(color)
 
         return False
 
     def setRgb(self, color):
-        if not isinstance(color, tuple) or len(color) != 3:
+        if not (isinstance(color, tuple) or isinstance(color, list)) or len(color) != 3:
             return False
 
         # Check if all values are ints
@@ -112,7 +112,7 @@ class Color(object):
         return False
  
     def setRgba(self, color):
-        if not isinstance(color, tuple) or len(color) != 4:
+        if not (isinstance(color, tuple) or isinstance(color, list)) or len(color) != 4:
             return False
 
         # Check if all values are ints

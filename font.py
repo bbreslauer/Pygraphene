@@ -1,5 +1,6 @@
 
 from base import PObject
+from color import Color
 
 class Font(PObject):
     """
@@ -12,13 +13,14 @@ class Font(PObject):
     Property                Possible Values     Description
     ======================  =================   =======
     family                  str ('Times')       The font family to use. Needs to be recognized by the canvas being used.
-    style                   | 'Normal'          Italicize font.
+    style                   | 'Normal'
                             | 'Italic'
                             | 'Oblique'
     size                    int (12)            The font size.
-    weight                  | 'Normal'          Boldness.
+    weight                  | 'Normal'
                             | 'Bold'
                             | 'Light'
+    color                   Color               The font color.
     ======================  =================   =======
 
     """
@@ -57,4 +59,19 @@ class Font(PObject):
         Set the font weight to use.
         """
         self.setProps(weight=weight)
+
+    def setProps(self, props={}, **kwprops):
+        """
+        Remove 'color' from props and/or kwprops. Then set the color, and
+        then set the kwprops. props takes precedence over kwprops.
+        """
+
+        color = kwprops.pop('color', None)
+        color = props.pop('color', color)
+        if not isinstance(color, Color):
+            kwprops['color'] = Color(color)
+        else:
+            kwprops['color'] = color
+
+        PObject.setProps(self, props, **kwprops)
 
