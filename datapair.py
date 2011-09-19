@@ -90,6 +90,7 @@ class DataPair(object):
 
     def setPlot(self, plot):
         """Set the plot this DataPair is attached to."""
+# TODO need to fix this        
         #if isinstance(plot, Plot):
         if True:
             self._plot = plot

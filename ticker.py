@@ -1,4 +1,5 @@
 
+import math
 
 class Locator(object):
     """
@@ -24,6 +25,14 @@ class Locator(object):
         it is ignored.
         """
         pass
+
+class NullLocator(Locator):
+    """
+    Provides no locations.
+    """
+
+    def locations(self, start, end, axisType='major'):
+        return []
 
 class LinearLocator(Locator):
     """
@@ -275,6 +284,84 @@ class SpacedLocator(Locator):
         anchor = kwargs.pop('anchor', '')  # None is a valid value, so need '' for nothing to happen
         self.setBase(base)
         self.setAnchor(anchor)
+
+class LogLocator(Locator):
+    """
+    Define tick locations in a logarithmic fashion.
+    """
+
+# TODO need to take care of symlog
+
+    def __init__(self, base=10, subdivisions=[1]):
+        """
+        **Constructor**
+
+        base
+            The base of the logarithm. Defaults to 10.
+
+        subdivisions
+            The list of locations within one order of magnitude that should
+            be created. If [1,2,5], then, for example, the following would
+            be locations in [1, 100]: [1, 2, 5, 10, 20, 50, 100].
+        """
+
+        Locator.__init__(self)
+
+        self._base = 10
+        self.setBase(base)
+        self._subdivisions = [1]
+        self.setSubdivisions(subdivisions)
+
+    def setBase(self, base):
+        """
+        Set the base of the logarithm.
+        """
+        if isinstance(base, int) or isinstance(base, float):
+            self._base = base
+
+    def setSubdivisions(self, subdivisions):
+        """
+        Set the subdivisions of the logarithm.
+        """
+        if isinstance(subdivisions, list) or isinstance(subdivisions, tuple):
+            self._subdivisions = list(subdivisions)
+
+    def locations(self, start, end, axisType='major'):
+        """
+        If axisType is major, then return the orders of magnitude between
+        start and end. If axisType is minor, then return the subdivisions.
+        """
+
+        locs = []
+
+        try:
+            exponent = int(math.floor(math.log(start, self._base)))
+        except ValueError:
+            # input is < 0, default to 1
+            exponent = 0
+        try:
+            lastExponent = int(math.ceil(math.log(end, self._base)))
+        except ValueError:
+            # input is < 0, default to 1
+            lastExponent = 0
+        
+        while exponent <= lastExponent:
+            locs.extend([x * pow(self._base, exponent) for x in self._subdivisions])
+            exponent += 1
+        
+        return locs
+
+    def setValues(self, **kwargs):
+        """
+        Accepted keywords:
+        
+        * base
+
+        """
+        base = kwargs.pop('base', None)
+        subdivisions = kwargs.pop('subdivisions', None)
+        self.setBase(base)
+        self.setSubdivisions(subdivisions)
 
 
 # TODO it doesn't seem like labeler needs to be instantiated. maybe it does when given

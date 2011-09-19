@@ -1,4 +1,5 @@
 
+import math
 
 from artist import Artist
 from line import Line
@@ -16,6 +17,9 @@ class Axis(Line):
 
     The Axis maintains its current location on the Plot as well as the data range
     that it represents.
+
+    The scaling of an Axis can either be 'linear', 'log', or 'symlog'. If it is 'log'
+    or 'semilog', then logBase is used to specify the log's base.
 
     The orientation of an Axis can either be 'horizontal' or 'vertical'.
 
@@ -45,7 +49,7 @@ class Axis(Line):
     if Axis objects are slaved such that Axis1->Axis2->Axis1 occur.
     """
 
-    def __init__(self, canvas, plot, orientation='horizontal', inside='up', **kwprops):
+    def __init__(self, canvas, plot, orientation='horizontal', inside='up', scaling='linear', logBase=10, **kwprops):
 
         # Need to define the label before init'ing the Line. This is because we
         # override Line.setOrigin to include the label, but setOrigin is called
@@ -105,6 +109,11 @@ class Axis(Line):
         self._orientation = None
         self.setOrientation(orientation)
 
+        # Scaling value. Can be 'linear', 'log', or 'symlog'
+        self._scaling = None
+        self._logBase = 10
+        self.setScaling(scaling, logBase=logBase)
+
     def setOrigin(self, x=0, y=0):
         """
         Set the origin, using figure coordinates.
@@ -118,7 +127,9 @@ class Axis(Line):
         does not actually span any range (say, because both the start and end
         are 0), then this will always return 0.
 
-        The algorithm performed is:
+        This method takes into account the Axis scaling.
+
+        For a linear scaling, the algorithm performed is:
 
         | ds = dataStart
         | de = dataEnd
@@ -126,41 +137,67 @@ class Axis(Line):
         | ps = plotStart
         | pe = plotEnd
         | pl = pe - ps = plotLength
+        | return = ps + pl * (value - ds) / dl
 
-        return = ps + pl * (value - ds) / dl
+        For a logarithmic scaling, the algorithm performed is the same as for linear
+        scaling, except that it is done with the logarithms of ds, de, and value.
         """
+
+        # TODO need to take care of symlog
+
+        if self.scaling() == 'linear':
+            ds = self._dataStart
+            dl = self._dataLength
+        elif self.scaling() == 'log':
+            try:
+                ds = math.log(self._dataStart, self.logBase())
+            except ValueError:
+                # input is < 0, default to 1e-7
+                ds = 1e-7
+            try:
+                de = math.log(self._dataEnd, self.logBase())
+            except ValueError:
+                # input is < 0, default to 1e-7
+                ds = 1e-7
+            dl = de - ds
+            try:
+                value = math.log(value, self.logBase())
+            except ValueError:
+                # input is < 0, default to 1e-7
+                ds = 1e-7
 
         try:
             val = self._plotStart + self._plotLength * \
-                   (float(value) - self._dataStart) / self._dataLength
+                   (float(value) - ds) / dl
         except ZeroDivisionError:
             val = 0
         return val
 
-    def mapPlotToData(self, value):
-        """
-        Convert value from plot coordinates to data coordinates. If the axis has
-        no length (probably because it has not yet been attached to a Plot),
-        then this will always return 0.
-
-        The algorithm performed is:
-
-        | ds = dataStart
-        | de = dataEnd
-        | dl = de - ds = dataLength
-        | ps = plotStart
-        | pe = plotEnd
-        | pl = pe - ps = plotLength
-
-        return = ds + dl * (value - ps) / pl
-        """
-
-        try:
-            val = self._dataStart + self._dataLength * \
-                    (float(value) - self._plotStart) / self._plotLength
-        except ZeroDivisionError:
-            val = 0
-        return val
+# THIS IS NOT USED, MAYBE WE CAN JUST GET RID OF IT
+#    def mapPlotToData(self, value):
+#        """
+#        Convert value from plot coordinates to data coordinates. If the axis has
+#        no length (probably because it has not yet been attached to a Plot),
+#        then this will always return 0.
+#
+#        The algorithm performed is:
+#
+#        | ds = dataStart
+#        | de = dataEnd
+#        | dl = de - ds = dataLength
+#        | ps = plotStart
+#        | pe = plotEnd
+#        | pl = pe - ps = plotLength
+#
+#        return = ds + dl * (value - ps) / pl
+#        """
+#
+#        try:
+#            val = self._dataStart + self._dataLength * \
+#                    (float(value) - self._plotStart) / self._plotLength
+#        except ZeroDivisionError:
+#            val = 0
+#        return val
 
     def slaveTo(self, other):
         """
@@ -242,6 +279,14 @@ class Axis(Line):
         """Return the inside side of the Axis."""
         return self._inside
 
+    def scaling(self):
+        """Return the scaling type of the Axis."""
+        return self._scaling
+
+    def logBase(self):
+        """Return the log base of the Axis."""
+        return self._logBase
+
     def setOrientation(self, o):
         """
         Set the orientation of this Axis. Valid values are 'horizontal' and 'vertical'.
@@ -294,6 +339,52 @@ class Axis(Line):
         self.setLabelPosition()
         self._majorTicks.determineAxisPosition()
         self._minorTicks.determineAxisPosition()
+
+    def setScaling(self, s, logBase=10, fromMaster=False):
+        """
+        Set the scaling of the Axis.
+        If an invalid value is passed, then nothing happens unless the current
+        value is None, in which case it defaults to 'linear'.
+
+        **Parameters**
+
+        s
+            Valid values are 'linear', 'log', and 'symlog'.
+
+
+        fromMaster
+            boolean specifying whether this method was called from the Axis'
+            master. Users should leave this set to its default.
+        """
+
+        # Do not change the scaling if this axis is slaved, unless
+        # we are calling it from the master
+        if self._slavedTo is None or fromMaster is True:
+            if s in ('linear', 'log', 'symlog'):
+                self._scaling = s
+                self._logBase = logBase
+            elif self.scaling() != None:
+                return
+            else:
+                self._scaling = 'linear'
+                self._logBase = logBase
+
+            for axis in self._masterOf:
+                axis.setScaling(s, logBase, True)
+
+    def setLog(self, logBase=10):
+        """
+        Convenient way to make this axis logarithmically scaled.
+
+        Sets the scaling, and the major and minor ticks locators and labelers.
+        """
+
+        self.setScaling('log', logBase)
+        self.setTicksLocator('major', LogLocator(logBase, [1]), True)
+        self.setTicksLocator('minor', LogLocator(logBase, [1,2,3,4,5,6,7,8,9]), True)
+        self.setTicksLabeler('major', FormatLabeler('%.2g'), True)
+        self.setTicksLabeler('minor', NullLabeler(), True)
+
 
     def setPlotRange(self, anchor, start, end):
         """
