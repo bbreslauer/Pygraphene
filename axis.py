@@ -744,6 +744,12 @@ class Axis(Line):
         self._label.setProps(props)
         self._label.setPosition(x, y)
 
+    def setLabelProps(self, props={}, **kwprops):
+        """
+        Set the Axis label's properties.
+        """
+        self._label.setProps(props, **kwprops)
+
     def location(self):
         """
         Return the location of the axis, as a string. Return values can be:

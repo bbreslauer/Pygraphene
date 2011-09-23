@@ -34,6 +34,7 @@ class Text(Artist):
     rotation                | 'horizontal'      Define how much to rotate the text. If using an int, specifies degrees clockwise.
                             | 'vertical'
                             | int
+                            | float
     ======================  =================   =======
     """
 
@@ -60,12 +61,13 @@ class Text(Artist):
     def setProps(self, props={}, **kwprops):
         """
         If font is given as a string or a dict, convert it into a Font object.
+        If rotation is a string representing a number, convert it.
 
         Then call Artist.setProps.
         """
 
-        # font might be defined in both props and kwprops, so do all of this
-        # twice
+        # A property might be defined in both props and kwprops,
+        # so do all of this twice
         for d in (props, kwprops):
             if 'font' in d.keys():
                 currentFont = Font()
@@ -78,6 +80,12 @@ class Text(Artist):
                 elif isinstance(d['font'], dict):
                     currentFont.setProps(d['font'])
                     d['font'] = currentFont
+
+            if 'rotation' in d.keys():
+                try:
+                    d['rotation'] = float(d['rotation'])
+                except ValueError:
+                    pass
 
         Artist.setProps(self, props, **kwprops)
 
