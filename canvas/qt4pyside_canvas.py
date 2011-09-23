@@ -404,13 +404,23 @@ class Qt4PySideCanvas(BaseCanvas):
 
         return self._scene.items(sx, sy, width, height, Qt.IntersectsItemShape, Qt.AscendingOrder)
 
-    def listFonts(self):
-        """
-        Print out a list of the fonts that are available to use.
-        """
 
-        d = QFontDatabase()
 
+
+
+
+
+def listFonts(display=False):
+    """
+    Provide a list of the fonts that are available to use.
+
+    If display is True, then print out the families, styles, and sizes available.
+    If display is False, then return a list of the families.
+    """
+
+    d = QFontDatabase()
+
+    if display:
         for font in d.families():
             print font
             for style in d.styles(font):
@@ -418,12 +428,8 @@ class Qt4PySideCanvas(BaseCanvas):
                 for size in d.smoothSizes(font, style):
                     print size,
                 print ""
-
-
-
-
-
-
+    else:
+        return d.families()
 
 def makePen(**kwargs):
     """
