@@ -169,6 +169,24 @@ class Artist(PObject, Parent):
         """
         return self._clipPath
 
+    def resize(self, oldWidth, oldHeight, newWidth, newHeight):
+        """
+        Reposition and (potentially) resize this Artist to correspond to a new
+        Figure size. The arguments correspond to the Figure's old and new size.
+        """
+
+        # Relocate origin
+        ox, oy = self.origin()
+        ox = newWidth * ox / oldWidth
+        oy = newHeight * oy / oldHeight
+        self.setOrigin(ox, oy)
+
+        # Relocate position
+        x, y = self.position()
+        x = newWidth * x / oldWidth
+        y = newHeight * y / oldHeight
+        self.setPosition(x, y)
+
     def draw(self, *args, **kwargs):
         """
         Draw this Artist if it is visible. args and kwargs may be

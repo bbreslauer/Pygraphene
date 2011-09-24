@@ -79,7 +79,6 @@ class CartesianPlot(Plot):
         the appropriate region.
         """
 
-        
         num -= 1  # need to zero-index the plot number so that div and mod work properly
         row = num / nCols
         col = num % nCols
@@ -109,6 +108,21 @@ class CartesianPlot(Plot):
 
         self.setAxesRegion()
         self.setTitlePosition()
+
+    def resize(self, oldWidth, oldHeight, newWidth, newHeight):
+        """
+        Reposition and (potentially) resize this Artist to correspond to a new
+        Figure size. The arguments correspond to the Figure's old and new size.
+        """
+
+        Plot.resize(self, oldWidth, oldHeight, newWidth, newHeight)
+        x, y = self.origin()
+
+        # Resize plot
+        w = newWidth * self.width() / oldWidth
+        h = newHeight * self.height() / oldHeight
+
+        self.setPlotRegion(x, y, w, h)
 
     def setPadding(self, top=50, right=50, bottom=50, left=50):
         """

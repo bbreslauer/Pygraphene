@@ -25,9 +25,11 @@ p.setAxisLabel('left', 'left')
 p.setAxisLabel('right', 'right')
 p.setColor('#ff0000')
 #print p.axis('bottom')._item
+FigureManager.getActive().setSize(600, 400)
 show()
 
 #FigureManager.getActive().clear()
+FigureManager.getActive().setSize(300, 500)
 
 p.setTitle('wwwwwwwwwwwwww')
 p.axis('bottom').setDataRange(0, 5)

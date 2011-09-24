@@ -1,6 +1,6 @@
 
 from PySide.QtGui import *
-from PySide.QtCore import Qt, QPointF
+from PySide.QtCore import Qt, QPointF, Signal
 
 from base_canvas import BaseCanvas
 
@@ -99,6 +99,10 @@ class GraphicsPolygonItem(QGraphicsPolygonItem):
         QGraphicsPolygonItem.paint(self, painter, option, widget)
 
 
+class GraphicsView(QGraphicsView):
+    viewResized = Signal(int, int)
+    def resizeEvent(self, event):
+        self.viewResized.emit(event.size().width(), event.size().height())
 
 class Qt4PySideCanvas(BaseCanvas):
     """
@@ -107,15 +111,21 @@ class Qt4PySideCanvas(BaseCanvas):
 
     #scene and canvas are used interchangably.
 
-    def __init__(self, width, height):
+    def __init__(self, figure, width, height):
+        # figure is passed in so that the canvas can update the figure if needed
+        # such as when the scene's size is adjusted by the user.
 
+        self._figure = figure
 
         self._scene = QGraphicsScene(0, 0, width, height)
-        self._view = QGraphicsView(self._scene)
+        self._view = GraphicsView(self._scene)
         self._view.setAlignment(Qt.AlignLeft | Qt.AlignTop)
         self._view.setRenderHints(QPainter.Antialiasing | QPainter.TextAntialiasing)
+
+        self._view.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self._view.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         
-        self._view.show()
+        self._view.viewResized.connect(self.updateFigureSize)
 
     def show(self):
         self._view.show()
@@ -125,6 +135,28 @@ class Qt4PySideCanvas(BaseCanvas):
 
     def scene(self):
         return self._scene
+
+    def view(self):
+        return self._view
+
+    def setSceneSize(self, width, height):
+        self._scene.setSceneRect(0, 0, width, height)
+
+    def setViewSize(self, width, height):
+        # Need to use the frame width so that we don't have scroll bars on the widget
+        fw = self._view.frameWidth()
+        self._view.setGeometry(0, 0, width+2*fw, height+2*fw)
+
+    def updateFigureSize(self, width, height):
+        """
+        Update the figure's size to match the new scene rect.
+
+        This is called whenever the user manually adjusts the scene's size (i.e.
+        if they adjust the window size).
+        """
+        if self._figure.setSize(width, height, False):
+            # There was an actual size change
+            self._figure.draw()
 
     def figureToCanvas(self, x, y, ox=0, oy=0):
         """

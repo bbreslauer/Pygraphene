@@ -25,7 +25,7 @@ class Figure(Artist):
             The width and height of the figure, in pixels.
         """
 
-        self._canvas = Qt4PySideCanvas(width, height)
+        self._canvas = Qt4PySideCanvas(self, width, height)
 
         Artist.__init__(self, self._canvas)
 
@@ -97,6 +97,36 @@ class Figure(Artist):
     def height(self):
         """Return the height of the Figure."""
         return self.canvas().scene().height()
+
+    def setSize(self, width, height, updateViewSize=True):
+        """
+        Set the width and height of the Figure, and update all children of
+        the figure with their new relative positions and sizes.
+
+        This does not redraw anything.
+
+        Return True if the Figure's size is actually changed (i.e. if the old
+        size is different from the new size), False otherwise.
+        """
+
+        oldWidth = self.width()
+        oldHeight = self.height()
+        
+        if int(oldWidth) == int(width) and int(oldHeight) == int(height):
+            return False
+
+        self.canvas().setSceneSize(width, height)
+        if updateViewSize:
+            self.canvas().setViewSize(width, height)
+
+        # Scale all children
+        for child in self.children():
+            try:
+                child.resize(oldWidth, oldHeight, width, height)
+            except:
+                pass
+        
+        return True
 
     def title(self):
         return self._title

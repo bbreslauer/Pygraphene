@@ -118,6 +118,9 @@ def show():
 
     fig = FigureManager.getActive()
     if fig is not None:
+        # Every time the figure is shown, need to reinitialize it so that the sizes
+        # are all set correctly.
+        fig.canvas().__init__(fig, fig.canvas().scene().width(), fig.canvas().scene().height())
         fig.draw()
         _show_Qt()
 
@@ -137,6 +140,7 @@ def listFonts():
     in use.
     """
 
+# TODO can change this so that it doesn't require instantiating a Figure
     figure = Figure(600, 400)
     figure.canvas().listFonts()
 
