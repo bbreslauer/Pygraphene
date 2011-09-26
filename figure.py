@@ -36,6 +36,7 @@ class Figure(Artist):
         self._title.setOrigin(0, 0)
         self._title.setPosition(width / 2, height - 10)
         self.setTitle('')
+        self.addChild(self._title)
         self._plots = []
         self._currentPlot = None  # index of the current plot
 

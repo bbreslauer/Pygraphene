@@ -351,6 +351,9 @@ class Axis(Line):
         s
             Valid values are 'linear', 'log', and 'symlog'.
 
+        logBase
+            float value, specifying the base if using a log scaling. Otherwise
+            this value is ignored.
 
         fromMaster
             boolean specifying whether this method was called from the Axis'
@@ -1088,7 +1091,7 @@ class Ticks(Parent):
         or 'out', and refers to whether the tick mark should be inside or outside
         the plot. The label will always be outside.
         """
-        if direction in ('in', 'out'):
+        if direction in ('in', 'out', 'both'):
             self._direction = direction
 
     def setWidth(self, width):
@@ -1229,7 +1232,7 @@ class Tick(Parent):
 
         direction
             Whether the tick should be drawn to the inside or outside of the axis.
-            Valid values are 'in' and 'out'. Defaults to 'in'.
+            Valid values are 'in', 'out', and 'both'. Defaults to 'in'.
 
         tickMarkProps
             Keyword arguments for the tick mark Line object.
@@ -1282,7 +1285,7 @@ class Tick(Parent):
         or 'out', and refers to whether the tick mark should be inside or outside
         the plot. The label will always be outside.
         """
-        if direction in ('in', 'out'):
+        if direction in ('in', 'out', 'both'):
             self._direction = direction
 
     def setTickMarkProps(self, **kwprops):
@@ -1297,6 +1300,7 @@ class Tick(Parent):
 
         # Determine various points in plot coordinates
         plotLocation = self._axis.mapDataToPlot(self._dataLocation)
+        labelPosition = self._axis._plotAnchor
         startPosition = self._axis._plotAnchor
         endPosition = startPosition
 
@@ -1304,10 +1308,16 @@ class Tick(Parent):
             endPosition = startPosition + self._length
         elif self._axis.inside() == 'up' and self._direction == 'out':
             endPosition = startPosition - self._length
+        elif self._axis.inside() == 'up' and self._direction == 'both':
+            endPosition = startPosition - self._length
+            startPosition += self._length
         elif self._axis.inside() == 'down' and self._direction == 'in':
             endPosition = startPosition - self._length
         elif self._axis.inside() == 'down' and self._direction == 'out':
             endPosition = startPosition + self._length
+        elif self._axis.inside() == 'down' and self._direction == 'both':
+            endPosition = startPosition + self._length
+            startPosition -= self._length
 
         self._tickMark.setOrigin(self._axis._ox, self._axis._oy)
         self._label.setOrigin(self._axis._ox, self._axis._oy)
@@ -1316,11 +1326,11 @@ class Tick(Parent):
         if self._axis.orientation() == 'horizontal':
             self._tickMark.setPosition(plotLocation, startPosition)
             self._tickMark.setEnd(plotLocation, endPosition)
-            self._label.setPosition(plotLocation, startPosition)
+            self._label.setPosition(plotLocation, labelPosition)
         elif self._axis.orientation() == 'vertical':
             self._tickMark.setPosition(startPosition, plotLocation)
             self._tickMark.setEnd(endPosition, plotLocation)
-            self._label.setPosition(startPosition, plotLocation)
+            self._label.setPosition(labelPosition, plotLocation)
 
     def remove(self):
         """Remove both the tick mark and the label from the figure."""
