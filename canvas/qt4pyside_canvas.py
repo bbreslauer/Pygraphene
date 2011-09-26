@@ -219,8 +219,19 @@ class Qt4PySideCanvas(BaseCanvas):
             line.setPen(makePen(**kwargs))
 
         if clipPath is not None:
+            (csx, csy, w, h) = clipPath
+
+            # The clip rect for Qt needs to be defined from the top-left
+            # corner. The clipPath that is passed in has the bottom-left
+            # corner defined. So we need to shift from the bottom-left
+            # to the top-left corner.
+            csy += h
+
+            # Convert from figure to canvas coordinates. Origin is always 0, 0.
+            (csx, csy) = self.figureToCanvas(csx, csy)
+
             line.setFlags(QGraphicsItem.ItemClipsToShape)
-            line.setClipRect(clipPath)
+            line.setClipRect([csx, csy, w, h])
 
         self._scene.addItem(line)
         return line

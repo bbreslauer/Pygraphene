@@ -25,6 +25,8 @@ p.setAxisLabel('right', 'right')
 
 p.setColor(Color('#ff0000aa'))
 
+p.setTopPadding(100)
+
 p.axis('top').ticks('major').setVisible(False)
 
 p.axis('top').setLabelFont('Comic Sans Ms')

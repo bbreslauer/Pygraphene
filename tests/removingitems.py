@@ -54,22 +54,23 @@ FigureManager.getActive().setTitle({'visible': False})
 
 p.axis('right').setLabelText('right')
 
-figbutton.show()
-pb.show()
 show()
-
-
-FigureManager.getActive().clear()
-
-
-
-
-p.setColor('#00ff00')
-
-figbutton.show()
-pb.show()
-show()
-
+#figbutton.show()
+#pb.show()
+#show()
+#
+#
+#FigureManager.getActive().clear()
+#
+#
+#
+#
+#p.setColor('#00ff00')
+#
+#figbutton.show()
+#pb.show()
+#show()
+#
 
 
 
