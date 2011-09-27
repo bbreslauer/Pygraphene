@@ -430,6 +430,12 @@ class Axis(Line):
         self.setLabelOrigin()
         self.setLabelPosition()
 
+    def dataRange(self):
+        """
+        Return a 2-tuple of (data start, data end).
+        """
+        return (self._dataStart, self._dataEnd)
+
     def setDataRange(self, start, end, fromMaster=False, autoscaled=False):
         """
         Set the data range that this Axis shows. If start == end, then
@@ -779,6 +785,13 @@ class Axis(Line):
         except:
             return None
 
+    def autoscaled(self):
+        """
+        Return True if this Axis is autoscaled, False otherwise.
+        """
+
+        return self._autoscaled
+
     def autoscale(self):
         """
         Autoscale the Axis' data range so that it fits all the data attached
@@ -796,25 +809,25 @@ class Axis(Line):
         for dp in datapairs:
             if dp._xaxis == self:
                 if start is None:
-                    start = dp.minXValue()
+                    start = dp.minXValue(True)
                 else:
-                    start = min(start, dp.minXValue())
+                    start = min(start, dp.minXValue(True))
                 
                 if end is None:
-                    end = dp.maxXValue()
+                    end = dp.maxXValue(True)
                 else:
-                    end = max(end, dp.maxXValue())
+                    end = max(end, dp.maxXValue(True))
 
             if dp._yaxis == self:
                 if start is None:
-                    start = dp.minYValue()
+                    start = dp.minYValue(True)
                 else:
-                    start = min(start, dp.minYValue())
+                    start = min(start, dp.minYValue(True))
                 
                 if end is None:
-                    end = dp.maxYValue()
+                    end = dp.maxYValue(True)
                 else:
-                    end = max(end, dp.maxYValue())
+                    end = max(end, dp.maxYValue(True))
 
         # If there is no data, then default to a range of [0, 10]
         if start is None:

@@ -4,8 +4,25 @@ from artist import Artist
 from line import Line
 from axis import Axis
 from color import Color
-#from plot import Plot
 from marker import *
+
+def subsetOfData(data, region, start, end):
+    """
+    Given a set of data points, this function returns the data points
+    that are between start and end.
+
+    More specifically, start and end correspond to range limits in region.
+    For every entry in range that is between start and end, the corresponding entry
+    in data is returned in a list.
+    """
+
+    subset = []
+    for i in range(len(region)):
+        if region[i] >= start and region[i] <= end:
+            subset.append(data[i])
+
+    return subset
+
 
 class DataPair(object):
     """
@@ -284,20 +301,84 @@ class DataPair(object):
         """Return the y Axis instance."""
         return self._yaxis
 
-    def maxXValue(self):
-        """Get the maximum value in the x data."""
+    def maxXValue(self, inSubRegion=False):
+        """
+        Get the maximum value in the x data.
+
+        If inSubRegion is False, then this finds the appropriate value
+        in the entire data set.
+
+        If inSubRegion is True, then it determines the region on the other
+        axis that will be displayed, and finds the appropriate value within
+        that region. If the other axis is autoscaled, then this defaults to
+        inSubRegion=False behavior.
+
+        If the other axis is not currently defined, then this defaults to
+        inSubRegion=False behavior.
+        """
+
+        if inSubRegion and self.yAxis() is not None and not self.yAxis().autoscaled():
+            return max(subsetOfData(self._x, self._y, *self.yAxis().dataRange()))
         return max(self._x)
 
-    def maxYValue(self):
-        """Get the maximum value in the y data."""
+    def maxYValue(self, inSubRegion=False):
+        """
+        Get the maximum value in the y data.
+
+        If inSubRegion is False, then this finds the appropriate value
+        in the entire data set.
+
+        If inSubRegion is True, then it determines the region on the other
+        axis that will be displayed, and finds the appropriate value within
+        that region. If the other axis is autoscaled, then this defaults to
+        inSubRegion=False behavior.
+
+        If the other axis is not currently defined, then this defaults to
+        inSubRegion=False behavior.
+        """
+
+        if inSubRegion and self.xAxis() is not None and not self.xAxis().autoscaled():
+            return max(subsetOfData(self._y, self._x, *self.xAxis().dataRange()))
         return max(self._y)
 
-    def minXValue(self):
-        """Get the minimum value in the x data."""
+    def minXValue(self, inSubRegion=False):
+        """
+        Get the minimum value in the x data.
+
+        If inSubRegion is False, then this finds the appropriate value
+        in the entire data set.
+
+        If inSubRegion is True, then it determines the region on the other
+        axis that will be displayed, and finds the appropriate value within
+        that region. If the other axis is autoscaled, then this defaults to
+        inSubRegion=False behavior.
+
+        If the other axis is not currently defined, then this defaults to
+        inSubRegion=False behavior.
+        """
+
+        if inSubRegion and self.yAxis() is not None and not self.yAxis().autoscaled():
+            return min(subsetOfData(self._x, self._y, *self.yAxis().dataRange()))
         return min(self._x)
 
-    def minYValue(self):
-        """Get the minimum value in the y data."""
+    def minYValue(self, inSubRegion=False):
+        """
+        Get the minimum value in the y data.
+
+        If inSubRegion is False, then this finds the appropriate value
+        in the entire data set.
+
+        If inSubRegion is True, then it determines the region on the other
+        axis that will be displayed, and finds the appropriate value within
+        that region. If the other axis is autoscaled, then this defaults to
+        inSubRegion=False behavior.
+
+        If the other axis is not currently defined, then this defaults to
+        inSubRegion=False behavior.
+        """
+
+        if inSubRegion and self.xAxis() is not None and not self.xAxis().autoscaled():
+            return min(subsetOfData(self._y, self._x, *self.xAxis().dataRange()))
         return min(self._y)
 
     def makeLinesAndMarkers(self):
