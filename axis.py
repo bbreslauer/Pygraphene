@@ -231,8 +231,9 @@ class Axis(Line):
             ret = other.addSlave(self)
 
             if ret:
-                # Now that we have slaved, initialize the data range
+                # Now that we have slaved, initialize the data range and scaling
                 self.setDataRange(other._dataStart, other._dataEnd, True, other._autoscaled)
+                self.setScaling(other.scaling(), other.logBase(), True)
             else:
                 # The other Axis did not add this axis to its _masterOf list for some reason,
                 # then we need to revert what we have already done
