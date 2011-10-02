@@ -31,6 +31,12 @@ class Text(Artist):
     verticalignment         | 'center'          Define where the vertical anchor point is located in reference to the text.
                             | 'top'
                             | 'bottom'
+    xoffset                 int (0)             A shift in the x direction of where the text will be located. This will be
+                                                applied by adding it to the text's position when drawn. But the text's position
+                                                will not be modified.
+    yoffset                 int (0)             A shift in the y direction of where the text will be located. This will be
+                                                applied by adding it to the text's position when drawn. But the text's position
+                                                will not be modified.
     rotation                | 'horizontal'      Define how much to rotate the text. If using an int, specifies degrees clockwise.
                             | 'vertical'
                             | int
@@ -47,6 +53,8 @@ class Text(Artist):
                              'text': text,
                              'horizontalalignment': 'center',
                              'verticalalignment': 'center',
+                             'xoffset': 0,
+                             'yoffset': 0,
                              'rotation': 'horizontal',
                             }
         initialProperties.update(kwprops)

@@ -339,6 +339,8 @@ class Qt4PySideCanvas(BaseCanvas):
         font = Font object or str
         horizontalalignment = str
         verticalalignment = str
+        xoffset = int
+        yoffset = int
         rotation = 'horizontal', 'vertical' or int (for degrees)
 
         if font provides a color, then that is the text color.
@@ -386,6 +388,11 @@ class Qt4PySideCanvas(BaseCanvas):
             y = y + height
         elif kwargs['verticalalignment'] == 'center':
             y = y + height / 2
+
+        if isinstance(kwargs['xoffset'], int):
+            x = x + kwargs['xoffset']
+        if isinstance(kwargs['yoffset'], int):
+            y = y + kwargs['yoffset']
 
         (x, y) = self.figureToCanvas(x, y, ox, oy)
 
